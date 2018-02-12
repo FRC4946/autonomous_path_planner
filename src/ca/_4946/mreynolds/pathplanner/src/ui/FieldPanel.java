@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.List;
 
@@ -33,6 +34,8 @@ public class FieldPanel extends JPanel {
 	private Image switchBlueL;
 	private Image scaleRedL;
 	private Image scaleBlueL;
+	private Image blueRobot;
+	private Image redRobot;
 
 	public static final int IMG_WIDTH = 748;
 	public static final int IMG_HEIGHT = 812;
@@ -83,14 +86,17 @@ public class FieldPanel extends JPanel {
 	 */
 	public FieldPanel() {
 		try {
-			String dir = "/ca/_4946/mreynolds/pathplanner/resources/field/";
+			String fieldDir = "/ca/_4946/mreynolds/pathplanner/resources/field/";
+			String robotDir = "/ca/_4946/mreynolds/pathplanner/resources/robot/";
 
-			blueField = ImageIO.read(this.getClass().getResource(dir + "Blue.png"));
-			redField = ImageIO.read(this.getClass().getResource(dir + "Red.png"));
-			switchRedL = ImageIO.read(this.getClass().getResource(dir + "Switch Red L.png"));
-			switchBlueL = ImageIO.read(this.getClass().getResource(dir + "Switch Blue L.png"));
-			scaleRedL = ImageIO.read(this.getClass().getResource(dir + "Scale Red L.png"));
-			scaleBlueL = ImageIO.read(this.getClass().getResource(dir + "Scale Blue L.png"));
+			blueField = ImageIO.read(this.getClass().getResource(fieldDir + "Blue.png"));
+			redField = ImageIO.read(this.getClass().getResource(fieldDir + "Red.png"));
+			switchRedL = ImageIO.read(this.getClass().getResource(fieldDir + "Switch Red L.png"));
+			switchBlueL = ImageIO.read(this.getClass().getResource(fieldDir + "Switch Blue L.png"));
+			scaleRedL = ImageIO.read(this.getClass().getResource(fieldDir + "Scale Red L.png"));
+			scaleBlueL = ImageIO.read(this.getClass().getResource(fieldDir + "Scale Blue L.png"));
+			redRobot = ImageIO.read(this.getClass().getResource(robotDir + "Red.png"));
+			blueRobot = ImageIO.read(this.getClass().getResource(robotDir + "Blue.png"));
 
 		} catch (IOException | IllegalArgumentException e) {
 			ErrorPopup.createPopup("Error loading resources", e);
@@ -138,6 +144,9 @@ public class FieldPanel extends JPanel {
 	public void drawPaths(Graphics g) {
 		for (DriveAction path : PathPlanner.main.getScript().getDriveActions()) {
 
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setStroke(new BasicStroke(1));
+
 			path.generatePath();
 
 			for (int i = 0; i < path.left.size(); i += 5) {
@@ -147,6 +156,7 @@ public class FieldPanel extends JPanel {
 
 				g.setColor(Color.GREEN);
 				g.drawLine((int) l.getX(), (int) l.getY(), (int) r.getX(), (int) r.getY());
+
 				// c.draw(g);
 				g.setColor(Color.RED);
 				l.draw(g);
@@ -157,10 +167,43 @@ public class FieldPanel extends JPanel {
 			for (Segment s : PathParser.fillPath(path.curves))
 				pt2px(new Point(s.x, s.y)).draw(g);
 
-			for (int i = 0; i < path.getNumPts(); i++)
-				drawWaypoint(path.getPt(i), g);
-
 		}
+	}
+
+	private void drawBots(Graphics g) {
+		List<DriveAction> list = PathPlanner.main.getScript().getDriveActions();
+
+		if (!list.isEmpty()) {
+			DriveAction path = list.get(0);
+			if (!path.isEmpty())
+				drawBot(path.getPt(0), path.data == 1, (Graphics2D) g);
+		}
+
+		for (DriveAction path : list) {
+			if (!path.isEmpty())
+				drawBot(path.getPt(path.getNumPts() - 1), path.data == 1, (Graphics2D) g);
+		}
+	}
+
+	private void drawBot(Waypoint o, boolean isFlipped, Graphics2D g) {
+		Image robot = PathPlanner.main.fieldIsBlue ? blueRobot : redRobot;
+
+		double x = robot.getWidth(null) / 2;
+		double y = robot.getHeight(null) / 2;
+
+		AffineTransform tx = new AffineTransform();
+		tx.translate(in2px_x(o.getX()), in2px_y(o.getY()));
+
+		tx.scale(PathPlanner.ROBOT_WIDTH_IN / x, PathPlanner.ROBOT_WIDTH_IN / x);
+		tx.translate(-x, -y);
+
+		double angle = -Math.toRadians(o.getHeading() + 90);
+		if (isFlipped)
+			angle += Math.PI;
+
+		tx.rotate(angle, x, y);
+
+		g.drawImage(robot, tx, null);
 	}
 
 	private void drawWaypoint(Waypoint p, Graphics g) {
@@ -180,8 +223,13 @@ public class FieldPanel extends JPanel {
 
 	public void paintComponent(Graphics g) {
 		drawBackground(g);
-		drawMagnets(g);
 		drawPaths(g);
+		drawBots(g);
+		drawMagnets(g);
+
+		for (DriveAction path : PathPlanner.main.getScript().getDriveActions())
+			for (int i = 0; i < path.getNumPts(); i++)
+				drawWaypoint(path.getPt(i), g);
 	}
 
 	MouseAdapter mouse = new MouseAdapter() {
