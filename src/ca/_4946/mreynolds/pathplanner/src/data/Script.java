@@ -1,5 +1,7 @@
 package ca._4946.mreynolds.pathplanner.src.data;
 
+import java.util.ArrayList;
+
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
@@ -24,26 +26,24 @@ public class Script {
 	public void connectPaths() {
 		DriveAction prevDrive = null;
 
-		for (int i = 0; i < script.size(); i++) {
+		// Iterate through each drive action
+		for (DriveAction a : getDriveActions()) {
 
-			Action<?> a = script.get(i);
-			if (!(a instanceof DriveAction))
-				continue;
+			if (prevDrive != null && prevDrive.getNumPts() > 1) {
+				Waypoint pt = new Waypoint(prevDrive.getPt(prevDrive.getNumPts() - 1));
 
-			if (prevDrive != null && prevDrive.waypoints.size() > 1) {
-				Waypoint pt = new Waypoint(prevDrive.waypoints.get(prevDrive.waypoints.size() - 1));
-
+				// If the isReversed flag differs on the prev and cur action, flip the heading
 				if ((a.data == 1) ^ (prevDrive.data == 1))
 					pt.setHeading(pt.getHeading() - 180);
 
 				pt.setAutomaticHeading(false);
-				if (((DriveAction) a).waypoints.isEmpty())
-					((DriveAction) a).waypoints.add(pt);
+				if (a.isEmpty())
+					a.addPt(pt);
 				else
-					((DriveAction) a).waypoints.set(0, pt);
-				((DriveAction) a).generatePath();
+					a.setPt(0, pt);
+				a.generatePath();
 			}
-			prevDrive = (DriveAction) a;
+			prevDrive = a;
 		}
 	}
 
@@ -103,6 +103,15 @@ public class Script {
 
 	public void setSelectedAction(Action<?> a) {
 		selectedAction = script.indexOf(a);
+	}
+
+	public ArrayList<DriveAction> getDriveActions() {
+		ArrayList<DriveAction> list = new ArrayList<>();
+		for (Action<?> a : script)
+			if (a instanceof DriveAction)
+				list.add((DriveAction) a);
+
+		return list;
 	}
 
 	public DriveAction getSelectedAction() {

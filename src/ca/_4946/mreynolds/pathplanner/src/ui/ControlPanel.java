@@ -197,7 +197,7 @@ public class ControlPanel extends JPanel {
 				PathPlanner.main.scaleIsL = (msg.charAt(1) == 'L');
 
 				updateActionList(PathPlanner.main.getScript().getActions());
-				updateWaypointList(PathPlanner.main.getScript().getSelectedAction().waypoints);
+//				updateWaypointList(PathPlanner.main.getScript().getSelectedAction().waypoints);
 
 			});
 
@@ -379,7 +379,7 @@ public class ControlPanel extends JPanel {
 		if (a == null || !(a instanceof DriveAction))
 			return;
 
-		((DriveAction) a).waypoints.addListListener(() -> updateWaypointList(((DriveAction) a).waypoints));
+//		((DriveAction) a).waypoints.addListListener(() -> updateWaypointList(((DriveAction) a).waypoints));
 	}
 
 	ActionListener addNewAction = e -> {

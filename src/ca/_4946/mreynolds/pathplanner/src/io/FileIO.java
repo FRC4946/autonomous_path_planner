@@ -150,7 +150,7 @@ public class FileIO {
 							pt.setAutomaticHeading(curPtEl.getAttribute("autoHeading") == "true" ? true : false);
 							pt.setMagnet(curPtEl.getAttribute("magnet") == "true" ? true : false);
 
-							((DriveAction) curAction).waypoints.add(pt);
+							((DriveAction) curAction).addPt(pt);
 						}
 					}
 				}
@@ -177,8 +177,8 @@ public class FileIO {
 
 		Element llElement = doc.createElement("ll");
 		root.appendChild(saveScript(doc, llElement, scBundle.LL, false));
-		
-		PathParser.smoothAccelJerk(((DriveAction)scBundle.LL.getAction(0)).right);
+
+		PathParser.smoothAccelJerk(((DriveAction) scBundle.LL.getAction(0)).right);
 		System.out.println(printPath((DriveAction) scBundle.LL.getAction(0)));
 
 		Element lrElement = doc.createElement("lr");
@@ -231,7 +231,9 @@ public class FileIO {
 			if (a instanceof DriveAction) {
 
 				if (!isExport) {
-					for (Waypoint p : ((DriveAction) a).waypoints) {
+					for (int i = 0; i < ((DriveAction) a).getNumPts(); i++) {
+						Waypoint p = ((DriveAction) a).getPt(i);
+
 						Element curWaypoint = doc.createElement("waypoint");
 						curElement.appendChild(curWaypoint);
 

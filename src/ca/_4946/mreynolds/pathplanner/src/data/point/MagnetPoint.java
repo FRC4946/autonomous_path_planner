@@ -33,6 +33,15 @@ public class MagnetPoint extends Point {
 		setup(false, 0);
 	}
 
+	public void latch(Waypoint p) {
+		p.setX(x);
+		p.setY(y);
+		if (hasHeading) {
+			p.setHeading(heading);
+			p.setMagnet(true);
+		}
+	}
+
 	private void setup(boolean hasHeading, double newHeading) {
 		size = 10;
 		this.hasHeading = hasHeading;

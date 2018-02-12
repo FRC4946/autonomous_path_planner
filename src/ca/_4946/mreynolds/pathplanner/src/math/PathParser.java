@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
-import ca._4946.mreynolds.pathplanner.src.data.LinAngSegment;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
-import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
 import ca._4946.mreynolds.pathplanner.src.math.bezier.CubicBezier;
 
 public class PathParser {
@@ -18,71 +16,68 @@ public class PathParser {
 	public static final double MAX_VEL = 15; // in/s
 	public static final double SAMPLE_PERIOD = 0.02; // 20ms
 
-	public static ArrayList<LinAngSegment> fillPath(List<Waypoint> list) {
-		ArrayList<LinAngSegment> fill = new ArrayList<>();
+	public static ArrayList<Segment> fillPath(List<CubicBezier> list) {
+
+		ArrayList<Segment> fill = new ArrayList<>();
 
 		double dist = 0;
-		for (int i = 0; i < list.size() - 1; i++) {
-			CubicBezier curve = new CubicBezier(list.get(i), list.get(i + 1));
+		for (CubicBezier c : list) {
 
 			double spacing = 1; // 5in
 
-			for (double pos = 0; pos < curve.length(); pos += spacing) {
-				LinAngSegment seg = curve.getSegOnCurve(pos / curve.length());
-				seg.lin.pos = dist + pos;
+			for (double pos = 0; pos < c.length(); pos += spacing) {
+				Segment seg = c.getSegOnCurve(pos / c.length());
+				seg.pos = dist + pos;
 				fill.add(seg);
 			}
 
-			dist += curve.length();
+			dist += c.length();
+		}
+
+		for (int i = 0; i < fill.size(); i++) {
+			Segment prev = fill.get(Math.max(i - 1, 0));
+			Segment next = fill.get(Math.min(i + 1, fill.size() - 1));
+			fill.get(i).heading = Math.atan2(prev.y - next.y, prev.x - next.x);
 		}
 
 		return fill;
 	}
 
-	public static ArrayList<LinAngSegment> smoothPath(List<Waypoint> list) {
+	public static ArrayList<Segment> smoothPath(DriveAction action) {
 
-		ArrayList<LinAngSegment> fill = fillPath(list);
-		ArrayList<LinAngSegment> smooth = new ArrayList<>();
+		ArrayList<Segment> fill = fillPath(action.curves);
+		ArrayList<Segment> smooth = new ArrayList<>();
 
-		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(fill.get(fill.size() - 1).lin.pos, MAX_VEL,
-				MAX_ACCEL, MAX_JERK);
+		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(fill.get(fill.size() - 1).pos, MAX_VEL, MAX_ACCEL,
+				MAX_JERK);
 		double time = 0;
 		int lastSeg = 0;
 		while (time < profile.time[7]) {
 
-			LinAngSegment s = new LinAngSegment(profile.getSeg(time));
+			Segment s = new Segment(profile.getSeg(time));
 
 			for (int i = lastSeg; i < fill.size() - 1; i++) {
 
 				// If we are between two points...
-				if (fill.get(i).lin.pos <= s.lin.pos && fill.get(i + 1).lin.pos >= s.lin.pos) {
+				if (fill.get(i).pos <= s.pos && fill.get(i + 1).pos >= s.pos) {
 					lastSeg = i;
 
-					double dp = fill.get(i + 1).lin.pos - fill.get(i).lin.pos;
-					double dx = fill.get(i + 1).lin.x - fill.get(i).lin.x;
-					double dy = fill.get(i + 1).lin.y - fill.get(i).lin.y;
-					double dap = fill.get(i + 1).ang.pos - fill.get(i).ang.pos;
-					double dav = fill.get(i + 1).ang.vel - fill.get(i).ang.vel;
-					double daa = fill.get(i + 1).ang.accel - fill.get(i).ang.accel;
-					double daj = fill.get(i + 1).ang.jerk - fill.get(i).ang.jerk;
+					double dp = fill.get(i + 1).pos - fill.get(i).pos;
+					double dx = fill.get(i + 1).x - fill.get(i).x;
+					double dy = fill.get(i + 1).y - fill.get(i).y;
+					double dh = fill.get(i + 1).heading - fill.get(i).heading;
 
-					if (dap > Math.PI)
-						dap = -2 * Math.PI + dap;
-					if (dap < -Math.PI)
-						dap = 2 * Math.PI + dap;
+					if (dh > Math.PI)
+						dh = -2 * Math.PI + dh;
+					if (dh < -Math.PI)
+						dh = 2 * Math.PI + dh;
 
-					double percent = (s.lin.pos - fill.get(i).lin.pos) / dp;
-					// System.out.println(percent + "\t" + percent * percent);
+					double percent = (s.pos - fill.get(i).pos) / dp;
 
-					s.lin.dt = SAMPLE_PERIOD;
-					s.lin.x = fill.get(i).lin.x + dx * percent;
-					s.lin.y = fill.get(i).lin.y + dy * percent;
-					s.ang.pos = fill.get(i).ang.pos + dap * percent;
-					s.ang.vel = fill.get(i).ang.vel + dav * percent;
-					s.ang.accel = fill.get(i).ang.accel + daa * percent;
-					s.ang.jerk = fill.get(i).ang.jerk + daj * percent;
-
-					s.lin.heading = Math.toDegrees(s.ang.pos);
+					s.dt = SAMPLE_PERIOD;
+					s.x = fill.get(i).x + dx * percent;
+					s.y = fill.get(i).y + dy * percent;
+					s.heading = Math.toDegrees(fill.get(i).heading + dh * percent);
 					smooth.add(s);
 					break;
 				}
@@ -95,17 +90,17 @@ public class PathParser {
 		return smooth;
 	}
 
-	public static DriveAction generatePath(ArrayList<LinAngSegment> list) {
-		if (list.size() < 3)
+	public static DriveAction generatePath(ArrayList<Segment> list) {
+		if (list.size() < 2)
 			return new DriveAction();
 
 		DriveAction path = new DriveAction();
 
 		Segment l, r, lastL, lastR;
 		double botRadius = PathPlanner.WHEEL_WIDTH_IN / 2.0;
-		double perp = MathUtil.toRange(list.get(0).ang.pos - (Math.PI / 2), 0, 2 * Math.PI);
-		l = new Segment(list.get(0).lin);
-		r = new Segment(list.get(0).lin);
+		double perp = MathUtil.toRange(Math.toRadians(list.get(0).heading) - (Math.PI / 2), 0, 2 * Math.PI);
+		l = new Segment(list.get(0));
+		r = new Segment(list.get(0));
 
 		l.x += Math.cos(perp) * botRadius;
 		l.y += Math.sin(perp) * botRadius;
@@ -118,11 +113,11 @@ public class PathParser {
 			lastL = l;
 			lastR = r;
 
-			LinAngSegment s = list.get(i);
+			Segment s = list.get(i);
 
-			perp = MathUtil.toRange(s.ang.pos - (Math.PI / 2), 0, 2 * Math.PI);
-			l = new Segment(s.lin);
-			r = new Segment(s.lin);
+			perp = MathUtil.toRange(Math.toRadians(list.get(i).heading) - (Math.PI / 2), 0, 2 * Math.PI);
+			l = new Segment(s);
+			r = new Segment(s);
 
 			// l.heading = r.heading = Math.toDegrees(s.ang.pos);
 			l.x += Math.cos(perp) * botRadius;
@@ -132,7 +127,7 @@ public class PathParser {
 
 			// Negative change is turning CW (L+, R-)
 			// Positive change is turning CCW (L-, R+)
-			double dtheta = (list.get(i + 1).ang.pos - s.ang.pos);
+			double dtheta = Math.toRadians(list.get(i + 1).heading - s.heading);
 			if (dtheta > Math.PI)
 				dtheta -= Math.PI * 2;
 			else if (dtheta < -Math.PI)
@@ -165,6 +160,7 @@ public class PathParser {
 		// }
 	}
 
+	@SuppressWarnings("unused")
 	private static Point getIntersection(Segment a, Segment b) {
 		double ma = Math.tan(Math.toRadians(a.heading - 90));
 		double ba = a.y - a.x * ma;

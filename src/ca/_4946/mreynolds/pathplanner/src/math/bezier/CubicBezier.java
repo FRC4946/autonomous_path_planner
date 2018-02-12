@@ -1,6 +1,5 @@
 package ca._4946.mreynolds.pathplanner.src.math.bezier;
 
-import ca._4946.mreynolds.pathplanner.src.data.LinAngSegment;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
@@ -28,6 +27,22 @@ public class CubicBezier {
 		this.b = startCtrl;
 		this.c = endCtrl;
 
+		calcMap();
+	}
+
+	public void updateStart(Waypoint start) {
+		this.a = start;
+		this.b = start.getHandle();
+		calcMap();
+	}
+
+	public void updateEnd(Waypoint end) {
+		this.d = end;
+		this.c = end.getFlipHandle();
+		calcMap();
+	}
+
+	private void calcMap() {
 		lenMap = new double[mapSize + 1];
 
 		double lastX = x(0);
@@ -180,13 +195,12 @@ public class CubicBezier {
 		return false;
 	}
 
-	public LinAngSegment getSegOnCurve(double t) {
-		LinAngSegment s = new LinAngSegment();
-		s.lin = new Segment(getPtOnCurve(t));
-		s.ang = calcAngular(t);
+	public Segment getSegOnCurve(double t) {
+		Segment s = new Segment(getPtOnCurve(t));
 		return s;
 	}
 
+	@SuppressWarnings("unused")
 	private Segment calcAngular(double t) {
 		Segment s = new Segment();
 

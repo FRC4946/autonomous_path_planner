@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
-import ca._4946.mreynolds.pathplanner.src.data.LinAngSegment;
-import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
+import ca._4946.mreynolds.pathplanner.src.data.Script;
+import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.MagnetPoint;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
@@ -136,15 +136,11 @@ public class FieldPanel extends JPanel {
 	}
 
 	public void drawPaths(Graphics g) {
-		for (Action<?> curAction : PathPlanner.main.getScript().getActions()) {
-			if (!(curAction instanceof DriveAction))
-				continue;
+		for (DriveAction path : PathPlanner.main.getScript().getDriveActions()) {
 
-			DriveAction path = (DriveAction) curAction;
-			List<Waypoint> points = path.waypoints;
 			path.generatePath();
 
-			for (int i = 0; i < path.left.size(); i++) {
+			for (int i = 0; i < path.left.size(); i += 5) {
 				Point l = pt2px(new Point(path.left.get(i).x, path.left.get(i).y));
 				Point r = pt2px(new Point(path.right.get(i).x, path.right.get(i).y));
 				// Point c = new Point((l.getX() + r.getX()) / 2, (l.getY() + r.getY()) / 2);
@@ -158,14 +154,11 @@ public class FieldPanel extends JPanel {
 			}
 
 			g.setColor(Color.CYAN);
-			for (LinAngSegment s : PathParser.fillPath(path.waypoints))
-				pt2px(new Point(s.lin.x, s.lin.y)).draw(g);
+			for (Segment s : PathParser.fillPath(path.curves))
+				pt2px(new Point(s.x, s.y)).draw(g);
 
-			for (int i = 0; i < points.size() - 1; i++)
-				drawWaypoint(points.get(i), g);
-
-			if (points.size() > 0)
-				drawWaypoint(points.get(points.size() - 1), g);
+			for (int i = 0; i < path.getNumPts(); i++)
+				drawWaypoint(path.getPt(i), g);
 
 		}
 	}
@@ -197,10 +190,9 @@ public class FieldPanel extends JPanel {
 		int ref = -1;
 
 		private Waypoint curPt() {
-			DriveAction a = PathPlanner.main.getScript().getSelectedAction();
-			if (a == null)
+			if (PathPlanner.main.getScript().getSelectedAction() == null)
 				return new Waypoint();
-			return a.waypoints.get(ref);
+			return PathPlanner.main.getScript().getSelectedAction().getPt(ref);
 		}
 
 		@Override
@@ -235,107 +227,102 @@ public class FieldPanel extends JPanel {
 					}
 
 				if (!foundMagnet)
-					((Waypoint) curPt()).setMagnet(false);
+					curPt().setMagnet(false);
 			}
 
-			DriveAction a = (DriveAction) PathPlanner.main.getScript().getSelectedAction();
-			if (a != null) {
-				PathPlanner.main.getScript().connectPaths();
-				// a.generatePath();
-			}
+			PathPlanner.main.getScript().connectPaths();
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			DriveAction a = (DriveAction) PathPlanner.main.getScript().getSelectedAction();
-			if (a == null)
-				return;
+			Script script = PathPlanner.main.getScript();
 
-			List<Waypoint> points = a.waypoints;
+			if (script.getDriveActions().isEmpty())
+				script.addAction(new DriveAction());
+
 			Point click = pt2in(new Point(e.getPoint()));
 
-			// Right Click
-			if (e.getButton() == MouseEvent.BUTTON3) {
+			List<DriveAction> actions = script.getDriveActions();
+			for (int j = 0; j < actions.size(); j++) {
+				DriveAction a = actions.get(j);
 
-				for (int i = 0; i < points.size(); i++)
-					if (points.get(i).contains(click)) {
-						points.remove(i);
-						break;
-					}
-			}
+				// Right Click
+				if (e.getButton() == MouseEvent.BUTTON3) {
 
-			// Left click
-			else {
+					for (int i = 0; i < a.getNumPts(); i++)
+						if (a.getPt(i).contains(click)) {
+							a.removePt(i);
+							return;
+						}
+				}
 
-				// If we already have points, check if the click is on an existing point
-				if (points.size() > 0) {
+				// Left click
+				else {
 
 					// Check handles
-					for (int i = 0; i < points.size(); i++)
-						if (points.get(i).getHandle().contains(click)) {
+					for (int i = 0; i < a.getNumPts(); i++) {
+						if (a.getPt(i).getHandle().contains(click)) {
 							ref = i;
 							handleIsFlip = false;
 							refIsHandle = true;
-						} else if (points.get(i).getFlipHandle().contains(click)) {
+							script.setSelectedAction(a);
+							return;
+						} else if (a.getPt(i).getFlipHandle().contains(click)) {
 							ref = i;
 							handleIsFlip = true;
 							refIsHandle = true;
+							script.setSelectedAction(a);
+							return;
 						}
-
-					// Check pt 0
-					if (points.get(0).contains(click)) {
-						refIsHandle = false;
-						ref = 0;
 					}
 
-					// Check every other point and every line
-					for (int i = 0; i < points.size() - 1 && ref == -1; i++) {
-						CubicBezier curve = new CubicBezier(points.get(i), points.get(i + 1));
-						
-						if (points.get(i + 1).contains(click)) {
-							ref = i + 1;
+					// Check each point
+					for (int i = 0; i < a.getNumPts(); i++) {
+						if (a.getPt(i).contains(click)) {
+							ref = i;
 							refIsHandle = false;
+							script.setSelectedAction(a);
+							return;
 						}
-						else if (curve.ptIsOnCurve(click, 0.1)) {
-							points.add(i + 1, new Waypoint(click));
+					}
+
+					// Check each curve
+					for (int i = 0; i < a.curves.size(); i++) {
+						CubicBezier curve = a.curves.get(i);
+
+						if (curve.ptIsOnCurve(click, 0.15)) {
+							a.addPt(i + 1, new Waypoint(click));
 							ref = i + 1;
 							refIsHandle = false;
+							script.setSelectedAction(a);
+							return;
 						}
 					}
 				}
 
-				if (ref == -1) {
-					ref = points.size();
-					points.add(new Waypoint(click));
+				// If we haven't found a match and this is the last action in the script...
+				if (ref == -1 && j == actions.size() - 1) {
+					ref = a.getNumPts();
+					a.addPt(new Waypoint(click));
 					refIsHandle = false;
+					script.setSelectedAction(a);
+
+					// Check for magnet points
+					for (MagnetPoint mag : PathPlanner.main.getMagnets())
+						if (mag.contains(click))
+							mag.latch(a.getPt(ref));
 				}
 
-				// Check for magnet points
-				if (!refIsHandle)
-					for (MagnetPoint mag : PathPlanner.main.getMagnets())
-						if (mag.contains(click)) {
-							points.get(ref).setX(mag.getX());
-							points.get(ref).setY(mag.getY());
-							if (mag.hasHeading() && !refIsHandle) {
-								((Waypoint) curPt()).setHeading(mag.getHeading());
-								((Waypoint) curPt()).setMagnet(true);
-							}
-						}
+				PathPlanner.main.getScript().connectPaths();
 			}
-
-			PathPlanner.main.getScript().connectPaths();
-			// a.generatePath();
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			ref = -1;
-
-			DriveAction a = (DriveAction) PathPlanner.main.getScript().getSelectedAction();
-			if (a != null) {
+			if (PathPlanner.main.getScript().getSelectedAction() != null)
 				PathPlanner.main.getScript().connectPaths();
-				// a.generatePath();
-			}
+
+			ref = -1;
 		}
 	};
 }
