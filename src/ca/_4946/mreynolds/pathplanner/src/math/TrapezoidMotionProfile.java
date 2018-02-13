@@ -24,9 +24,9 @@ public class TrapezoidMotionProfile {
 
 	public TrapezoidMotionProfile(double dist, double maxVelocity, double maxAcceleration, double maxJerk) {
 
-		jmax_param = maxJerk;
-		amax_param = maxAcceleration;
-		vmax_param = maxVelocity;
+		jmax_param = maxJerk * Math.signum(dist);
+		amax_param = maxAcceleration * Math.signum(dist);
+		vmax_param = maxVelocity * Math.signum(dist);
 		pathLength = dist;
 
 		calc();
@@ -38,6 +38,7 @@ public class TrapezoidMotionProfile {
 		vel[0] = 0;
 		for (int i = 1; i < 8; i++)
 			vel[i] = vel(accel[i - 1], jerk[i - 1], time[i] - time[i - 1]) + vel[i - 1];
+
 	}
 
 	private void calc() {
@@ -67,7 +68,7 @@ public class TrapezoidMotionProfile {
 		double _a = amax;
 		double _b = 3 * amax * amax / jmax;
 		double _c = 2 * (amax * amax * amax) / (jmax * jmax) - pathLength;
-		double newT2 = Math.max(MathUtil.quadratic(_a, _b, _c), 0);
+		double newT2 = Math.max(Math.max(MathUtil.quadratic(_a, _b, _c), MathUtil.quadratic2(_a, _b, _c)), 0);
 		if (newT2 < t2) {
 			t2 = newT2;
 
@@ -134,16 +135,6 @@ public class TrapezoidMotionProfile {
 			s.jerk = jerk[i];
 		}
 		return s;
-	}
-
-	public double timeToTravel(double d) {
-
-		double time;
-
-		for (time = 0; getSeg(time).pos < (d-0.5); time += 0.001)
-			;
-
-		return time;
 	}
 
 	private static double pos(double vel, double accel, double jerk, double t) {

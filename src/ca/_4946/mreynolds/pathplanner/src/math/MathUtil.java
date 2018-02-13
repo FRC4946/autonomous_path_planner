@@ -4,6 +4,13 @@ public class MathUtil {
 
 	public static final double EPSILON = 1e-8;
 	
+	public static boolean isBetween(double left, double right, double a) {
+		if(left <= right)
+			return left <= a && a <= right;
+		
+		return right <= a && a <= left;
+	}
+	
 	public static double toRange(double in, double min, double max) {
 		while(in < min)
 			in += (max-min);

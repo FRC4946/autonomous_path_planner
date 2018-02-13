@@ -178,8 +178,11 @@ public class FileIO {
 		Element llElement = doc.createElement("ll");
 		root.appendChild(saveScript(doc, llElement, scBundle.LL, false));
 
-		PathParser.smoothAccelJerk(((DriveAction) scBundle.LL.getAction(0)).right);
-		System.out.println(printPath((DriveAction) scBundle.LL.getAction(0)));
+		for (DriveAction a : scBundle.LL.getDriveActions()) {
+			PathParser.smoothAccelJerk(a.left);
+			PathParser.smoothAccelJerk(a.right);
+			System.out.println(printPath(a));
+		}
 
 		Element lrElement = doc.createElement("lr");
 		root.appendChild(saveScript(doc, lrElement, scBundle.LR, false));
@@ -246,6 +249,9 @@ public class FileIO {
 						curWaypoint.setAttribute("autoHeading", p.isAutomaticHeading() ? "true" : "false");
 					}
 				} else {
+
+					PathParser.smoothAccelJerk(((DriveAction) a).left);
+					PathParser.smoothAccelJerk(((DriveAction) a).right);
 					curElement.setTextContent(printPath((DriveAction) a));
 				}
 

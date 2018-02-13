@@ -44,22 +44,25 @@ public class PathParser {
 	}
 
 	public static ArrayList<Segment> smoothPath(DriveAction action) {
+		boolean isReverse = action.data == 1;
 
 		ArrayList<Segment> fill = fillPath(action.curves);
 		ArrayList<Segment> smooth = new ArrayList<>();
 
-		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(fill.get(fill.size() - 1).pos, MAX_VEL, MAX_ACCEL,
-				MAX_JERK);
+		double dist = fill.get(fill.size() - 1).pos;
+		if (isReverse)
+			dist *= -1;
+
+		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(dist, MAX_VEL, MAX_ACCEL, MAX_JERK);
 		double time = 0;
 		int lastSeg = 0;
 		while (time < profile.time[7]) {
 
 			Segment s = new Segment(profile.getSeg(time));
-
 			for (int i = lastSeg; i < fill.size() - 1; i++) {
 
 				// If we are between two points...
-				if (fill.get(i).pos <= s.pos && fill.get(i + 1).pos >= s.pos) {
+				if (MathUtil.isBetween(fill.get(i).pos, fill.get(i + 1).pos, Math.abs(s.pos))) {
 					lastSeg = i;
 
 					double dp = fill.get(i + 1).pos - fill.get(i).pos;
@@ -72,12 +75,14 @@ public class PathParser {
 					if (dh < -Math.PI)
 						dh = 2 * Math.PI + dh;
 
-					double percent = (s.pos - fill.get(i).pos) / dp;
+					double percent = (Math.abs(s.pos) - fill.get(i).pos) / dp;
 
 					s.dt = SAMPLE_PERIOD;
 					s.x = fill.get(i).x + dx * percent;
 					s.y = fill.get(i).y + dy * percent;
 					s.heading = Math.toDegrees(fill.get(i).heading + dh * percent);
+					if (isReverse)
+						s.heading -= 180;
 					smooth.add(s);
 					break;
 				}
@@ -97,7 +102,7 @@ public class PathParser {
 		DriveAction path = new DriveAction();
 
 		Segment l, r, lastL, lastR;
-		double botRadius = PathPlanner.WHEEL_WIDTH_IN / 2.0;
+		double botRadius = PathPlanner.WHEEL_WIDTH_IN / 2;
 		double perp = MathUtil.toRange(Math.toRadians(list.get(0).heading) - (Math.PI / 2), 0, 2 * Math.PI);
 		l = new Segment(list.get(0));
 		r = new Segment(list.get(0));
@@ -132,9 +137,10 @@ public class PathParser {
 				dtheta -= Math.PI * 2;
 			else if (dtheta < -Math.PI)
 				dtheta += Math.PI * 2;
+
 			double omega = dtheta / SAMPLE_PERIOD;
-			l.pos = lastL.pos + l.toPt().distance(lastL.toPt());
-			r.pos = lastR.pos + r.toPt().distance(lastR.toPt());
+			l.pos = lastL.pos + Math.copySign(l.toPt().distance(lastL.toPt()), s.pos);
+			r.pos = lastR.pos + Math.copySign(r.toPt().distance(lastR.toPt()), s.pos);
 
 			l.vel += -omega * (botRadius);
 			r.vel += omega * (botRadius);
