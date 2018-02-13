@@ -47,50 +47,47 @@ public class ActionEditorPanel extends JPanel {
 	public ActionEditorPanel(Action<?> a, ButtonGroup grp) {
 		setBorder(new LineBorder(Color.LIGHT_GRAY));
 		// setPreferredSize(new Dimension(1000, 25));
-		setMaximumSize(new Dimension(1000, 25));
+		setMaximumSize(new Dimension(1000, 28));
 
 		action = a;
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 60, 30, 50, 150, 30, 60, 50, 30, 0, 30, 75, 60, 30, 45, 45, 45, 45,
-				0 };
+		gridBagLayout.columnWidths = new int[] { 60, 50, 150, 30, 60, 50, 30, 0, 30, 75, 60, 30, 45, 45, 45, 45, 0 };
 		gridBagLayout.rowHeights = new int[] { 21, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-				0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+				0.0, 0.0, 0.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
 		JLabel actionTypeLbl = new JLabel(action.getName());
 		actionTypeLbl.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_actionTypeLbl = new GridBagConstraints();
+		gbc_actionTypeLbl.fill = GridBagConstraints.VERTICAL;
 		gbc_actionTypeLbl.insets = new Insets(0, 0, 0, 5);
 		gbc_actionTypeLbl.gridx = 0;
 
-		JRadioButton selectBtn = new JRadioButton("");
-		selectBtn.setSelected(action == PathPlanner.main.getScript().getSelectedAction());
-		grp.add(selectBtn);
-		GridBagConstraints gbc_selectBtn = new GridBagConstraints();
-		gbc_selectBtn.gridx = 1;
-
 		JLabel actionLbl = new JLabel("Action:");
 		GridBagConstraints gbc_lblAction = new GridBagConstraints();
+		gbc_lblAction.fill = GridBagConstraints.VERTICAL;
 		gbc_lblAction.insets = new Insets(0, 0, 0, 5);
 		gbc_lblAction.anchor = GridBagConstraints.EAST;
-		gbc_lblAction.gridx = 2;
+		gbc_lblAction.gridx = 1;
 
 		JComboBox<String> actionSelector = new JComboBox<String>();
 		for (Object o : a.options.getDeclaringClass().getEnumConstants())
 			actionSelector.addItem(o.toString());
 		GridBagConstraints gbc_actionSelector = new GridBagConstraints();
+		gbc_actionSelector.insets = new Insets(0, 0, 0, 5);
 		gbc_actionSelector.fill = GridBagConstraints.BOTH;
-		gbc_actionSelector.gridx = 3;
+		gbc_actionSelector.gridx = 2;
 		actionSelector.setSelectedItem(action.options.toString());
 
 		detailsLbl = new JLabel(action.getDataLabel());
 		GridBagConstraints gbc_detailsLbl = new GridBagConstraints();
+		gbc_detailsLbl.fill = GridBagConstraints.VERTICAL;
 		gbc_detailsLbl.anchor = GridBagConstraints.EAST;
 		gbc_detailsLbl.insets = new Insets(0, 0, 0, 5);
-		gbc_detailsLbl.gridx = 5;
+		gbc_detailsLbl.gridx = 4;
 
 		GridBagConstraints gbc_data = new GridBagConstraints();
 		gbc_data.anchor = GridBagConstraints.WEST;
@@ -116,15 +113,18 @@ public class ActionEditorPanel extends JPanel {
 
 		JLabel timeoutLbl = new JLabel("Timeout (s):");
 		GridBagConstraints gbc_timeoutLbl = new GridBagConstraints();
+		gbc_timeoutLbl.fill = GridBagConstraints.VERTICAL;
 		gbc_timeoutLbl.anchor = GridBagConstraints.EAST;
 		gbc_timeoutLbl.insets = new Insets(0, 0, 0, 5);
-		gbc_timeoutLbl.gridx = 8;
+		gbc_timeoutLbl.gridx = 7;
 
 		JSpinner timeoutSpinner = new JSpinner();
 		timeoutSpinner.setModel(new SpinnerNumberModel(action.timeout, 0.0, 15.0, 0.5));
 		GridBagConstraints gbc_timeoutSpinner = new GridBagConstraints();
+		gbc_timeoutSpinner.fill = GridBagConstraints.VERTICAL;
+		gbc_timeoutSpinner.insets = new Insets(0, 0, 0, 5);
 		gbc_timeoutSpinner.anchor = GridBagConstraints.WEST;
-		gbc_timeoutSpinner.gridx = 9;
+		gbc_timeoutSpinner.gridx = 8;
 
 		JRadioButton rdbtnSequential = new JRadioButton("Sequential");
 		rdbtnSequential.setSelected(action.behaviour == Behaviour.kSequential);
@@ -143,32 +143,34 @@ public class ActionEditorPanel extends JPanel {
 		JButton btnUp = new JButton("Up");
 		btnUp.setBorder(new EmptyBorder(0, 0, 0, 0));
 		GridBagConstraints gbc_btnUp = new GridBagConstraints();
+		gbc_btnUp.insets = new Insets(0, 0, 0, 5);
 		gbc_btnUp.fill = GridBagConstraints.BOTH;
-		gbc_btnUp.gridx = 13;
+		gbc_btnUp.gridx = 12;
 
 		JButton btnDown = new JButton("Down");
 		btnDown.setBorder(new EmptyBorder(0, 0, 0, 0));
 		GridBagConstraints gbc_btnDown = new GridBagConstraints();
+		gbc_btnDown.insets = new Insets(0, 0, 0, 5);
 		gbc_btnDown.fill = GridBagConstraints.BOTH;
-		gbc_btnDown.gridx = 14;
+		gbc_btnDown.gridx = 13;
 
 		JButton btnClear = new JButton("Clear");
 		btnClear.setBorder(new EmptyBorder(0, 0, 0, 0));
 		GridBagConstraints gbc_btnReset = new GridBagConstraints();
+		gbc_btnReset.insets = new Insets(0, 0, 0, 5);
 		gbc_btnReset.fill = GridBagConstraints.BOTH;
-		gbc_btnReset.gridx = 15;
+		gbc_btnReset.gridx = 14;
 
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.setBorder(new EmptyBorder(0, 0, 0, 0));
 		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
 		gbc_btnDelete.fill = GridBagConstraints.BOTH;
-		gbc_btnDelete.gridx = 16;
+		gbc_btnDelete.gridx = 15;
 
 		if (!(action instanceof DriveAction))
 			btnClear.setEnabled(false);
 
 		// Setup all the listeners
-		selectBtn.addActionListener(e -> PathPlanner.main.getScript().setSelectedAction(action));
 		actionSelector.addActionListener(actionSelectListener);
 		timeoutSpinner.addChangeListener(e -> action.timeout = (double) timeoutSpinner.getValue());
 		rdbtnSequential.addActionListener(e -> action.behaviour = Behaviour.kSequential);
@@ -180,8 +182,6 @@ public class ActionEditorPanel extends JPanel {
 
 		// Add the action label
 		add(actionTypeLbl, gbc_actionTypeLbl);
-		if (action instanceof DriveAction)
-			add(selectBtn, gbc_selectBtn);
 
 		// Add the action options
 		add(actionLbl, gbc_lblAction);

@@ -147,8 +147,8 @@ public class FileIO {
 							pt.setY(Double.parseDouble(curPtEl.getAttribute("y")));
 							pt.setR(Double.parseDouble(curPtEl.getAttribute("radius")));
 							pt.setHeading(Double.parseDouble(curPtEl.getAttribute("heading")));
-							pt.setAutomaticHeading(curPtEl.getAttribute("autoHeading") == "true" ? true : false);
-							pt.setMagnet(curPtEl.getAttribute("magnet") == "true" ? true : false);
+							pt.setAutomaticHeading(curPtEl.getAttribute("autoHeading").contains("true"));
+							pt.setMagnet(curPtEl.getAttribute("magnet").contains("true"));
 
 							((DriveAction) curAction).addPt(pt);
 						}

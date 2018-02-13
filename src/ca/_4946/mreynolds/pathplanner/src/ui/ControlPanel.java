@@ -1,5 +1,6 @@
 package ca._4946.mreynolds.pathplanner.src.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -25,7 +26,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -44,8 +44,6 @@ import ca._4946.mreynolds.util.ObservableList;
 
 public class ControlPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-
-	JPanel waypointListPanel;
 	JPanel actionListPanel;
 	JComboBox<String> fieldConfigDropdown;
 	JTextField scriptNameField;
@@ -97,190 +95,6 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void initialize() {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-		actionSelectButtonGroup = new ButtonGroup();
-
-		JPanel topPanel = new JPanel();
-		topPanel.setMaximumSize(new Dimension(32767, 30));
-		GridBagLayout gbl_topPanel = new GridBagLayout();
-		gbl_topPanel.columnWidths = new int[] { 0, 60, 150, 0, 75, 0 };
-		gbl_topPanel.rowHeights = new int[] { 30, 0 };
-		gbl_topPanel.columnWeights = new double[] { 1.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gbl_topPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-		topPanel.setLayout(gbl_topPanel);
-
-		{
-
-			JLabel lblScriptName = new JLabel("Script Name:");
-			lblScriptName.setFont(new Font("Tahoma", Font.BOLD, 18));
-			GridBagConstraints gbc_lblScriptName = new GridBagConstraints();
-			gbc_lblScriptName.anchor = GridBagConstraints.WEST;
-			gbc_lblScriptName.insets = new Insets(0, 0, 0, 5);
-			gbc_lblScriptName.gridx = 1;
-			gbc_lblScriptName.gridy = 0;
-			topPanel.add(lblScriptName, gbc_lblScriptName);
-
-			scriptNameField = new JTextField();
-			GridBagConstraints gbc_scriptNameField = new GridBagConstraints();
-			gbc_scriptNameField.fill = GridBagConstraints.BOTH;
-			gbc_scriptNameField.insets = new Insets(0, 0, 0, 5);
-			gbc_scriptNameField.gridx = 2;
-			gbc_scriptNameField.gridy = 0;
-			topPanel.add(scriptNameField, gbc_scriptNameField);
-			scriptNameField.setColumns(20);
-			scriptNameField.addActionListener(e -> PathPlanner.main.setScriptName(scriptNameField.getText()));
-
-			statusLbl = new JLabel("Not Connected");
-			statusLbl.setHorizontalAlignment(SwingConstants.CENTER);
-			statusLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-			statusLbl.setOpaque(true);
-			statusLbl.setBackground(Color.RED);
-			GridBagConstraints gbc_statusLbl = new GridBagConstraints();
-			gbc_statusLbl.fill = GridBagConstraints.BOTH;
-			gbc_statusLbl.gridx = 4;
-			gbc_statusLbl.gridy = 0;
-			topPanel.add(statusLbl, gbc_statusLbl);
-		}
-
-		JPanel configPanel = new JPanel();
-		configPanel.setMaximumSize(new Dimension(32767, 100));
-		GridBagLayout gbl_configPanel = new GridBagLayout();
-		gbl_configPanel.rowWeights = new double[] { 1.0, 1.0 };
-		gbl_configPanel.columnWeights = new double[] { 0.0, 0.0, 0.0 };
-		configPanel.setLayout(gbl_configPanel);
-		{
-			JLabel alliancePanelLabel = new JLabel("Alliance:");
-			GridBagConstraints gbc_allianceLbl = new GridBagConstraints();
-			gbc_allianceLbl.anchor = GridBagConstraints.EAST;
-			gbc_allianceLbl.insets = new Insets(0, 0, 5, 5);
-			gbc_allianceLbl.gridx = 0;
-			gbc_allianceLbl.gridy = 0;
-
-			JPanel allianceSelectPanel = new JPanel();
-			GridBagConstraints gbc_allianceSelectPanel = new GridBagConstraints();
-			gbc_allianceSelectPanel.fill = GridBagConstraints.BOTH;
-			gbc_allianceSelectPanel.insets = new Insets(0, 0, 5, 0);
-			gbc_allianceSelectPanel.gridx = 2;
-			gbc_allianceSelectPanel.gridy = 0;
-			{
-
-				JRadioButton redAllianceBtn = new JRadioButton("Red");
-				redAllianceBtn.addActionListener(e -> PathPlanner.main.fieldIsBlue = false);
-
-				JRadioButton blueAllianceBtn = new JRadioButton("Blue");
-				blueAllianceBtn.addActionListener(e -> PathPlanner.main.fieldIsBlue = true);
-
-				ButtonGroup allianceBtns = new ButtonGroup();
-				allianceBtns.add(blueAllianceBtn);
-				allianceBtns.add(redAllianceBtn);
-				allianceBtns.setSelected(blueAllianceBtn.getModel(), true);
-				allianceSelectPanel.add(blueAllianceBtn);
-				allianceSelectPanel.add(redAllianceBtn);
-			}
-
-			JLabel lblConfig = new JLabel("Field Configuration:");
-			GridBagConstraints gbc_lblConfig = new GridBagConstraints();
-			gbc_lblConfig.anchor = GridBagConstraints.EAST;
-			gbc_lblConfig.insets = new Insets(0, 0, 0, 5);
-			gbc_lblConfig.gridx = 0;
-			gbc_lblConfig.gridy = 1;
-
-			fieldConfigDropdown = new JComboBox<String>();
-			fieldConfigDropdown.setModel(new DefaultComboBoxModel<String>(new String[] { "LL", "LR", "RL", "RR" }));
-			fieldConfigDropdown.setSelectedIndex(0);
-			fieldConfigDropdown.setMaximumRowCount(4);
-			fieldConfigDropdown.addActionListener(e -> {
-
-				String msg = (String) ((JComboBox<?>) e.getSource()).getSelectedItem();
-				PathPlanner.main.switchIsL = (msg.charAt(0) == 'L');
-				PathPlanner.main.scaleIsL = (msg.charAt(1) == 'L');
-
-				updateActionList(PathPlanner.main.getScript().getActions());
-//				updateWaypointList(PathPlanner.main.getScript().getSelectedAction().waypoints);
-
-			});
-
-			GridBagConstraints gbc_configDropdown = new GridBagConstraints();
-			gbc_configDropdown.fill = GridBagConstraints.BOTH;
-			gbc_configDropdown.gridx = 2;
-			gbc_configDropdown.gridy = 1;
-
-			configPanel.add(alliancePanelLabel, gbc_allianceLbl);
-			configPanel.add(allianceSelectPanel, gbc_allianceSelectPanel);
-			configPanel.add(lblConfig, gbc_lblConfig);
-			configPanel.add(fieldConfigDropdown, gbc_configDropdown);
-		}
-
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setResizeWeight(0.5);
-		splitPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		{
-			JPanel waypointPanel = new JPanel();
-			{
-				JScrollPane waypointScroller = new JScrollPane();
-				{
-					waypointListPanel = new JPanel();
-					waypointListPanel.setLayout(new BoxLayout(waypointListPanel, BoxLayout.Y_AXIS));
-					waypointScroller.setViewportView(waypointListPanel);
-				}
-				waypointPanel.setLayout(new BoxLayout(waypointPanel, BoxLayout.Y_AXIS));
-
-				JLabel waypointLbl = new JLabel("Waypoints");
-				waypointLbl.setFont(new Font("Tahoma", Font.BOLD, 18));
-				waypointLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-				waypointPanel.add(waypointLbl);
-				waypointPanel.add(waypointScroller);
-			}
-
-			JPanel actionPanel = new JPanel();
-			actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
-			{
-				JLabel actionsLbl = new JLabel("Script Actions");
-				actionsLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-				actionsLbl.setFont(new Font("Tahoma", Font.BOLD, 18));
-
-				JScrollPane actionScroller = new JScrollPane();
-				actionScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-				{
-					actionListPanel = new JPanel();
-					actionListPanel.setLayout(new BoxLayout(actionListPanel, BoxLayout.Y_AXIS));
-					actionScroller.setViewportView(actionListPanel);
-				}
-
-				JPanel actionBtnPanel = new JPanel();
-				actionBtnPanel.setLayout(new BoxLayout(actionBtnPanel, BoxLayout.X_AXIS));
-				{
-					JButton addPathBtn = new JButton("Add Drive Action");
-					JButton addElevatorBtn = new JButton("Add Elevator Action");
-					JButton addIntakeBtn = new JButton("Add Intake Action");
-					JButton addOutputBtn = new JButton("Add Output Action");
-					JButton addDelayBtn = new JButton("Add Delay");
-
-					addPathBtn.addActionListener(addNewAction);
-					addElevatorBtn.addActionListener(addNewAction);
-					addIntakeBtn.addActionListener(addNewAction);
-					addOutputBtn.addActionListener(addNewAction);
-					addDelayBtn.addActionListener(addNewAction);
-
-					actionBtnPanel.add(addPathBtn);
-					actionBtnPanel.add(addElevatorBtn);
-					actionBtnPanel.add(addIntakeBtn);
-					actionBtnPanel.add(addOutputBtn);
-					actionBtnPanel.add(addDelayBtn);
-
-				}
-
-				actionPanel.add(actionsLbl);
-				actionPanel.add(actionScroller);
-				actionPanel.add(actionBtnPanel);
-
-			}
-
-			splitPane.setTopComponent(waypointPanel);
-			splitPane.setBottomComponent(actionPanel);
-		}
 
 		JPanel btnPanel = new JPanel();
 		{
@@ -323,13 +137,172 @@ public class ControlPanel extends JPanel {
 			btnPanel.add(clearBtn);
 			clearBtn.addActionListener(e -> PathPlanner.main.getScript().clear());
 		}
+		setLayout(new BorderLayout(0, 0));
 
-		add(topPanel);
-		add(configPanel);
-		add(Box.createVerticalStrut(20));
-		add(splitPane);
-		add(Box.createVerticalStrut(20));
-		add(btnPanel);
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.NORTH);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JPanel statusPanel = new JPanel();
+		panel.add(statusPanel);
+		statusPanel.setMaximumSize(new Dimension(32767, 30));
+		GridBagLayout gbl_statusPanel = new GridBagLayout();
+		gbl_statusPanel.columnWidths = new int[] { 0, 60, 150, 0, 75, 0 };
+		gbl_statusPanel.rowHeights = new int[] { 30, 0 };
+		gbl_statusPanel.columnWeights = new double[] { 1.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gbl_statusPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+		statusPanel.setLayout(gbl_statusPanel);
+
+		{
+
+			JLabel lblScriptName = new JLabel("Script Name:");
+			lblScriptName.setFont(new Font("Tahoma", Font.BOLD, 18));
+			GridBagConstraints gbc_lblScriptName = new GridBagConstraints();
+			gbc_lblScriptName.anchor = GridBagConstraints.WEST;
+			gbc_lblScriptName.insets = new Insets(0, 0, 0, 5);
+			gbc_lblScriptName.gridx = 1;
+			gbc_lblScriptName.gridy = 0;
+			statusPanel.add(lblScriptName, gbc_lblScriptName);
+
+			scriptNameField = new JTextField();
+			GridBagConstraints gbc_scriptNameField = new GridBagConstraints();
+			gbc_scriptNameField.fill = GridBagConstraints.BOTH;
+			gbc_scriptNameField.insets = new Insets(0, 0, 0, 5);
+			gbc_scriptNameField.gridx = 2;
+			gbc_scriptNameField.gridy = 0;
+			statusPanel.add(scriptNameField, gbc_scriptNameField);
+			scriptNameField.setColumns(20);
+			scriptNameField.addActionListener(e -> PathPlanner.main.setScriptName(scriptNameField.getText()));
+
+			statusLbl = new JLabel("Not Connected");
+			statusLbl.setHorizontalAlignment(SwingConstants.CENTER);
+			statusLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+			statusLbl.setOpaque(true);
+			statusLbl.setBackground(Color.RED);
+			GridBagConstraints gbc_statusLbl = new GridBagConstraints();
+			gbc_statusLbl.fill = GridBagConstraints.BOTH;
+			gbc_statusLbl.gridx = 4;
+			gbc_statusLbl.gridy = 0;
+			statusPanel.add(statusLbl, gbc_statusLbl);
+		}
+
+		JPanel configPanel = new JPanel();
+		panel.add(configPanel);
+		configPanel.setMaximumSize(new Dimension(32767, 100));
+		GridBagLayout gbl_configPanel = new GridBagLayout();
+		gbl_configPanel.rowWeights = new double[] { 1.0, 1.0 };
+		gbl_configPanel.columnWeights = new double[] { 0.0, 0.0, 0.0 };
+		configPanel.setLayout(gbl_configPanel);
+		JLabel alliancePanelLabel = new JLabel("Alliance:");
+		GridBagConstraints gbc_allianceLbl = new GridBagConstraints();
+		gbc_allianceLbl.anchor = GridBagConstraints.EAST;
+		gbc_allianceLbl.insets = new Insets(0, 0, 5, 5);
+		gbc_allianceLbl.gridx = 0;
+		gbc_allianceLbl.gridy = 0;
+
+		JPanel allianceSelectPanel = new JPanel();
+		GridBagConstraints gbc_allianceSelectPanel = new GridBagConstraints();
+		gbc_allianceSelectPanel.fill = GridBagConstraints.BOTH;
+		gbc_allianceSelectPanel.insets = new Insets(0, 0, 5, 0);
+		gbc_allianceSelectPanel.gridx = 2;
+		gbc_allianceSelectPanel.gridy = 0;
+
+		actionSelectButtonGroup = new ButtonGroup();
+		{
+
+			ButtonGroup allianceBtns = new ButtonGroup();
+
+			JRadioButton redAllianceBtn = new JRadioButton("Red");
+			redAllianceBtn.addActionListener(e -> PathPlanner.main.fieldIsBlue = false);
+
+			JRadioButton blueAllianceBtn = new JRadioButton("Blue");
+			blueAllianceBtn.addActionListener(e -> PathPlanner.main.fieldIsBlue = true);
+			allianceBtns.add(blueAllianceBtn);
+			allianceBtns.add(redAllianceBtn);
+			allianceBtns.setSelected(blueAllianceBtn.getModel(), true);
+			allianceSelectPanel.add(blueAllianceBtn);
+			allianceSelectPanel.add(redAllianceBtn);
+		}
+
+		JLabel lblConfig = new JLabel("Field Configuration:");
+		GridBagConstraints gbc_lblConfig = new GridBagConstraints();
+		gbc_lblConfig.anchor = GridBagConstraints.EAST;
+		gbc_lblConfig.insets = new Insets(0, 0, 0, 5);
+		gbc_lblConfig.gridx = 0;
+		gbc_lblConfig.gridy = 1;
+
+		fieldConfigDropdown = new JComboBox<String>();
+		fieldConfigDropdown.setModel(new DefaultComboBoxModel<String>(new String[] { "LL", "LR", "RL", "RR" }));
+		fieldConfigDropdown.setSelectedIndex(0);
+		fieldConfigDropdown.setMaximumRowCount(4);
+		fieldConfigDropdown.addActionListener(e -> {
+
+			String msg = (String) ((JComboBox<?>) e.getSource()).getSelectedItem();
+			PathPlanner.main.switchIsL = (msg.charAt(0) == 'L');
+			PathPlanner.main.scaleIsL = (msg.charAt(1) == 'L');
+
+			updateActionList(PathPlanner.main.getScript().getActions());
+			// updateWaypointList(PathPlanner.main.getScript().getSelectedAction().waypoints);
+
+		});
+
+		GridBagConstraints gbc_configDropdown = new GridBagConstraints();
+		gbc_configDropdown.fill = GridBagConstraints.BOTH;
+		gbc_configDropdown.gridx = 2;
+		gbc_configDropdown.gridy = 1;
+
+		configPanel.add(alliancePanelLabel, gbc_allianceLbl);
+		configPanel.add(allianceSelectPanel, gbc_allianceSelectPanel);
+		configPanel.add(lblConfig, gbc_lblConfig);
+		configPanel.add(fieldConfigDropdown, gbc_configDropdown);
+
+		JPanel actionPanel = new JPanel();
+		add(actionPanel);
+		actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
+		{
+			JLabel actionsLbl = new JLabel("Script Actions");
+			actionsLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+			actionsLbl.setFont(new Font("Tahoma", Font.BOLD, 18));
+
+			JScrollPane actionScroller = new JScrollPane();
+			actionScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			{
+				actionListPanel = new JPanel();
+				actionListPanel.setLayout(new BoxLayout(actionListPanel, BoxLayout.Y_AXIS));
+				actionScroller.setViewportView(actionListPanel);
+			}
+
+			JPanel actionBtnPanel = new JPanel();
+			actionBtnPanel.setLayout(new BoxLayout(actionBtnPanel, BoxLayout.X_AXIS));
+			{
+				JButton addPathBtn = new JButton("Add Drive Action");
+				JButton addElevatorBtn = new JButton("Add Elevator Action");
+				JButton addIntakeBtn = new JButton("Add Intake Action");
+				JButton addOutputBtn = new JButton("Add Output Action");
+				JButton addDelayBtn = new JButton("Add Delay");
+
+				addPathBtn.addActionListener(addNewAction);
+				addElevatorBtn.addActionListener(addNewAction);
+				addIntakeBtn.addActionListener(addNewAction);
+				addOutputBtn.addActionListener(addNewAction);
+				addDelayBtn.addActionListener(addNewAction);
+
+				actionBtnPanel.add(addPathBtn);
+				actionBtnPanel.add(addElevatorBtn);
+				actionBtnPanel.add(addIntakeBtn);
+				actionBtnPanel.add(addOutputBtn);
+				actionBtnPanel.add(addDelayBtn);
+
+			}
+
+			actionPanel.add(actionsLbl);
+			actionPanel.add(actionScroller);
+			actionPanel.add(actionBtnPanel);
+
+		}
+
+		actionListPanel.add(Box.createVerticalGlue());
+		add(btnPanel, BorderLayout.SOUTH);
 	}
 
 	public void updateWaypointList(ObservableList<Waypoint> points) {
@@ -348,8 +321,6 @@ public class ControlPanel extends JPanel {
 
 		for (Action<?> a : actions)
 			actionListPanel.add(new ActionEditorPanel(a, actionSelectButtonGroup));
-
-		actionListPanel.add(Box.createVerticalGlue());
 		actionListPanel.revalidate();
 	}
 
@@ -375,11 +346,6 @@ public class ControlPanel extends JPanel {
 
 		updateActionList(PathPlanner.main.getScript().getActions());
 
-		Action<?> a = PathPlanner.main.getScript().getSelectedAction();
-		if (a == null || !(a instanceof DriveAction))
-			return;
-
-//		((DriveAction) a).waypoints.addListListener(() -> updateWaypointList(((DriveAction) a).waypoints));
 	}
 
 	ActionListener addNewAction = e -> {

@@ -11,14 +11,6 @@ public class Script {
 
 	private ObservableList<Action<?>> script;
 
-	private int selectedAction = -1;
-
-	public static Script newScript() {
-		Script sc = new Script();
-		sc.addAction(new DriveAction());
-		return sc;
-	}
-
 	public Script() {
 		script = new ObservableList<>();
 	}
@@ -56,11 +48,6 @@ public class Script {
 		if (index == 0)
 			return;
 
-		if (index == selectedAction)
-			selectedAction = index - 1;
-		else if (index - 1 == selectedAction)
-			selectedAction = index;
-
 		script.quiet();
 		script.remove(a);
 		script.add(index - 1, a);
@@ -72,37 +59,19 @@ public class Script {
 		if (index == script.size() - 1)
 			return;
 
-		if (index == selectedAction)
-			selectedAction = index + 1;
-		else if (index + 1 == selectedAction)
-			selectedAction = index;
-
 		script.quiet();
 		script.remove(a);
 		script.add(index + 1, a);
 	}
 
 	public void removeAction(Action<?> a) {
-
-		if (script.indexOf(a) < selectedAction)
-			selectedAction -= 1;
-
-		if (a == getSelectedAction())
-			selectedAction = -1;
-
 		script.remove(a);
 	}
 
 	public void addAction(Action<?> a) {
-
-		if (a instanceof DriveAction)
-			selectedAction = script.size();
-
+		if (a instanceof DriveAction && !getDriveActions().isEmpty())
+			a.data = (int) getDriveActions().get(getDriveActions().size() - 1).data ^ 1;
 		script.add(a);
-	}
-
-	public void setSelectedAction(Action<?> a) {
-		selectedAction = script.indexOf(a);
 	}
 
 	public ArrayList<DriveAction> getDriveActions() {
@@ -114,12 +83,6 @@ public class Script {
 		return list;
 	}
 
-	public DriveAction getSelectedAction() {
-		if (selectedAction == -1)
-			return null;
-		return (DriveAction) script.get(selectedAction);
-	}
-
 	public Action<?> getAction(int index) {
 		return script.get(index);
 	}
@@ -129,7 +92,6 @@ public class Script {
 	}
 
 	public void clear() {
-		selectedAction = -1;
 		script.clear();
 	}
 

@@ -158,6 +158,7 @@ public class DriveAction extends Action<DriveAction.Options> {
 		left.clear();
 		right.clear();
 		waypoints.clear();
+		curves.clear();
 	}
 
 	@Override

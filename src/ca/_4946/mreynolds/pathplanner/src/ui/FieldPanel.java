@@ -1,5 +1,6 @@
 package ca._4946.mreynolds.pathplanner.src.ui;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -203,7 +204,10 @@ public class FieldPanel extends JPanel {
 
 		tx.rotate(angle, x, y);
 
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.66f));
 		g.drawImage(robot, tx, null);
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+
 	}
 
 	private void drawWaypoint(Waypoint p, Graphics g) {
@@ -235,12 +239,13 @@ public class FieldPanel extends JPanel {
 	MouseAdapter mouse = new MouseAdapter() {
 		boolean refIsHandle = false;
 		boolean handleIsFlip = false;
+		DriveAction curAction = null;
 		int ref = -1;
 
 		private Waypoint curPt() {
-			if (PathPlanner.main.getScript().getSelectedAction() == null)
+			if (curAction == null)
 				return new Waypoint();
-			return PathPlanner.main.getScript().getSelectedAction().getPt(ref);
+			return curAction.getPt(ref);
 		}
 
 		@Override
@@ -283,6 +288,7 @@ public class FieldPanel extends JPanel {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			curAction = null;
 			Script script = PathPlanner.main.getScript();
 
 			if (script.getDriveActions().isEmpty())
@@ -292,14 +298,14 @@ public class FieldPanel extends JPanel {
 
 			List<DriveAction> actions = script.getDriveActions();
 			for (int j = 0; j < actions.size(); j++) {
-				DriveAction a = actions.get(j);
+				curAction = actions.get(j);
 
 				// Right Click
 				if (e.getButton() == MouseEvent.BUTTON3) {
 
-					for (int i = 0; i < a.getNumPts(); i++)
-						if (a.getPt(i).contains(click)) {
-							a.removePt(i);
+					for (int i = 0; i < curAction.getNumPts(); i++)
+						if (curAction.getPt(i).contains(click)) {
+							curAction.removePt(i);
 							return;
 						}
 				}
@@ -308,41 +314,37 @@ public class FieldPanel extends JPanel {
 				else {
 
 					// Check handles
-					for (int i = 0; i < a.getNumPts(); i++) {
-						if (a.getPt(i).getHandle().contains(click)) {
+					for (int i = 0; i < curAction.getNumPts(); i++) {
+						if (curAction.getPt(i).getHandle().contains(click)) {
 							ref = i;
 							handleIsFlip = false;
 							refIsHandle = true;
-							script.setSelectedAction(a);
 							return;
-						} else if (a.getPt(i).getFlipHandle().contains(click)) {
+						} else if (curAction.getPt(i).getFlipHandle().contains(click)) {
 							ref = i;
 							handleIsFlip = true;
 							refIsHandle = true;
-							script.setSelectedAction(a);
 							return;
 						}
 					}
 
 					// Check each point
-					for (int i = 0; i < a.getNumPts(); i++) {
-						if (a.getPt(i).contains(click)) {
+					for (int i = 0; i < curAction.getNumPts(); i++) {
+						if (curAction.getPt(i).contains(click)) {
 							ref = i;
 							refIsHandle = false;
-							script.setSelectedAction(a);
 							return;
 						}
 					}
 
 					// Check each curve
-					for (int i = 0; i < a.curves.size(); i++) {
-						CubicBezier curve = a.curves.get(i);
+					for (int i = 0; i < curAction.curves.size(); i++) {
+						CubicBezier curve = curAction.curves.get(i);
 
 						if (curve.ptIsOnCurve(click, 0.15)) {
-							a.addPt(i + 1, new Waypoint(click));
+							curAction.addPt(i + 1, new Waypoint(click));
 							ref = i + 1;
 							refIsHandle = false;
-							script.setSelectedAction(a);
 							return;
 						}
 					}
@@ -350,15 +352,14 @@ public class FieldPanel extends JPanel {
 
 				// If we haven't found a match and this is the last action in the script...
 				if (ref == -1 && j == actions.size() - 1) {
-					ref = a.getNumPts();
-					a.addPt(new Waypoint(click));
+					ref = curAction.getNumPts();
+					curAction.addPt(new Waypoint(click));
 					refIsHandle = false;
-					script.setSelectedAction(a);
 
 					// Check for magnet points
 					for (MagnetPoint mag : PathPlanner.main.getMagnets())
 						if (mag.contains(click))
-							mag.latch(a.getPt(ref));
+							mag.latch(curAction.getPt(ref));
 				}
 
 				PathPlanner.main.getScript().connectPaths();
@@ -367,10 +368,9 @@ public class FieldPanel extends JPanel {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if (PathPlanner.main.getScript().getSelectedAction() != null)
-				PathPlanner.main.getScript().connectPaths();
-
+			PathPlanner.main.getScript().connectPaths();
 			ref = -1;
+			curAction = null;
 		}
 	};
 }

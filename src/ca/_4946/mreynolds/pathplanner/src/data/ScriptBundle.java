@@ -3,8 +3,8 @@ package ca._4946.mreynolds.pathplanner.src.data;
 public class ScriptBundle {
 	public String name = "";
 
-	public Script LL = Script.newScript();
-	public Script LR = Script.newScript();
-	public Script RL = Script.newScript();
-	public Script RR = Script.newScript();
+	public Script LL = new Script();
+	public Script LR = new Script();
+	public Script RL = new Script();
+	public Script RR = new Script();
 }
