@@ -16,15 +16,20 @@ public class PathParser {
 	public static final double MAX_VEL = 15; // in/s
 	public static final double SAMPLE_PERIOD = 0.02; // 20ms
 
+	/**
+	 * Create one continuous path of segments from the specified list of curves
+	 * 
+	 * @param list
+	 *            The curves used to generate the path
+	 * @return the path
+	 */
 	public static ArrayList<Segment> fillPath(List<CubicBezier> list) {
-
 		ArrayList<Segment> fill = new ArrayList<>();
+		double spacing = 1;
 
+		// Generate the list
 		double dist = 0;
 		for (CubicBezier c : list) {
-
-			double spacing = 1; // 5in
-
 			for (double pos = 0; pos < c.length(); pos += spacing) {
 				Segment seg = c.getSegOnCurve(pos / c.length());
 				seg.pos = dist + pos;
@@ -34,6 +39,7 @@ public class PathParser {
 			dist += c.length();
 		}
 
+		// Calc all the headings
 		for (int i = 0; i < fill.size(); i++) {
 			Segment prev = fill.get(Math.max(i - 1, 0));
 			Segment next = fill.get(Math.min(i + 1, fill.size() - 1));
@@ -43,6 +49,14 @@ public class PathParser {
 		return fill;
 	}
 
+	/**
+	 * Smooth out the path with proper distances as specified by the
+	 * TrapezoidMotionProfile
+	 * 
+	 * @param action
+	 *            the action to smooth
+	 * @return The list of center points
+	 */
 	public static ArrayList<Segment> smoothPath(DriveAction action) {
 		boolean isReverse = action.data == 1;
 
@@ -53,18 +67,24 @@ public class PathParser {
 		if (isReverse)
 			dist *= -1;
 
+		// Create the motion profile
 		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(dist, MAX_VEL, MAX_ACCEL, MAX_JERK);
 		double time = 0;
 		int lastSeg = 0;
+
+		// Iterate through every timestamp
 		while (time < profile.time[7]) {
 
+			// Load the current segment's pos, vel, accel, jerk
 			Segment s = new Segment(profile.getSeg(time));
 			for (int i = lastSeg; i < fill.size() - 1; i++) {
 
-				// If we are between two points...
+				// Find the two surrounding points on the 2D path to add the x, y, and heading
+				// data from the curve to the final path
 				if (MathUtil.isBetween(fill.get(i).pos, fill.get(i + 1).pos, Math.abs(s.pos))) {
 					lastSeg = i;
 
+					// Linearly interpolate between the vars
 					double dp = fill.get(i + 1).pos - fill.get(i).pos;
 					double dx = fill.get(i + 1).x - fill.get(i).x;
 					double dy = fill.get(i + 1).y - fill.get(i).y;
@@ -95,10 +115,16 @@ public class PathParser {
 		return smooth;
 	}
 
+	/**
+	 * Turn the path into a path pair, for the left and right sides of the bot
+	 * 
+	 * @param list
+	 *            The center path
+	 * @return An Action containing the pair
+	 */
 	public static DriveAction generatePath(ArrayList<Segment> list) {
 		if (list.size() < 2)
 			return new DriveAction();
-
 		DriveAction path = new DriveAction();
 
 		Segment l, r, lastL, lastR;
@@ -107,24 +133,23 @@ public class PathParser {
 		l = new Segment(list.get(0));
 		r = new Segment(list.get(0));
 
+		// Offset the coords by the bot radius
 		l.x += Math.cos(perp) * botRadius;
 		l.y += Math.sin(perp) * botRadius;
 		r.x -= Math.cos(perp) * botRadius;
 		r.y -= Math.sin(perp) * botRadius;
 
-		// TODO: Fix last
+		// Iterate through every segment
 		for (int i = 1; i < list.size() - 1; i++) {
-
 			lastL = l;
 			lastR = r;
 
 			Segment s = list.get(i);
-
 			perp = MathUtil.toRange(Math.toRadians(list.get(i).heading) - (Math.PI / 2), 0, 2 * Math.PI);
 			l = new Segment(s);
 			r = new Segment(s);
 
-			// l.heading = r.heading = Math.toDegrees(s.ang.pos);
+			// Offset the coords by the bot radius
 			l.x += Math.cos(perp) * botRadius;
 			l.y += Math.sin(perp) * botRadius;
 			r.x -= Math.cos(perp) * botRadius;
@@ -138,6 +163,7 @@ public class PathParser {
 			else if (dtheta < -Math.PI)
 				dtheta += Math.PI * 2;
 
+			// Calc pos and vel as a result of rotation
 			double omega = dtheta / SAMPLE_PERIOD;
 			l.pos = lastL.pos + Math.copySign(l.toPt().distance(lastL.toPt()), s.pos);
 			r.pos = lastR.pos + Math.copySign(r.toPt().distance(lastR.toPt()), s.pos);
@@ -149,9 +175,17 @@ public class PathParser {
 			path.addSegment(false, r);
 		}
 
+		// TODO: Fix last pt
+
 		return path;
 	}
 
+	/**
+	 * Smooth out the acceleration and jerk on the specified path
+	 * 
+	 * @param path
+	 *            The path to smooth
+	 */
 	public static void smoothAccelJerk(ArrayList<Segment> path) {
 		int smoothSize = 5;
 
@@ -179,46 +213,4 @@ public class PathParser {
 
 		return new Point(cx, cy);
 	}
-
-	// public static ArrayList<Point> smoothPath_Spline(ArrayList<? extends Point>
-	// path) {
-	// ArrayList<Point> smooth = new ArrayList<>();
-	// double maxSpeed = 10; // The max pixel spacing
-	// ArrayList<Point> spline = new ArrayList<>();
-	// spline.addAll(Arrays.asList(CatmullRomSplineUtils.subdividePoints(path.toArray(new
-	// Point[path.size()]), 100)));
-	//
-	// smooth.add(spline.get(0));
-	//
-	// for (int i = 1; i < spline.size(); i++) {
-	// double dist = 0;
-	//
-	// do {
-	// Point cur = spline.get(i);
-	// Point last = smooth.get(smooth.size() - 1);
-	//
-	// // Distance from this point to the last one in smooth
-	// dist = cur.distance(last);
-	// double slope = (double) (cur.getY() - last.getY()) / (cur.getX() -
-	// last.getX());
-	//
-	// if (dist > maxSpeed * 1.25) {
-	// if (Double.isInfinite(Math.abs(slope)))
-	// smooth.add(new Point(cur.getX(), last.getY() + Math.signum(slope) *
-	// maxSpeed));
-	// else {
-	// double dX = (Math.sqrt((maxSpeed * maxSpeed) / (slope * slope + 1)));
-	// if (cur.getX() < last.getX())
-	// dX *= -1;
-	//
-	// double newY = (dX) * slope + last.getY();
-	// Point interpolate = new Point(dX + last.getX(), newY);
-	// smooth.add(interpolate);
-	// }
-	// }
-	// } while (dist > maxSpeed * 1.25);
-	// }
-	//
-	// return smooth;
-	// }
 }

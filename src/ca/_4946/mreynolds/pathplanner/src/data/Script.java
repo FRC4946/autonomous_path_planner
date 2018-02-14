@@ -51,7 +51,6 @@ public class Script {
 		script.quiet();
 		script.remove(a);
 		script.add(index - 1, a);
-
 	}
 
 	public void moveActionDown(Action<?> a) {

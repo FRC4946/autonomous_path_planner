@@ -42,6 +42,9 @@ public class CubicBezier {
 		calcMap();
 	}
 
+	/**
+	 * Arc length parameterization
+	 */
 	private void calcMap() {
 		lenMap = new double[mapSize + 1];
 
@@ -75,7 +78,8 @@ public class CubicBezier {
 	 * parameter `t`
 	 * 
 	 * @param p
-	 * @return
+	 *            the percentage length of the curve
+	 * @return the curve parameter t
 	 */
 	private double map(double p) {
 		p = Math.max(0.0, p);
@@ -141,10 +145,6 @@ public class CubicBezier {
 
 	}
 
-	// private double tangent(double t) {
-	// return MathUtil.toRange(Math.toDegrees(Math.atan2(dy(t), dx(t))), 0, 360);
-	// }
-
 	private double[] tAtX(double x) {
 		double p = a.getX() - x;
 		double q = 3 * (b.getX() - a.getX());
@@ -204,12 +204,17 @@ public class CubicBezier {
 	private Segment calcAngular(double t) {
 		Segment s = new Segment();
 
-		// double ax = x(t);
+		// Since I did this wrt t instead of time, beyond the heading these values are
+		// pretty useless
+
+		// The right thing to do would be to fix the derivatives to get proper angular
+		// kinematics, but we don't need to do this for our application since it is
+		// good enough to simply calculate these from our dtheta on the generated path
+
 		double bx = dx(t);
 		double cx = ddx(t);
 		double dx = dddx();
 
-		// double ay = y(t);
 		double by = dy(t);
 		double cy = ddy(t);
 		double dy = dddy();

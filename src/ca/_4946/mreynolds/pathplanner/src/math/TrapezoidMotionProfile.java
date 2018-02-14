@@ -38,13 +38,15 @@ public class TrapezoidMotionProfile {
 		vel[0] = 0;
 		for (int i = 1; i < 8; i++)
 			vel[i] = vel(accel[i - 1], jerk[i - 1], time[i] - time[i - 1]) + vel[i - 1];
-
 	}
 
 	private void calc() {
 		jmax = jmax_param;
 		amax = amax_param;
 		vmax = vmax_param;
+
+		// I modeled all of this in Desmos first to figure out the correct timing
+		// https://www.desmos.com/calculator/6vfqgo69uz
 
 		// Parameters of phase 1
 		double t1 = amax / jmax;
@@ -112,15 +114,7 @@ public class TrapezoidMotionProfile {
 		time[7] = t1 + t2 + t1 + t4 + t1 + t2 + t1;
 	}
 
-	/**
-	 * Get the instantaneous velocity desired after having travelled a certain
-	 * distance on the path
-	 * 
-	 * @param distTraveled
-	 * @return
-	 */
 	public Segment getSeg(double t) {
-
 		Segment s = new Segment();
 
 		for (int i = 0; i < 7 && t > time[i]; i++) {
