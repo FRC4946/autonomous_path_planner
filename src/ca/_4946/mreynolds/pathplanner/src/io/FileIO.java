@@ -33,6 +33,7 @@ import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
+import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
@@ -115,6 +116,9 @@ public class FileIO {
 				case "Elevator":
 					curAction = new ElevatorAction();
 					break;
+				case "Arm":
+					curAction = new ArmAction();
+					break;
 				case "Intake":
 					curAction = new IntakeAction();
 					break;
@@ -132,6 +136,7 @@ public class FileIO {
 				curAction.options = Enum.valueOf(curAction.options.getDeclaringClass(), curEl.getAttribute("options"));
 				curAction.behaviour = Enum.valueOf(curAction.behaviour.getDeclaringClass(),
 						curEl.getAttribute("behaviour"));
+				curAction.delay = Double.parseDouble(curEl.getAttribute("delay"));
 				curAction.data = Double.parseDouble(curEl.getAttribute("data"));
 				curAction.timeout = Double.parseDouble(curEl.getAttribute("timeout"));
 
@@ -224,6 +229,9 @@ public class FileIO {
 			// Set the new element's "timeout" attribute
 			curElement.setAttribute("timeout", "" + a.timeout);
 
+			// Set the new element's "delay" attribute
+			curElement.setAttribute("delay", "" + a.delay);
+			
 			// Set the new element's "data" attribute
 			curElement.setAttribute("data", "" + a.data);
 
@@ -400,6 +408,8 @@ public class FileIO {
 			ftp.changeWorkingDirectory("AutoPathPlanner");
 			log.append(ftp.getReplyString());
 
+			ftp.deleteFile(filename);
+
 			// Upload the file
 			log.append("Opening Output Stream '" + filename + "'");
 			OutputStream os = ftp.appendFileStream(filename);
@@ -444,7 +454,7 @@ public class FileIO {
 	private static String printPath(DriveAction a) {
 
 		String path = "";
-		path += a.left.size() + "\n";
+		path += a.left.size() + "\t";
 		for (Segment s : a.left) {
 			path += f.format(s.pos) + "\t";
 			path += f.format(s.vel) + "\t";
@@ -455,7 +465,7 @@ public class FileIO {
 			path += f.format(s.x) + "\t";
 			path += f.format(s.y) + "\n";
 		}
-		path += a.right.size() + "\n";
+		path += a.right.size() + "\t";
 		for (Segment s : a.right) {
 			path += f.format(s.pos) + "\t";
 			path += f.format(s.vel) + "\t";

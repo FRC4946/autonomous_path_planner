@@ -1,29 +1,28 @@
 package ca._4946.mreynolds.pathplanner.src.data.actions;
 
-public class OutputAction extends Action<OutputAction.Options> {
+public class ArmAction extends Action<ArmAction.Options> {
 
 	public static enum Options implements Action.ActionOptions {
-		kOutput
+		kArmDown, kArmUp
 	}
 
-	public OutputAction() {
-		this(Options.kOutput);
+	public ArmAction() {
+		this(Options.kArmDown);
 	}
 
-	public OutputAction(Options options) {
+	public ArmAction(Options options) {
 		super(options);
-		data = 1;
-		timeout = 1;
+		timeout = 0.5;
 	}
 
 	@Override
 	public String getName() {
-		return "Output";
+		return "Arm";
 	}
 
 	@Override
 	public String getDataLabel() {
-		return "Speed";
+		return "";
 	}
 
 }

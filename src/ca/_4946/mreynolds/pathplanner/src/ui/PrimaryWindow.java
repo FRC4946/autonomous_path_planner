@@ -9,8 +9,8 @@ import javax.swing.Timer;
 public class PrimaryWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	int width = 1800;
-	int height = 900;
+	int width = 1350;
+	int height = 675;
 
 	private FieldPanel pathPanel;
 	private ControlPanel controlPanel;

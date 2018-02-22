@@ -28,6 +28,8 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.Action.Behaviour;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
+import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
+import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
 
 public class ActionEditorPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -52,46 +54,44 @@ public class ActionEditorPanel extends JPanel {
 		action = a;
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 60, 50, 150, 30, 60, 50, 30, 0, 30, 75, 60, 30, 45, 45, 45, 45, 0 };
+		gridBagLayout.columnWidths = new int[] { 55, 120, 45, 45, 0, 30, 55, 30, 0, 0, 30, 45, 45, 45, 45, 0 };
 		gridBagLayout.rowHeights = new int[] { 21, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-				0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+				0.0, 0.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
 		JLabel actionTypeLbl = new JLabel(action.getName());
-		actionTypeLbl.setFont(new Font("Tahoma", Font.BOLD, 12));
+		actionTypeLbl.setFont(new Font("Tahoma", Font.BOLD, 10));
 		GridBagConstraints gbc_actionTypeLbl = new GridBagConstraints();
+		gbc_actionTypeLbl.gridy = 0;
 		gbc_actionTypeLbl.fill = GridBagConstraints.VERTICAL;
 		gbc_actionTypeLbl.insets = new Insets(0, 0, 0, 5);
 		gbc_actionTypeLbl.gridx = 0;
 
-		JLabel actionLbl = new JLabel("Action:");
-		GridBagConstraints gbc_lblAction = new GridBagConstraints();
-		gbc_lblAction.fill = GridBagConstraints.VERTICAL;
-		gbc_lblAction.insets = new Insets(0, 0, 0, 5);
-		gbc_lblAction.anchor = GridBagConstraints.EAST;
-		gbc_lblAction.gridx = 1;
-
 		JComboBox<String> actionSelector = new JComboBox<String>();
+		actionSelector.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		for (Object o : a.options.getDeclaringClass().getEnumConstants())
 			actionSelector.addItem(o.toString());
 		GridBagConstraints gbc_actionSelector = new GridBagConstraints();
+		gbc_actionSelector.gridy = 0;
 		gbc_actionSelector.insets = new Insets(0, 0, 0, 5);
 		gbc_actionSelector.fill = GridBagConstraints.BOTH;
-		gbc_actionSelector.gridx = 2;
+		gbc_actionSelector.gridx = 1;
 		actionSelector.setSelectedItem(action.options.toString());
 
 		detailsLbl = new JLabel(action.getDataLabel());
+		detailsLbl.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		GridBagConstraints gbc_detailsLbl = new GridBagConstraints();
+		gbc_detailsLbl.gridy = 0;
+		gbc_detailsLbl.anchor = GridBagConstraints.WEST;
 		gbc_detailsLbl.fill = GridBagConstraints.VERTICAL;
-		gbc_detailsLbl.anchor = GridBagConstraints.EAST;
 		gbc_detailsLbl.insets = new Insets(0, 0, 0, 5);
-		gbc_detailsLbl.gridx = 4;
+		gbc_detailsLbl.gridx = 2;
 
 		GridBagConstraints gbc_data = new GridBagConstraints();
 		gbc_data.anchor = GridBagConstraints.WEST;
-		gbc_data.gridx = 6;
+		gbc_data.gridx = 3;
 
 		if (action instanceof DriveAction) {
 			JCheckBox reverseBox = new JCheckBox("");
@@ -103,91 +103,113 @@ public class ActionEditorPanel extends JPanel {
 			data = reverseBox;
 		} else {
 			JSpinner heightSpinner = new JSpinner();
-			heightSpinner.setModel(new SpinnerNumberModel(12, 12.0, 60.0, 1));
-			heightSpinner.addChangeListener(e -> action.data = (double) heightSpinner.getValue());
 			data = heightSpinner;
-			data.setVisible(false);
-			if (action instanceof ElevatorAction && action.options == ElevatorAction.Options.kMoveToCustom)
+			gbc_data.fill = 1;
+
+			if (action instanceof IntakeAction || action instanceof OutputAction) {
+				heightSpinner.setModel(new SpinnerNumberModel(action.data, 0, 1, 0.1));
 				data.setVisible(true);
+			} else if (action instanceof ElevatorAction && action.options == ElevatorAction.Options.kMoveToCustom) {
+				heightSpinner.setModel(new SpinnerNumberModel(action.data, 6.0, 90.0, 6.0));
+				data.setVisible(true);
+			} else
+				data.setVisible(false);
+
+			heightSpinner.addChangeListener(e -> action.data = Double.parseDouble(heightSpinner.getValue().toString()));
+
 		}
 
-		JLabel timeoutLbl = new JLabel("Timeout (s):");
+		JLabel delayLbl = new JLabel("Delay");
+		delayLbl.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		GridBagConstraints gbc_delayLbl = new GridBagConstraints();
+		gbc_delayLbl.insets = new Insets(0, 0, 0, 5);
+		gbc_delayLbl.gridx = 4;
+		gbc_delayLbl.gridy = 0;
+
+		JSpinner delaySpinner = new JSpinner();
+		delaySpinner.setModel(new SpinnerNumberModel(action.delay, 0, 15.0, 0.5));
+		GridBagConstraints gbc_delaySpinner = new GridBagConstraints();
+		gbc_delaySpinner.fill = GridBagConstraints.HORIZONTAL;
+		gbc_delaySpinner.insets = new Insets(0, 0, 0, 5);
+		gbc_delaySpinner.gridx = 5;
+		gbc_delaySpinner.gridy = 0;
+
+		JLabel timeoutLbl = new JLabel("Timeout");
+		timeoutLbl.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		GridBagConstraints gbc_timeoutLbl = new GridBagConstraints();
+		gbc_timeoutLbl.gridy = 0;
 		gbc_timeoutLbl.fill = GridBagConstraints.VERTICAL;
 		gbc_timeoutLbl.anchor = GridBagConstraints.EAST;
 		gbc_timeoutLbl.insets = new Insets(0, 0, 0, 5);
-		gbc_timeoutLbl.gridx = 7;
+		gbc_timeoutLbl.gridx = 6;
 
 		JSpinner timeoutSpinner = new JSpinner();
-		timeoutSpinner.setModel(new SpinnerNumberModel(action.timeout, 0.0, 15.0, 0.5));
+		timeoutSpinner.setModel(new SpinnerNumberModel(action.timeout, -1, 15.0, 0.5));
 		GridBagConstraints gbc_timeoutSpinner = new GridBagConstraints();
+		gbc_timeoutSpinner.gridy = 0;
 		gbc_timeoutSpinner.fill = GridBagConstraints.VERTICAL;
 		gbc_timeoutSpinner.insets = new Insets(0, 0, 0, 5);
 		gbc_timeoutSpinner.anchor = GridBagConstraints.WEST;
-		gbc_timeoutSpinner.gridx = 8;
+		gbc_timeoutSpinner.gridx = 7;
 
-		JRadioButton rdbtnSequential = new JRadioButton("Sequential");
+		JRadioButton rdbtnSequential = new JRadioButton("Seq");
 		rdbtnSequential.setSelected(action.behaviour == Behaviour.kSequential);
 		behaviourBtns.add(rdbtnSequential);
 		GridBagConstraints gbc_rdbtnSequential = new GridBagConstraints();
 		gbc_rdbtnSequential.anchor = GridBagConstraints.NORTHEAST;
-		gbc_rdbtnSequential.gridx = 10;
+		gbc_rdbtnSequential.gridx = 9;
 
-		JRadioButton rdbtnParallel = new JRadioButton("Parallel");
+		JRadioButton rdbtnParallel = new JRadioButton("Par");
 		rdbtnParallel.setSelected(action.behaviour == Behaviour.kParallel);
 		behaviourBtns.add(rdbtnParallel);
 		GridBagConstraints gbc_rdbtnParallel = new GridBagConstraints();
 		gbc_rdbtnParallel.anchor = GridBagConstraints.NORTHWEST;
-		gbc_rdbtnParallel.gridx = 11;
+		gbc_rdbtnParallel.gridx = 10;
 
 		JButton btnUp = new JButton("Up");
 		btnUp.setBorder(new EmptyBorder(0, 0, 0, 0));
 		GridBagConstraints gbc_btnUp = new GridBagConstraints();
+		gbc_btnUp.gridy = 0;
 		gbc_btnUp.insets = new Insets(0, 0, 0, 5);
 		gbc_btnUp.fill = GridBagConstraints.BOTH;
-		gbc_btnUp.gridx = 12;
+		gbc_btnUp.gridx = 11;
 
 		JButton btnDown = new JButton("Down");
 		btnDown.setBorder(new EmptyBorder(0, 0, 0, 0));
 		GridBagConstraints gbc_btnDown = new GridBagConstraints();
+		gbc_btnDown.gridy = 0;
 		gbc_btnDown.insets = new Insets(0, 0, 0, 5);
 		gbc_btnDown.fill = GridBagConstraints.BOTH;
-		gbc_btnDown.gridx = 13;
+		gbc_btnDown.gridx = 12;
 
 		JButton btnClear = new JButton("Clear");
 		btnClear.setBorder(new EmptyBorder(0, 0, 0, 0));
 		GridBagConstraints gbc_btnReset = new GridBagConstraints();
+		gbc_btnReset.gridy = 0;
 		gbc_btnReset.insets = new Insets(0, 0, 0, 5);
 		gbc_btnReset.fill = GridBagConstraints.BOTH;
-		gbc_btnReset.gridx = 14;
-
-		JButton btnDelete = new JButton("Delete");
-		btnDelete.setBorder(new EmptyBorder(0, 0, 0, 0));
-		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
-		gbc_btnDelete.fill = GridBagConstraints.BOTH;
-		gbc_btnDelete.gridx = 15;
+		gbc_btnReset.gridx = 13;
 
 		if (!(action instanceof DriveAction))
 			btnClear.setEnabled(false);
 
 		// Setup all the listeners
 		actionSelector.addActionListener(actionSelectListener);
+		delaySpinner.addChangeListener(e -> action.delay = (double) delaySpinner.getValue());
 		timeoutSpinner.addChangeListener(e -> action.timeout = (double) timeoutSpinner.getValue());
 		rdbtnSequential.addActionListener(e -> action.behaviour = Behaviour.kSequential);
 		rdbtnParallel.addActionListener(e -> action.behaviour = Behaviour.kParallel);
 		btnUp.addActionListener(e -> PathPlanner.main.getScript().moveActionUp(action));
 		btnDown.addActionListener(e -> PathPlanner.main.getScript().moveActionDown(action));
 		btnClear.addActionListener(e -> ((DriveAction) action).clear());
-		btnDelete.addActionListener(e -> PathPlanner.main.getScript().removeAction(action));
 
 		// Add the action label
 		add(actionTypeLbl, gbc_actionTypeLbl);
-
-		// Add the action options
-		add(actionLbl, gbc_lblAction);
 		add(actionSelector, gbc_actionSelector);
 		add(detailsLbl, gbc_detailsLbl);
 		add(data, gbc_data);
+		add(delayLbl, gbc_delayLbl);
+		add(delaySpinner, gbc_delaySpinner);
 		add(timeoutLbl, gbc_timeoutLbl);
 		add(timeoutSpinner, gbc_timeoutSpinner);
 
@@ -201,6 +223,14 @@ public class ActionEditorPanel extends JPanel {
 		add(btnUp, gbc_btnUp);
 		add(btnDown, gbc_btnDown);
 		add(btnClear, gbc_btnReset);
+
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.setBorder(new EmptyBorder(0, 0, 0, 0));
+		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
+		gbc_btnDelete.gridy = 0;
+		gbc_btnDelete.fill = GridBagConstraints.BOTH;
+		gbc_btnDelete.gridx = 14;
+		btnDelete.addActionListener(e -> PathPlanner.main.getScript().removeAction(action));
 		add(btnDelete, gbc_btnDelete);
 	}
 
@@ -212,8 +242,11 @@ public class ActionEditorPanel extends JPanel {
 			action.options = Enum.valueOf(action.options.getDeclaringClass(),
 					((JComboBox<?>) e.getSource()).getSelectedItem().toString());
 
-			detailsLbl.setText(action.getDataLabel());
-			data.setVisible(action.options == ElevatorAction.Options.kMoveToCustom);
+			if (action instanceof ElevatorAction) {
+				detailsLbl.setText(action.getDataLabel());
+				((JSpinner) data).setModel(new SpinnerNumberModel(action.data, 6.0, 90.0, 6.0));
+				data.setVisible(action.options == ElevatorAction.Options.kMoveToCustom);
+			}
 		}
 	};
 }

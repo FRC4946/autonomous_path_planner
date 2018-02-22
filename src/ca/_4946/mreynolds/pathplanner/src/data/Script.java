@@ -3,6 +3,7 @@ package ca._4946.mreynolds.pathplanner.src.data;
 import java.util.ArrayList;
 
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
+import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
 import ca._4946.mreynolds.util.ObservableList;
@@ -70,16 +71,39 @@ public class Script {
 	public void addAction(Action<?> a) {
 		if (a instanceof DriveAction && !getDriveActions().isEmpty())
 			a.data = (int) getDriveActions().get(getDriveActions().size() - 1).data ^ 1;
+
+		if (a instanceof ArmAction && !getActionOfType(ArmAction.class).isEmpty()) {
+			ArmAction.Options opt = ArmAction.Options.valueOf(ArmAction.Options.class,
+					getActionOfType(ArmAction.class).get(getActionOfType(ArmAction.class).size() - 1).options
+							.toString());
+			if (opt == ArmAction.Options.kArmDown)
+				((ArmAction) a).options = ArmAction.Options.kArmUp;
+			else
+				((ArmAction) a).options = ArmAction.Options.kArmDown;
+		}
 		script.add(a);
 	}
 
-	public ArrayList<DriveAction> getDriveActions() {
-		ArrayList<DriveAction> list = new ArrayList<>();
+	@SuppressWarnings("unchecked")
+	public <T extends Action<?>> ArrayList<T> getActionOfType(Class<T> type) {
+
+		ArrayList<T> list = new ArrayList<>();
 		for (Action<?> a : script)
-			if (a instanceof DriveAction)
-				list.add((DriveAction) a);
+			if (type.isAssignableFrom(a.getClass()))
+				list.add((T) a);
 
 		return list;
+	}
+
+	public ArrayList<DriveAction> getDriveActions() {
+		// ArrayList<DriveAction> list = new ArrayList<>();
+		// for (Action<?> a : script)
+		// if (a instanceof DriveAction)
+		// list.add((DriveAction) a);
+		//
+		// return list;
+
+		return getActionOfType(DriveAction.class);
 	}
 
 	public Action<?> getAction(int index) {

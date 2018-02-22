@@ -11,9 +11,9 @@ import ca._4946.mreynolds.pathplanner.src.math.bezier.CubicBezier;
 
 public class PathParser {
 
-	public static final double MAX_JERK = 30; // in/s^2
-	public static final double MAX_ACCEL = 15; // in/s^2
-	public static final double MAX_VEL = 15; // in/s
+	public static final double MAX_JERK = 120; // in/s^2
+	public static final double MAX_ACCEL = 60; // in/s^2 // 1.1sec to max
+	public static final double MAX_VEL = 60; // in/s
 	public static final double SAMPLE_PERIOD = 0.02; // 20ms
 
 	/**

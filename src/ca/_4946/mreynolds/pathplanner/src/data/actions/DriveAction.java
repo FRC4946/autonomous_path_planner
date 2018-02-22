@@ -50,9 +50,10 @@ public class DriveAction extends Action<DriveAction.Options> {
 		}
 
 		// If this is the first...
-		else if (0 == index)
-			curves.remove(index);
-
+		else if (0 == index) {
+			if (curves.size() > 0)
+				curves.remove(index);
+		}
 		// If this is the last...
 		else if (index == waypoints.size() - 1)
 			curves.remove(index - 1);
@@ -168,7 +169,7 @@ public class DriveAction extends Action<DriveAction.Options> {
 
 	@Override
 	public String getDataLabel() {
-		return "Reverse?";
+		return "Reverse";
 	}
 
 	public boolean isEmpty() {

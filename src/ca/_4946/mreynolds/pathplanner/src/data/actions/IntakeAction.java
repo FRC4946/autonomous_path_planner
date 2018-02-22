@@ -12,6 +12,8 @@ public class IntakeAction extends Action<IntakeAction.Options> {
 
 	public IntakeAction(Options options) {
 		super(options);
+		data = 1;
+		timeout = 1;
 	}
 
 	@Override
@@ -21,7 +23,7 @@ public class IntakeAction extends Action<IntakeAction.Options> {
 
 	@Override
 	public String getDataLabel() {
-		return "";
+		return "Speed";
 	}
-	
+
 }

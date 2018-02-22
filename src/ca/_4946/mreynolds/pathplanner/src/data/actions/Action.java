@@ -17,7 +17,8 @@ public abstract class Action<T extends Enum<T> & ActionOptions> {
 
 	public Enum<T> options;
 	public Behaviour behaviour = Behaviour.kSequential;
-	public double timeout = 0.0;
+	public double delay = 0.0;
+	public double timeout = -1.0;
 	public double data = 0.0;
 
 	public abstract String getName();

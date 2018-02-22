@@ -150,15 +150,13 @@ public class FieldPanel extends JPanel {
 
 			path.generatePath();
 
-			for (int i = 0; i < path.left.size(); i += 5) {
+			for (int i = 0; i < path.left.size(); i++) {
 				Point l = pt2px(new Point(path.left.get(i).x, path.left.get(i).y));
 				Point r = pt2px(new Point(path.right.get(i).x, path.right.get(i).y));
-				// Point c = new Point((l.getX() + r.getX()) / 2, (l.getY() + r.getY()) / 2);
 
 				g.setColor(Color.GREEN);
 				g.drawLine((int) l.getX(), (int) l.getY(), (int) r.getX(), (int) r.getY());
 
-				// c.draw(g);
 				g.setColor(Color.RED);
 				l.draw(g);
 				r.draw(g);
@@ -189,21 +187,33 @@ public class FieldPanel extends JPanel {
 	private void drawBot(Waypoint o, boolean isFlipped, Graphics2D g) {
 		Image robot = PathPlanner.main.fieldIsBlue ? blueRobot : redRobot;
 
-		double x = robot.getWidth(null) / 2;
-		double y = robot.getHeight(null) / 2;
-
+		// Move the image to the point
 		AffineTransform tx = new AffineTransform();
 		tx.translate(in2px_x(o.getX()), in2px_y(o.getY()));
 
-		tx.scale(PathPlanner.ROBOT_WIDTH_IN / x, PathPlanner.ROBOT_WIDTH_IN / x);
+		// Scale the image
+		double pxPerIn = (double) (getWidth()) / IMG_WIDTH * PIXELS_PER_INCH;
+		double widthPx = pxPerIn * PathPlanner.ROBOT_WIDTH_IN;
+		double factor = widthPx / robot.getWidth(null);
+		tx.scale(factor, factor);
+
+		// Center the image
+		double x = robot.getWidth(null) / 2;
+		double y = robot.getHeight(null) / 2;
 		tx.translate(-x, -y);
 
+		// Rotate the image
 		double angle = -Math.toRadians(o.getHeading() + 90);
 		if (isFlipped)
 			angle += Math.PI;
-
 		tx.rotate(angle, x, y);
 
+		// Align the back of the robot
+		double dpos = (robot.getWidth(null) / PathPlanner.ROBOT_WIDTH_IN * PathPlanner.ROBOT_LENGTH_IN
+				- robot.getHeight(null))/2;
+		tx.translate(0, -dpos);
+
+		// Draw the image
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.66f));
 		g.drawImage(robot, tx, null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));

@@ -25,7 +25,7 @@ public class PathPlanner {
 
 	public static final double ROBOT_LENGTH_IN = 39.375;
 	public static final double ROBOT_WIDTH_IN = 34.375;
-	public static final double WHEEL_WIDTH_IN = 25.375;
+	public static final double WHEEL_WIDTH_IN = 32;
 
 	private ScriptBundle scBundle = new ScriptBundle();
 	private ArrayList<MagnetPoint> magnets = new ArrayList<>();

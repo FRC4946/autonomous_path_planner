@@ -3,7 +3,7 @@ package ca._4946.mreynolds.pathplanner.src.data.actions;
 public class ElevatorAction extends Action<ElevatorAction.Options> {
 
 	public static enum Options implements Action.ActionOptions {
-		kMoveToBottom, kMoveToSwitch, kMoveToScale, kMoveToCustom
+		kMoveToBottom, kMoveToSwitch, kMoveToScaleLow, kMoveToScaleHigh, kMoveToCustom
 	}
 
 	public ElevatorAction() {
@@ -11,12 +11,8 @@ public class ElevatorAction extends Action<ElevatorAction.Options> {
 	}
 
 	public ElevatorAction(Options options) {
-		this(options, 0);
-	}
-
-	public ElevatorAction(Options options, int timeout) {
 		super(options);
-		this.timeout = timeout;
+		data = 12;
 	}
 
 	@Override
@@ -27,7 +23,7 @@ public class ElevatorAction extends Action<ElevatorAction.Options> {
 	@Override
 	public String getDataLabel() {
 		if (options == Options.kMoveToCustom)
-			return "Height (in):";
+			return "Height:";
 
 		return "";
 	}

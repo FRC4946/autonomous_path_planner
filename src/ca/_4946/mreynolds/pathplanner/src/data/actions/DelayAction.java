@@ -15,6 +15,7 @@ public class DelayAction extends Action<DelayAction.Options> {
 	public DelayAction(Options options) {
 		super(options);
 		behaviour = Behaviour.kSequential;
+		timeout = 1;
 	}
 
 	@Override

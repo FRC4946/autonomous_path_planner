@@ -35,6 +35,7 @@ import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
+import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
@@ -68,17 +69,16 @@ public class ControlPanel extends JPanel {
 			if (isConnected) {
 				statusLbl.setText("Connected");
 				statusLbl.setBackground(Color.GREEN);
-			} else {
 
+				// Sleep 2sec
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else {
 				statusLbl.setText("Not Connected");
 				statusLbl.setBackground(Color.RED);
-			}
-
-			// Sleep 2sec
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 	});
@@ -275,20 +275,23 @@ public class ControlPanel extends JPanel {
 			JPanel actionBtnPanel = new JPanel();
 			actionBtnPanel.setLayout(new BoxLayout(actionBtnPanel, BoxLayout.X_AXIS));
 			{
-				JButton addPathBtn = new JButton("Add Drive Action");
-				JButton addElevatorBtn = new JButton("Add Elevator Action");
-				JButton addIntakeBtn = new JButton("Add Intake Action");
-				JButton addOutputBtn = new JButton("Add Output Action");
+				JButton addPathBtn = new JButton("Add Drive");
+				JButton addElevatorBtn = new JButton("Add Elevator");
+				JButton addArmBtn = new JButton("Add Arm");
+				JButton addIntakeBtn = new JButton("Add Intake");
+				JButton addOutputBtn = new JButton("Add Output");
 				JButton addDelayBtn = new JButton("Add Delay");
 
 				addPathBtn.addActionListener(addNewAction);
 				addElevatorBtn.addActionListener(addNewAction);
+				addArmBtn.addActionListener(addNewAction);
 				addIntakeBtn.addActionListener(addNewAction);
 				addOutputBtn.addActionListener(addNewAction);
 				addDelayBtn.addActionListener(addNewAction);
 
 				actionBtnPanel.add(addPathBtn);
 				actionBtnPanel.add(addElevatorBtn);
+				actionBtnPanel.add(addArmBtn);
 				actionBtnPanel.add(addIntakeBtn);
 				actionBtnPanel.add(addOutputBtn);
 				actionBtnPanel.add(addDelayBtn);
@@ -354,8 +357,11 @@ public class ControlPanel extends JPanel {
 		if (lbl.contains("Drive")) {
 			PathPlanner.main.getScript().addAction(new DriveAction());
 			PathPlanner.main.getScript().connectPaths();
+		} else if (lbl.contains("Arm")) {
+
+			PathPlanner.main.getScript().addAction(new ArmAction(ArmAction.Options.kArmDown));
 		} else if (lbl.contains("Intake"))
-			PathPlanner.main.getScript().addAction(new IntakeAction(IntakeAction.Options.kIntakeUntil));
+			PathPlanner.main.getScript().addAction(new IntakeAction(IntakeAction.Options.kIntakeOn));
 		else if (lbl.contains("Output"))
 			PathPlanner.main.getScript().addAction(new OutputAction());
 		else if (lbl.contains("Elevator"))
