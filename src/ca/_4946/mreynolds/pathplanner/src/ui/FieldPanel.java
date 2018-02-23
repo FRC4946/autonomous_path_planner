@@ -111,12 +111,12 @@ public class FieldPanel extends JPanel {
 	public void drawBackground(Graphics g) {
 		if (PathPlanner.main.fieldIsBlue) {
 			g.drawImage(blueField, 0, 0, getWidth(), getHeight(), this);
-			if (PathPlanner.main.scaleIsL)
+			if (PathPlanner.main.gameData.charAt(1) == 'L')
 				g.drawImage(scaleBlueL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(scaleRedL, 0, 0, getWidth(), getHeight(), this);
 
-			if (PathPlanner.main.switchIsL)
+			if (PathPlanner.main.gameData.charAt(0) == 'L')
 				g.drawImage(switchBlueL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(switchRedL, 0, 0, getWidth(), getHeight(), this);
@@ -124,12 +124,12 @@ public class FieldPanel extends JPanel {
 
 		else {
 			g.drawImage(redField, 0, 0, getWidth(), getHeight(), this);
-			if (PathPlanner.main.scaleIsL)
+			if (PathPlanner.main.gameData.charAt(1) == 'L')
 				g.drawImage(scaleRedL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(scaleBlueL, 0, 0, getWidth(), getHeight(), this);
 
-			if (PathPlanner.main.switchIsL)
+			if (PathPlanner.main.gameData.charAt(0) == 'L')
 				g.drawImage(switchRedL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(switchBlueL, 0, 0, getWidth(), getHeight(), this);
@@ -210,7 +210,7 @@ public class FieldPanel extends JPanel {
 
 		// Align the back of the robot
 		double dpos = (robot.getWidth(null) / PathPlanner.ROBOT_WIDTH_IN * PathPlanner.ROBOT_LENGTH_IN
-				- robot.getHeight(null))/2;
+				- robot.getHeight(null)) / 2;
 		tx.translate(0, -dpos);
 
 		// Draw the image

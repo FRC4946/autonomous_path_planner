@@ -175,4 +175,23 @@ public class DriveAction extends Action<DriveAction.Options> {
 	public boolean isEmpty() {
 		return waypoints.isEmpty();
 	}
+
+	@Override
+	public DriveAction clone() {
+		DriveAction a = new DriveAction();
+		a.options = options;
+		a.behaviour = behaviour;
+		a.delay = delay;
+		a.timeout = timeout;
+		a.data = data;
+
+		for (Waypoint pt : waypoints)
+			a.waypoints.add(pt.clone());
+		
+		for (CubicBezier c : curves)
+			a.curves.add(c.clone());
+		
+		a.generatePath();
+		return a;
+	}
 }

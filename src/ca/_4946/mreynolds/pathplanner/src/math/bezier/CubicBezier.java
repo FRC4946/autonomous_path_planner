@@ -250,4 +250,9 @@ public class CubicBezier {
 	public double length() {
 		return length;
 	}
+	
+	@Override
+	public CubicBezier clone() {
+		return new CubicBezier(a, d, b, c);
+	}
 }

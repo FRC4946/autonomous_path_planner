@@ -16,6 +16,12 @@ public class Script {
 		script = new ObservableList<>();
 	}
 
+	public Script(Script s) {
+		script = new ObservableList<>();
+		for(Action<?> a : s.script)
+			script.add(a.clone());
+	}
+
 	public void connectPaths() {
 		DriveAction prevDrive = null;
 

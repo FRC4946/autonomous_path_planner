@@ -215,6 +215,12 @@ public class ObservableList<E> implements List<E> {
 		listenerList.remove(ListListener.class, l);
 	}
 
+	public void removeAllListListeners() {
+		for (Object l : listenerList.getListenerList())
+			if (l instanceof ListListener)
+				removeListListener((ListListener) l);
+	}
+
 	protected void fireListChanged() {
 		if (isQuiet) {
 			isQuiet = false;

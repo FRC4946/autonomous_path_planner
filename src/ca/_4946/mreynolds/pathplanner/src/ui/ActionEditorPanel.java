@@ -46,7 +46,7 @@ public class ActionEditorPanel extends JPanel {
 	 * Create the panel.
 	 */
 	@SuppressWarnings("unchecked")
-	public ActionEditorPanel(Action<?> a, ButtonGroup grp) {
+	public ActionEditorPanel(Action<?> a) {
 		setBorder(new LineBorder(Color.LIGHT_GRAY));
 		// setPreferredSize(new Dimension(1000, 25));
 		setMaximumSize(new Dimension(1000, 28));

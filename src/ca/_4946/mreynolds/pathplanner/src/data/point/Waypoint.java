@@ -11,7 +11,7 @@ public class Waypoint extends Point {
 		super();
 		size = 5;
 	}
-	
+
 	public Waypoint(double x, double y) {
 		super(x, y);
 		size = 5;
@@ -24,6 +24,7 @@ public class Waypoint extends Point {
 
 	public Waypoint(Waypoint point) {
 		super(point);
+		isMagnet = point.isMagnet;
 		automaticHeading = point.automaticHeading;
 		heading = point.heading;
 		r = point.r;
@@ -41,16 +42,14 @@ public class Waypoint extends Point {
 
 		if (!automaticHeading)
 			return heading;
-		
 
 		double dx = next.getFlipHandle().x - prev.getHandle().x;
 		double dy = next.getFlipHandle().y - prev.getHandle().y;
-		
-		if(prev == this) {
+
+		if (prev == this) {
 			dx = next.getFlipHandle().x - prev.x;
 			dy = next.getFlipHandle().y - prev.y;
-		}
-		else if (next == this) {
+		} else if (next == this) {
 			dx = next.x - prev.getHandle().x;
 			dy = next.y - prev.getHandle().y;
 		}
@@ -88,7 +87,8 @@ public class Waypoint extends Point {
 	}
 
 	/**
-	 * @param isMagnet the isMagnet to set
+	 * @param isMagnet
+	 *            the isMagnet to set
 	 */
 	public void setMagnet(boolean isMagnet) {
 		this.isMagnet = isMagnet;
@@ -102,7 +102,8 @@ public class Waypoint extends Point {
 	}
 
 	/**
-	 * @param automaticHeading the automaticHeading to set
+	 * @param automaticHeading
+	 *            the automaticHeading to set
 	 */
 	public void setAutomaticHeading(boolean automaticHeading) {
 		this.automaticHeading = automaticHeading;
@@ -116,7 +117,8 @@ public class Waypoint extends Point {
 	}
 
 	/**
-	 * @param heading the heading to set
+	 * @param heading
+	 *            the heading to set
 	 */
 	public void setHeading(double heading) {
 		this.heading = heading;
@@ -130,10 +132,16 @@ public class Waypoint extends Point {
 	}
 
 	/**
-	 * @param r the r to set
+	 * @param r
+	 *            the r to set
 	 */
 	public void setR(double r) {
 		this.r = r;
+	}
+
+	@Override
+	public Waypoint clone() {
+		return new Waypoint(this);
 	}
 
 }

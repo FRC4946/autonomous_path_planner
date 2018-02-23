@@ -31,8 +31,10 @@ public class PathPlanner {
 	private ArrayList<MagnetPoint> magnets = new ArrayList<>();
 
 	public boolean fieldIsBlue = true;
-	public boolean scaleIsL = true;
-	public boolean switchIsL = true;
+	// public boolean scaleIsL = true;
+	// public boolean switchIsL = true;
+
+	public String gameData = "ll";
 
 	public static PathPlanner main;
 	private PrimaryWindow window;
@@ -82,18 +84,40 @@ public class PathPlanner {
 		return new Script[] { scBundle.LL, scBundle.LR, scBundle.RL, scBundle.RR };
 	}
 
+	public Script getScript(String code) {
+		code = code.toLowerCase();
+
+		if (code.contains("ll"))
+			return scBundle.LL;
+		else if (code.contains("lr"))
+			return scBundle.LR;
+		else if (code.contains("rl"))
+			return scBundle.RL;
+		else if (code.contains("rr"))
+			return scBundle.RR;
+
+		return null;
+	}
+
 	public Script getScript() {
-		if (switchIsL) {
-			if (scaleIsL)
-				return scBundle.LL;
-			else
-				return scBundle.LR;
-		} else {
-			if (scaleIsL)
-				return scBundle.RL;
-			else
-				return scBundle.RR;
-		}
+		return getScript(gameData);
+	}
+
+	public void setScript(Script newScript, String code) {	
+		
+		code = code.toLowerCase();
+		if (code.contains("ll"))
+			scBundle.LL = newScript;
+		else if (code.contains("lr"))
+			scBundle.LR = newScript;
+		else if (code.contains("rl"))
+			scBundle.RL = newScript;
+		else if (code.contains("rr"))
+			scBundle.RR = newScript;
+	}
+
+	public void setScript(Script newScript) {
+		setScript(newScript, gameData);
 	}
 
 	public String getScriptName() {
