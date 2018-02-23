@@ -47,8 +47,8 @@ public class CollapsablePanel extends JPanel {
 	private boolean m_isCollapsed = true;
 
 	/**
-	 * Default constructor. Create an empty {@link CollapsablePanel}. The panel
-	 * is collapsed by default. Content can be added using
+	 * Default constructor. Create an empty {@link CollapsablePanel}. The panel is
+	 * collapsed by default. Content can be added using
 	 * {@link #setContents(JComponent)}
 	 */
 	public CollapsablePanel() {
@@ -80,10 +80,8 @@ public class CollapsablePanel extends JPanel {
 
 				// Add the separator bar to its subpanel
 				separatorPanel.add(m_separator, BorderLayout.CENTER);
-				separatorPanel.add(Box.createVerticalStrut(9),
-						BorderLayout.NORTH);
-				separatorPanel.add(Box.createVerticalStrut(9),
-						BorderLayout.SOUTH);
+				separatorPanel.add(Box.createVerticalStrut(9), BorderLayout.NORTH);
+				separatorPanel.add(Box.createVerticalStrut(9), BorderLayout.SOUTH);
 			}
 
 			// Create a button to toggle the collapsed state of the panel
@@ -101,7 +99,6 @@ public class CollapsablePanel extends JPanel {
 					// Otherwise, collapse it
 					else
 						collapsePanel();
-
 				}
 			});
 
@@ -128,7 +125,7 @@ public class CollapsablePanel extends JPanel {
 
 		// Add a indented border to the panel
 		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		
+
 		// Update the panel
 		validate();
 		repaint();
@@ -136,8 +133,7 @@ public class CollapsablePanel extends JPanel {
 	}
 
 	/**
-	 * Collapse the panel's contents. If the panel is already collapsed, do
-	 * nothing
+	 * Collapse the panel's contents. If the panel is already collapsed, do nothing
 	 */
 	public void collapsePanel() {
 		m_isCollapsed = true;
@@ -160,8 +156,8 @@ public class CollapsablePanel extends JPanel {
 	}
 
 	/**
-	 * Set the contents of the {@link CollapsablePanel} (The components that
-	 * will be hidden/shown)
+	 * Set the contents of the {@link CollapsablePanel} (The components that will be
+	 * hidden/shown)
 	 * 
 	 * @param newContents
 	 *            the component to set
@@ -174,7 +170,7 @@ public class CollapsablePanel extends JPanel {
 
 		// Save and add the new contents
 		m_contentComponent = newContents;
-		if(m_isCollapsed)
+		if (m_isCollapsed)
 			collapsePanel();
 		add(newContents, BorderLayout.CENTER);
 	}
@@ -206,8 +202,7 @@ public class CollapsablePanel extends JPanel {
 		Object[] listeners = listenerList.getListenerList();
 		for (int i = 0; i < listeners.length; i = i + 2) {
 			if (listeners[i] == PanelCollapsedListener.class) {
-				((PanelCollapsedListener) listeners[i + 1])
-						.panelCollapsedOccurred();
+				((PanelCollapsedListener) listeners[i + 1]).panelCollapsedOccurred();
 			}
 		}
 	}
@@ -239,8 +234,7 @@ public class CollapsablePanel extends JPanel {
 		Object[] listeners = listenerList.getListenerList();
 		for (int i = 0; i < listeners.length; i = i + 2) {
 			if (listeners[i] == PanelCollapsedListener.class) {
-				((PanelExpandedListener) listeners[i + 1])
-						.panelExpandedOccurred();
+				((PanelExpandedListener) listeners[i + 1]).panelExpandedOccurred();
 			}
 		}
 	}

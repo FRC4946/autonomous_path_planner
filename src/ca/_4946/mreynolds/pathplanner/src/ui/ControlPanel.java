@@ -33,9 +33,9 @@ import javax.swing.SwingConstants;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
+import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
-import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
@@ -98,45 +98,27 @@ public class ControlPanel extends JPanel {
 
 		JPanel btnPanel = new JPanel();
 		{
-			JButton loadBtn = new JButton("Load Script");
-			loadBtn.addActionListener(e -> {
-				JFileChooser fc = FileIO.getFileChooser();
-				if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-					File file = fc.getSelectedFile();
-					PathPlanner.main.load(file);
-					scriptNameField.setText(PathPlanner.main.getScriptName());
-					setupListeners();
-				}
-			});
+			JButton loadBtn = new JButton("Open (O)");
+			loadBtn.addActionListener(e -> load());
 
 			btnPanel.add(loadBtn);
 
-			JButton saveBtn = new JButton("Save Script");
-			saveBtn.addActionListener(e -> {
-				PathPlanner.main.setScriptName(scriptNameField.getText());
-
-				JFileChooser fc = FileIO.getFileChooser(scriptNameField.getText() + ".xml");
-				if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-					File file = fc.getSelectedFile();
-					if (!file.getName().endsWith(".xml"))
-						file = new File(file.getAbsolutePath() + ".xml");
-
-					PathPlanner.main.save(file);
-				}
-			});
+			JButton saveBtn = new JButton("Save (S)");
+			saveBtn.addActionListener(e -> save());
 			btnPanel.add(saveBtn);
 
-			JButton uploadBtn = new JButton("Upload Script");
+			JButton uploadBtn = new JButton("Upload (Space)");
 			uploadBtn.addActionListener(e -> {
 				PathPlanner.main.setScriptName(scriptNameField.getText());
 				PathPlanner.main.upload(new File(scriptNameField.getText() + ".xml"));
 			});
 			btnPanel.add(uploadBtn);
 
-			JButton clearBtn = new JButton("Clear Script!");
+			JButton clearBtn = new JButton("Clear");
 			btnPanel.add(clearBtn);
 			clearBtn.addActionListener(e -> PathPlanner.main.getScript().clear());
 		}
+
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
@@ -190,6 +172,7 @@ public class ControlPanel extends JPanel {
 		panel.add(configPanel);
 		configPanel.setMaximumSize(new Dimension(32767, 100));
 		GridBagLayout gbl_configPanel = new GridBagLayout();
+		gbl_configPanel.rowHeights = new int[] { 0, 0 };
 		gbl_configPanel.rowWeights = new double[] { 1.0, 1.0 };
 		gbl_configPanel.columnWeights = new double[] { 0.0, 0.0, 0.0 };
 		configPanel.setLayout(gbl_configPanel);
@@ -275,12 +258,12 @@ public class ControlPanel extends JPanel {
 			JPanel actionBtnPanel = new JPanel();
 			actionBtnPanel.setLayout(new BoxLayout(actionBtnPanel, BoxLayout.X_AXIS));
 			{
-				JButton addPathBtn = new JButton("Add Drive");
-				JButton addElevatorBtn = new JButton("Add Elevator");
-				JButton addArmBtn = new JButton("Add Arm");
-				JButton addIntakeBtn = new JButton("Add Intake");
-				JButton addOutputBtn = new JButton("Add Output");
-				JButton addDelayBtn = new JButton("Add Delay");
+				JButton addPathBtn = new JButton("Add Drive (1)");
+				JButton addElevatorBtn = new JButton("Add Elevator (2)");
+				JButton addArmBtn = new JButton("Add Arm (3)");
+				JButton addIntakeBtn = new JButton("Add Intake (4)");
+				JButton addOutputBtn = new JButton("Add Output (5)");
+				JButton addDelayBtn = new JButton("Add Delay (6)");
 
 				addPathBtn.addActionListener(addNewAction);
 				addElevatorBtn.addActionListener(addNewAction);
@@ -329,7 +312,35 @@ public class ControlPanel extends JPanel {
 
 	private void setupKeyListeners() {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-			if (e.getKeyCode() == KeyEvent.VK_F1)
+
+			// If ctrl is down...
+			if (e.isControlDown() && e.getID() == KeyEvent.KEY_PRESSED) {
+				if (e.getKeyCode() == KeyEvent.VK_1) {
+					PathPlanner.main.getScript().addAction(new DriveAction());
+					PathPlanner.main.getScript().connectPaths();
+				} else if (e.getKeyCode() == KeyEvent.VK_2)
+					PathPlanner.main.getScript().addAction(new ElevatorAction());
+				else if (e.getKeyCode() == KeyEvent.VK_3)
+					PathPlanner.main.getScript().addAction(new ArmAction());
+				else if (e.getKeyCode() == KeyEvent.VK_4)
+					PathPlanner.main.getScript().addAction(new IntakeAction());
+				else if (e.getKeyCode() == KeyEvent.VK_5)
+					PathPlanner.main.getScript().addAction(new OutputAction());
+				else if (e.getKeyCode() == KeyEvent.VK_6)
+					PathPlanner.main.getScript().addAction(new DelayAction());
+
+				else if (e.getKeyCode() == KeyEvent.VK_O)
+					load();
+				else if (e.getKeyCode() == KeyEvent.VK_S)
+					save();
+
+				else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					PathPlanner.main.setScriptName(scriptNameField.getText());
+					PathPlanner.main.upload(new File(scriptNameField.getText() + ".xml"));
+				}
+			}
+
+			else if (e.getKeyCode() == KeyEvent.VK_F1)
 				fieldConfigDropdown.setSelectedIndex(0);
 			else if (e.getKeyCode() == KeyEvent.VK_F2)
 				fieldConfigDropdown.setSelectedIndex(1);
@@ -337,7 +348,11 @@ public class ControlPanel extends JPanel {
 				fieldConfigDropdown.setSelectedIndex(2);
 			else if (e.getKeyCode() == KeyEvent.VK_F4)
 				fieldConfigDropdown.setSelectedIndex(3);
-			return false;
+			else
+				return false;
+			
+			e.consume();
+			return true;
 		});
 	}
 
@@ -351,6 +366,29 @@ public class ControlPanel extends JPanel {
 
 	}
 
+	private void load() {
+		JFileChooser fc = FileIO.getFileChooser();
+		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			PathPlanner.main.load(file);
+			scriptNameField.setText(PathPlanner.main.getScriptName());
+			setupListeners();
+		}
+	}
+
+	private void save() {
+		PathPlanner.main.setScriptName(scriptNameField.getText());
+
+		JFileChooser fc = FileIO.getFileChooser(scriptNameField.getText() + ".xml");
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			if (!file.getName().endsWith(".xml"))
+				file = new File(file.getAbsolutePath() + ".xml");
+
+			PathPlanner.main.save(file);
+		}
+	}
+
 	ActionListener addNewAction = e -> {
 		String lbl = ((JButton) e.getSource()).getText();
 
@@ -359,13 +397,13 @@ public class ControlPanel extends JPanel {
 			PathPlanner.main.getScript().connectPaths();
 		} else if (lbl.contains("Arm")) {
 
-			PathPlanner.main.getScript().addAction(new ArmAction(ArmAction.Options.kArmDown));
+			PathPlanner.main.getScript().addAction(new ArmAction());
 		} else if (lbl.contains("Intake"))
-			PathPlanner.main.getScript().addAction(new IntakeAction(IntakeAction.Options.kIntakeOn));
+			PathPlanner.main.getScript().addAction(new IntakeAction());
 		else if (lbl.contains("Output"))
 			PathPlanner.main.getScript().addAction(new OutputAction());
 		else if (lbl.contains("Elevator"))
-			PathPlanner.main.getScript().addAction(new ElevatorAction(ElevatorAction.Options.kMoveToSwitch));
+			PathPlanner.main.getScript().addAction(new ElevatorAction());
 		else if (lbl.contains("Delay"))
 			PathPlanner.main.getScript().addAction(new DelayAction());
 	};

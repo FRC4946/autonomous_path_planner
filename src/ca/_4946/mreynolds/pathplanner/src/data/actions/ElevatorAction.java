@@ -7,7 +7,7 @@ public class ElevatorAction extends Action<ElevatorAction.Options> {
 	}
 
 	public ElevatorAction() {
-		this(Options.kMoveToCustom);
+		this(Options.kMoveToBottom);
 	}
 
 	public ElevatorAction(Options options) {
