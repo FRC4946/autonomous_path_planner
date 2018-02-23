@@ -111,12 +111,12 @@ public class FieldPanel extends JPanel {
 	public void drawBackground(Graphics g) {
 		if (PathPlanner.main.fieldIsBlue) {
 			g.drawImage(blueField, 0, 0, getWidth(), getHeight(), this);
-			if (PathPlanner.main.gameData.charAt(1) == 'L')
+			if (PathPlanner.main.gameData.charAt(1) == 'l')
 				g.drawImage(scaleBlueL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(scaleRedL, 0, 0, getWidth(), getHeight(), this);
 
-			if (PathPlanner.main.gameData.charAt(0) == 'L')
+			if (PathPlanner.main.gameData.charAt(0) == 'l')
 				g.drawImage(switchBlueL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(switchRedL, 0, 0, getWidth(), getHeight(), this);
@@ -124,12 +124,12 @@ public class FieldPanel extends JPanel {
 
 		else {
 			g.drawImage(redField, 0, 0, getWidth(), getHeight(), this);
-			if (PathPlanner.main.gameData.charAt(1) == 'L')
+			if (PathPlanner.main.gameData.charAt(1) == 'l')
 				g.drawImage(scaleRedL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(scaleBlueL, 0, 0, getWidth(), getHeight(), this);
 
-			if (PathPlanner.main.gameData.charAt(0) == 'L')
+			if (PathPlanner.main.gameData.charAt(0) == 'l')
 				g.drawImage(switchRedL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(switchBlueL, 0, 0, getWidth(), getHeight(), this);

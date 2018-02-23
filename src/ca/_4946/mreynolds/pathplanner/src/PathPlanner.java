@@ -31,8 +31,6 @@ public class PathPlanner {
 	private ArrayList<MagnetPoint> magnets = new ArrayList<>();
 
 	public boolean fieldIsBlue = true;
-	// public boolean scaleIsL = true;
-	// public boolean switchIsL = true;
 
 	public String gameData = "ll";
 

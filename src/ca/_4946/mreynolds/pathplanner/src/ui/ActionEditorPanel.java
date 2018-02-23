@@ -25,6 +25,7 @@ import javax.swing.border.LineBorder;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action.Behaviour;
+import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
@@ -95,6 +96,7 @@ public class ActionEditorPanel extends JPanel {
 
 		if (action instanceof DriveAction) {
 			JCheckBox reverseBox = new JCheckBox("");
+			reverseBox.setOpaque(false);
 			reverseBox.setSelected(action.data == 1.0);
 			reverseBox.addActionListener(e -> {
 				action.data = reverseBox.isSelected() ? 1 : 0;
@@ -154,6 +156,7 @@ public class ActionEditorPanel extends JPanel {
 
 		JRadioButton rdbtnSequential = new JRadioButton("Seq");
 		rdbtnSequential.setSelected(action.behaviour == Behaviour.kSequential);
+		rdbtnSequential.setOpaque(false);
 		behaviourBtns.add(rdbtnSequential);
 		GridBagConstraints gbc_rdbtnSequential = new GridBagConstraints();
 		gbc_rdbtnSequential.anchor = GridBagConstraints.NORTHEAST;
@@ -161,6 +164,7 @@ public class ActionEditorPanel extends JPanel {
 
 		JRadioButton rdbtnParallel = new JRadioButton("Par");
 		rdbtnParallel.setSelected(action.behaviour == Behaviour.kParallel);
+		rdbtnParallel.setOpaque(false);
 		behaviourBtns.add(rdbtnParallel);
 		GridBagConstraints gbc_rdbtnParallel = new GridBagConstraints();
 		gbc_rdbtnParallel.anchor = GridBagConstraints.NORTHWEST;
@@ -232,6 +236,8 @@ public class ActionEditorPanel extends JPanel {
 		gbc_btnDelete.gridx = 14;
 		btnDelete.addActionListener(e -> PathPlanner.main.getScript().removeAction(action));
 		add(btnDelete, gbc_btnDelete);
+
+		setBkgColor();
 	}
 
 	ActionListener actionSelectListener = new ActionListener() {
@@ -249,4 +255,19 @@ public class ActionEditorPanel extends JPanel {
 			}
 		}
 	};
+
+	private void setBkgColor() {
+		if (action instanceof DriveAction)
+			this.setBackground(new Color(255, 200, 220));
+		else if (action instanceof ArmAction)
+			this.setBackground(new Color(204, 210, 255));
+		else if (action instanceof DelayAction)
+			this.setBackground(new Color(204, 239, 255));
+		else if (action instanceof ElevatorAction)
+			this.setBackground(new Color(204, 255, 227));
+		else if (action instanceof IntakeAction)
+			this.setBackground(new Color(240, 255, 204));
+		else if (action instanceof OutputAction)
+			this.setBackground(new Color(255, 225, 204));
+	}
 }

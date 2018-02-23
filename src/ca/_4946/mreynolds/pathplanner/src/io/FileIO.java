@@ -136,9 +136,9 @@ public class FileIO {
 				curAction.options = Enum.valueOf(curAction.options.getDeclaringClass(), curEl.getAttribute("options"));
 				curAction.behaviour = Enum.valueOf(curAction.behaviour.getDeclaringClass(),
 						curEl.getAttribute("behaviour"));
-				curAction.delay = Double.parseDouble(curEl.getAttribute("delay"));
-				curAction.data = Double.parseDouble(curEl.getAttribute("data"));
-				curAction.timeout = Double.parseDouble(curEl.getAttribute("timeout"));
+				curAction.delay = Double.parseDouble(curEl.getAttribute("delay") + "0");
+				curAction.data = Double.parseDouble(curEl.getAttribute("data") + "0");
+				curAction.timeout = Double.parseDouble(curEl.getAttribute("timeout") + "0");
 
 				if (curAction instanceof DriveAction) {
 					NodeList waypoints = curEl.getElementsByTagName("waypoint");
