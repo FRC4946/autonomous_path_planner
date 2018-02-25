@@ -74,10 +74,6 @@ public class PathPlanner {
 		return Collections.unmodifiableList(magnets);
 	}
 
-	public void setScriptName(String name) {
-		scBundle.name = name;
-	}
-
 	public Script[] getScripts() {
 		return new Script[] { scBundle.LL, scBundle.LR, scBundle.RL, scBundle.RR };
 	}
@@ -101,8 +97,8 @@ public class PathPlanner {
 		return getScript(gameData);
 	}
 
-	public void setScript(Script newScript, String code) {	
-		
+	public void setScript(Script newScript, String code) {
+
 		code = code.toLowerCase();
 		if (code.contains("ll"))
 			scBundle.LL = newScript;
@@ -118,8 +114,20 @@ public class PathPlanner {
 		setScript(newScript, gameData);
 	}
 
+	public void setScriptName(String name) {
+		scBundle.name = name;
+	}
+
 	public String getScriptName() {
 		return scBundle.name;
+	}
+
+	public void setScriptNotes(String notes) {
+		scBundle.notes = notes;
+	}
+
+	public String getScriptNotes() {
+		return scBundle.notes;
 	}
 
 	public void load(File file) {

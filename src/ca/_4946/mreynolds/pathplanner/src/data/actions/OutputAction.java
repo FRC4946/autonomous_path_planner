@@ -26,4 +26,9 @@ public class OutputAction extends Action<OutputAction.Options> {
 		return "Speed";
 	}
 
+	@Override
+	public Options getDefaultOption() {
+		return Options.kOutput;
+	}
+
 }

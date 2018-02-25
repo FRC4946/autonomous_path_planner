@@ -171,6 +171,11 @@ public class DriveAction extends Action<DriveAction.Options> {
 	public String getDataLabel() {
 		return "Reverse";
 	}
+	
+	@Override
+	public Options getDefaultOption() {
+		return Options.kDrive;
+	}
 
 	public boolean isEmpty() {
 		return waypoints.isEmpty();

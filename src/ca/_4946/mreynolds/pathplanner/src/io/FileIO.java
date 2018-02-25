@@ -33,6 +33,7 @@ import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
+import ca._4946.mreynolds.pathplanner.src.data.actions.Action.Behaviour;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
@@ -77,6 +78,7 @@ public class FileIO {
 		doc.getDocumentElement().normalize();
 
 		scripts.name = ((Element) doc.getElementsByTagName("script").item(0)).getAttribute("name");
+		scripts.notes = ((Element) doc.getElementsByTagName("script").item(0)).getAttribute("notes");
 
 		// // All of the nodes of the main element (the "script" element)
 		// NodeList nodeList = doc.getFirstChild().getChildNodes();
@@ -86,10 +88,10 @@ public class FileIO {
 		Element rl = (Element) doc.getElementsByTagName("rl").item(0);
 		Element rr = (Element) doc.getElementsByTagName("rr").item(0);
 
-		scripts.LL = loadScript(ll);
-		scripts.LR = loadScript(lr);
-		scripts.RL = loadScript(rl);
-		scripts.RR = loadScript(rr);
+		scripts.LL = (ll == null) ? new Script() : loadScript(ll);
+		scripts.LR = (lr == null) ? new Script() : loadScript(lr);
+		scripts.RL = (rl == null) ? new Script() : loadScript(rl);
+		scripts.RR = (rr == null) ? new Script() : loadScript(rr);
 
 		// Return the newly-read data
 		return scripts;
@@ -133,9 +135,19 @@ public class FileIO {
 				if (curAction == null)
 					continue;
 
-				curAction.options = Enum.valueOf(curAction.options.getDeclaringClass(), curEl.getAttribute("options"));
-				curAction.behaviour = Enum.valueOf(curAction.behaviour.getDeclaringClass(),
-						curEl.getAttribute("behaviour"));
+				try {
+					curAction.options = Enum.valueOf(curAction.options.getDeclaringClass(),
+							curEl.getAttribute("options"));
+				} catch (IllegalArgumentException e) {
+					curAction.options = curAction.getDefaultOption();
+				}
+
+				try {
+					curAction.behaviour = Enum.valueOf(curAction.behaviour.getDeclaringClass(),
+							curEl.getAttribute("behaviour"));
+				} catch (IllegalArgumentException e) {
+					curAction.behaviour = Behaviour.kSequential;
+				}
 				curAction.delay = Double.parseDouble(curEl.getAttribute("delay") + "0");
 				curAction.data = Double.parseDouble(curEl.getAttribute("data") + "0");
 				curAction.timeout = Double.parseDouble(curEl.getAttribute("timeout") + "0");
@@ -148,10 +160,10 @@ public class FileIO {
 							Waypoint pt = new Waypoint();
 							Element curPtEl = (Element) waypoints.item(j);
 
-							pt.setX(Double.parseDouble(curPtEl.getAttribute("x")));
-							pt.setY(Double.parseDouble(curPtEl.getAttribute("y")));
-							pt.setR(Double.parseDouble(curPtEl.getAttribute("radius")));
-							pt.setHeading(Double.parseDouble(curPtEl.getAttribute("heading")));
+							pt.setX(Double.parseDouble(curPtEl.getAttribute("x") + "0"));
+							pt.setY(Double.parseDouble(curPtEl.getAttribute("y") + "0"));
+							pt.setR(Double.parseDouble(curPtEl.getAttribute("radius") + "0"));
+							pt.setHeading(Double.parseDouble(curPtEl.getAttribute("heading") + "0"));
 							pt.setAutomaticHeading(curPtEl.getAttribute("autoHeading").contains("true"));
 							pt.setMagnet(curPtEl.getAttribute("magnet").contains("true"));
 
@@ -179,6 +191,7 @@ public class FileIO {
 		doc.appendChild(root);
 
 		root.setAttribute("name", scBundle.name);
+		root.setAttribute("notes", scBundle.notes);
 
 		Element llElement = doc.createElement("ll");
 		root.appendChild(saveScript(doc, llElement, scBundle.LL, false));
@@ -231,7 +244,7 @@ public class FileIO {
 
 			// Set the new element's "delay" attribute
 			curElement.setAttribute("delay", "" + a.delay);
-			
+
 			// Set the new element's "data" attribute
 			curElement.setAttribute("data", "" + a.data);
 

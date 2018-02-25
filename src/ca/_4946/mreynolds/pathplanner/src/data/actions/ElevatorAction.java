@@ -27,4 +27,9 @@ public class ElevatorAction extends Action<ElevatorAction.Options> {
 
 		return "";
 	}
+	
+	@Override
+	public Options getDefaultOption() {
+		return Options.kMoveToBottom;
+	}
 }

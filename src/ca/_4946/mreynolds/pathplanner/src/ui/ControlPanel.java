@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
@@ -43,11 +44,11 @@ import ca._4946.mreynolds.util.ObservableList;
 
 public class ControlPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-	JPanel actionListPanel;
-	JComboBox<String> fieldConfigDropdown;
-	JTextField scriptNameField;
-	JLabel statusLbl;
-
+	private JPanel m_actionListPanel;
+	private JComboBox<String> m_fieldConfigDropdown;
+	private JTextPane m_notesTxtPane;
+	private JTextField m_scriptNameField;
+	private JLabel m_statusLbl;
 	private JButton m_copyLLBtn;
 	private JButton m_copyLRBtn;
 	private JButton m_copyRLBtn;
@@ -69,8 +70,8 @@ public class ControlPanel extends JPanel {
 			}
 
 			if (isConnected) {
-				statusLbl.setText("Connected");
-				statusLbl.setBackground(Color.GREEN);
+				m_statusLbl.setText("Connected");
+				m_statusLbl.setBackground(Color.GREEN);
 
 				// Sleep 2sec
 				try {
@@ -79,8 +80,8 @@ public class ControlPanel extends JPanel {
 					e.printStackTrace();
 				}
 			} else {
-				statusLbl.setText("Not Connected");
-				statusLbl.setBackground(Color.RED);
+				m_statusLbl.setText("Not Connected");
+				m_statusLbl.setBackground(Color.RED);
 			}
 		}
 	});
@@ -97,187 +98,188 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void initialize() {
-
-		JPanel btnPanel = new JPanel();
-		{
-			JButton loadBtn = new JButton("Open (O)");
-			loadBtn.addActionListener(e -> load());
-
-			btnPanel.add(loadBtn);
-
-			JButton saveBtn = new JButton("Save (S)");
-			saveBtn.addActionListener(e -> save());
-			btnPanel.add(saveBtn);
-
-			JButton uploadBtn = new JButton("Upload (Space)");
-			uploadBtn.addActionListener(e -> {
-				PathPlanner.main.setScriptName(scriptNameField.getText());
-				PathPlanner.main.upload(new File(scriptNameField.getText() + ".xml"));
-			});
-			btnPanel.add(uploadBtn);
-
-			JButton flipBtn = new JButton("Flip (F)");
-			flipBtn.addActionListener(e -> flip());
-			btnPanel.add(flipBtn);
-
-			JButton clearBtn = new JButton("Clear");
-			btnPanel.add(clearBtn);
-			clearBtn.addActionListener(e -> PathPlanner.main.getScript().clear());
-		}
-
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel topPanel = new JPanel();
-		add(topPanel, BorderLayout.NORTH);
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-
-		JPanel statusPanel = new JPanel();
-		topPanel.add(statusPanel);
-		statusPanel.setMaximumSize(new Dimension(32767, 30));
-		GridBagLayout gbl_statusPanel = new GridBagLayout();
-		gbl_statusPanel.columnWidths = new int[] { 0, 60, 150, 0, 0, 0, 0, 0, 75, 0 };
-		gbl_statusPanel.rowHeights = new int[] { 30, 0 };
-		gbl_statusPanel.columnWeights = new double[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gbl_statusPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-		statusPanel.setLayout(gbl_statusPanel);
 		{
 
-			JLabel lblScriptName = new JLabel("Script Name:");
-			lblScriptName.setFont(new Font("Tahoma", Font.BOLD, 18));
-			GridBagConstraints gbc_lblScriptName = new GridBagConstraints();
-			gbc_lblScriptName.anchor = GridBagConstraints.WEST;
-			gbc_lblScriptName.insets = new Insets(0, 0, 0, 5);
-			gbc_lblScriptName.gridx = 1;
-			gbc_lblScriptName.gridy = 0;
-			statusPanel.add(lblScriptName, gbc_lblScriptName);
+			JPanel statusPanel = new JPanel();
+			topPanel.add(statusPanel);
+			statusPanel.setMaximumSize(new Dimension(32767, 30));
+			GridBagLayout gbl_statusPanel = new GridBagLayout();
+			gbl_statusPanel.columnWidths = new int[] { 0, 60, 150, 0, 0, 0, 0, 0, 75, 0 };
+			gbl_statusPanel.rowHeights = new int[] { 30, 0 };
+			gbl_statusPanel.columnWeights = new double[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+					Double.MIN_VALUE };
+			gbl_statusPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+			statusPanel.setLayout(gbl_statusPanel);
+			{
 
-			scriptNameField = new JTextField();
-			GridBagConstraints gbc_scriptNameField = new GridBagConstraints();
-			gbc_scriptNameField.fill = GridBagConstraints.BOTH;
-			gbc_scriptNameField.insets = new Insets(0, 0, 0, 5);
-			gbc_scriptNameField.gridx = 2;
-			gbc_scriptNameField.gridy = 0;
-			statusPanel.add(scriptNameField, gbc_scriptNameField);
-			scriptNameField.setColumns(20);
-			scriptNameField.addActionListener(e -> PathPlanner.main.setScriptName(scriptNameField.getText()));
+				JLabel lblScriptName = new JLabel("Script Name:");
+				lblScriptName.setFont(new Font("Tahoma", Font.BOLD, 18));
+				GridBagConstraints gbc_lblScriptName = new GridBagConstraints();
+				gbc_lblScriptName.anchor = GridBagConstraints.WEST;
+				gbc_lblScriptName.insets = new Insets(0, 0, 0, 5);
+				gbc_lblScriptName.gridx = 1;
+				gbc_lblScriptName.gridy = 0;
+				statusPanel.add(lblScriptName, gbc_lblScriptName);
 
-			fieldConfigDropdown = new JComboBox<String>();
-			GridBagConstraints gbc_fieldConfigDropdown = new GridBagConstraints();
-			gbc_fieldConfigDropdown.insets = new Insets(0, 0, 0, 5);
-			gbc_fieldConfigDropdown.gridx = 4;
-			gbc_fieldConfigDropdown.gridy = 0;
-			statusPanel.add(fieldConfigDropdown, gbc_fieldConfigDropdown);
-			fieldConfigDropdown.setModel(new DefaultComboBoxModel<String>(new String[] { "LL", "LR", "RL", "RR" }));
-			fieldConfigDropdown.setSelectedIndex(0);
-			fieldConfigDropdown.setMaximumRowCount(4);
-			fieldConfigDropdown.addActionListener(e -> {
+				m_scriptNameField = new JTextField();
+				GridBagConstraints gbc_scriptNameField = new GridBagConstraints();
+				gbc_scriptNameField.fill = GridBagConstraints.BOTH;
+				gbc_scriptNameField.insets = new Insets(0, 0, 0, 5);
+				gbc_scriptNameField.gridx = 2;
+				gbc_scriptNameField.gridy = 0;
+				statusPanel.add(m_scriptNameField, gbc_scriptNameField);
+				m_scriptNameField.setColumns(20);
+				m_scriptNameField.addActionListener(e -> PathPlanner.main.setScriptName(m_scriptNameField.getText()));
 
-				String msg = (String) ((JComboBox<?>) e.getSource()).getSelectedItem();
-				PathPlanner.main.gameData = msg.toLowerCase();
-				updateActionList(PathPlanner.main.getScript().getActions());
+				m_fieldConfigDropdown = new JComboBox<String>();
+				GridBagConstraints gbc_fieldConfigDropdown = new GridBagConstraints();
+				gbc_fieldConfigDropdown.insets = new Insets(0, 0, 0, 5);
+				gbc_fieldConfigDropdown.gridx = 4;
+				gbc_fieldConfigDropdown.gridy = 0;
+				statusPanel.add(m_fieldConfigDropdown, gbc_fieldConfigDropdown);
+				m_fieldConfigDropdown
+						.setModel(new DefaultComboBoxModel<String>(new String[] { "LL", "LR", "RL", "RR" }));
+				m_fieldConfigDropdown.setSelectedIndex(0);
+				m_fieldConfigDropdown.setMaximumRowCount(4);
+				m_fieldConfigDropdown.addActionListener(e -> {
 
-				m_copyLLBtn.setEnabled(true);
-				m_copyLRBtn.setEnabled(true);
-				m_copyRLBtn.setEnabled(true);
-				m_copyRRBtn.setEnabled(true);
+					String msg = (String) ((JComboBox<?>) e.getSource()).getSelectedItem();
+					PathPlanner.main.gameData = msg.toLowerCase();
+					updateActionList(PathPlanner.main.getScript().getActions());
 
-				switch (PathPlanner.main.gameData.toLowerCase()) {
-				case "ll":
-					m_copyLLBtn.setEnabled(false);
-					break;
-				case "lr":
-					m_copyLRBtn.setEnabled(false);
-					break;
-				case "rl":
-					m_copyRLBtn.setEnabled(false);
-					break;
-				case "rr":
-					m_copyRRBtn.setEnabled(false);
-					break;
-				}
+					m_copyLLBtn.setEnabled(true);
+					m_copyLRBtn.setEnabled(true);
+					m_copyRLBtn.setEnabled(true);
+					m_copyRRBtn.setEnabled(true);
 
-			});
+					switch (PathPlanner.main.gameData.toLowerCase()) {
+					case "ll":
+						m_copyLLBtn.setEnabled(false);
+						break;
+					case "lr":
+						m_copyLRBtn.setEnabled(false);
+						break;
+					case "rl":
+						m_copyRLBtn.setEnabled(false);
+						break;
+					case "rr":
+						m_copyRRBtn.setEnabled(false);
+						break;
+					}
 
-			JButton toggleColor = new JButton("Red");
-			toggleColor.addActionListener(e -> {
-				PathPlanner.main.fieldIsBlue = !PathPlanner.main.fieldIsBlue;
-				if (PathPlanner.main.fieldIsBlue)
-					toggleColor.setText("Red");
-				else
-					toggleColor.setText("Blue");
-			});
-			GridBagConstraints gbc_toggleColor = new GridBagConstraints();
-			gbc_toggleColor.insets = new Insets(0, 0, 0, 5);
-			gbc_toggleColor.gridx = 6;
-			gbc_toggleColor.gridy = 0;
-			statusPanel.add(toggleColor, gbc_toggleColor);
+				});
 
-			statusLbl = new JLabel("Not Connected");
-			statusLbl.setHorizontalAlignment(SwingConstants.CENTER);
-			statusLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-			statusLbl.setOpaque(true);
-			statusLbl.setBackground(Color.RED);
-			GridBagConstraints gbc_statusLbl = new GridBagConstraints();
-			gbc_statusLbl.fill = GridBagConstraints.BOTH;
-			gbc_statusLbl.gridx = 8;
-			gbc_statusLbl.gridy = 0;
-			statusPanel.add(statusLbl, gbc_statusLbl);
+				JButton toggleColor = new JButton("Red");
+				toggleColor.addActionListener(e -> {
+					PathPlanner.main.fieldIsBlue = !PathPlanner.main.fieldIsBlue;
+					if (PathPlanner.main.fieldIsBlue)
+						toggleColor.setText("Red");
+					else
+						toggleColor.setText("Blue");
+				});
+				GridBagConstraints gbc_toggleColor = new GridBagConstraints();
+				gbc_toggleColor.insets = new Insets(0, 0, 0, 5);
+				gbc_toggleColor.gridx = 6;
+				gbc_toggleColor.gridy = 0;
+				statusPanel.add(toggleColor, gbc_toggleColor);
+
+				m_statusLbl = new JLabel("Not Connected");
+				m_statusLbl.setHorizontalAlignment(SwingConstants.CENTER);
+				m_statusLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+				m_statusLbl.setOpaque(true);
+				m_statusLbl.setBackground(Color.RED);
+				GridBagConstraints gbc_statusLbl = new GridBagConstraints();
+				gbc_statusLbl.fill = GridBagConstraints.BOTH;
+				gbc_statusLbl.gridx = 8;
+				gbc_statusLbl.gridy = 0;
+				statusPanel.add(m_statusLbl, gbc_statusLbl);
+			}
+
+			JPanel notesPanel = new JPanel();
+			topPanel.add(notesPanel);
+			GridBagLayout gbl_notesPanel = new GridBagLayout();
+			gbl_notesPanel.columnWidths = new int[] { 101, 37, 6, 100, 0 };
+			gbl_notesPanel.rowHeights = new int[] { 22, 0 };
+			gbl_notesPanel.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
+			gbl_notesPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+			notesPanel.setLayout(gbl_notesPanel);
+			{
+				JLabel lblNotes = new JLabel("Notes:");
+				GridBagConstraints gbc_lblNotes = new GridBagConstraints();
+				gbc_lblNotes.anchor = GridBagConstraints.WEST;
+				gbc_lblNotes.insets = new Insets(0, 0, 0, 5);
+				gbc_lblNotes.gridx = 1;
+				gbc_lblNotes.gridy = 0;
+				notesPanel.add(lblNotes, gbc_lblNotes);
+
+				m_notesTxtPane = new JTextPane();
+				GridBagConstraints gbc_notesTxtPane = new GridBagConstraints();
+				gbc_notesTxtPane.fill = GridBagConstraints.BOTH;
+				gbc_notesTxtPane.insets = new Insets(0, 0, 0, 5);
+				gbc_notesTxtPane.gridx = 2;
+				gbc_notesTxtPane.gridy = 0;
+				notesPanel.add(m_notesTxtPane, gbc_notesTxtPane);
+			}
+
+			JPanel configPanel = new JPanel();
+			topPanel.add(configPanel);
+			configPanel.setMaximumSize(new Dimension(32767, 100));
+			GridBagLayout gbl_configPanel = new GridBagLayout();
+			gbl_configPanel.columnWidths = new int[] { 0, 10, 0, 0, 0 };
+			gbl_configPanel.rowHeights = new int[] { 0, 0 };
+			gbl_configPanel.rowWeights = new double[] { 1.0, 1.0 };
+			gbl_configPanel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0 };
+			configPanel.setLayout(gbl_configPanel);
+			{
+				JLabel copyLbl = new JLabel("Copy To:");
+				GridBagConstraints gbc_copyLbl = new GridBagConstraints();
+				gbc_copyLbl.insets = new Insets(0, 0, 5, 5);
+				gbc_copyLbl.gridx = 0;
+				gbc_copyLbl.gridy = 0;
+				configPanel.add(copyLbl, gbc_copyLbl);
+
+				m_copyLLBtn = new JButton("LL");
+				GridBagConstraints gbc_copyLLBtn = new GridBagConstraints();
+				gbc_copyLLBtn.insets = new Insets(0, 0, 5, 5);
+				gbc_copyLLBtn.gridx = 1;
+				gbc_copyLLBtn.gridy = 0;
+				configPanel.add(m_copyLLBtn, gbc_copyLLBtn);
+
+				m_copyLRBtn = new JButton("LR");
+				GridBagConstraints gbc_copyLRBtn = new GridBagConstraints();
+				gbc_copyLRBtn.insets = new Insets(0, 0, 5, 5);
+				gbc_copyLRBtn.gridx = 2;
+				gbc_copyLRBtn.gridy = 0;
+				configPanel.add(m_copyLRBtn, gbc_copyLRBtn);
+
+				m_copyRLBtn = new JButton("RL");
+				GridBagConstraints gbc_copyRLBtn = new GridBagConstraints();
+				gbc_copyRLBtn.insets = new Insets(0, 0, 5, 5);
+				gbc_copyRLBtn.gridx = 3;
+				gbc_copyRLBtn.gridy = 0;
+				configPanel.add(m_copyRLBtn, gbc_copyRLBtn);
+
+				m_copyRRBtn = new JButton("RR");
+				GridBagConstraints gbc_copyRRBtn = new GridBagConstraints();
+				gbc_copyRRBtn.insets = new Insets(0, 0, 5, 0);
+				gbc_copyRRBtn.gridx = 4;
+				gbc_copyRRBtn.gridy = 0;
+				configPanel.add(m_copyRRBtn, gbc_copyRRBtn);
+
+				m_copyLLBtn.setEnabled(false);
+
+				m_copyLLBtn.addActionListener(copyScript);
+				m_copyLRBtn.addActionListener(copyScript);
+				m_copyRLBtn.addActionListener(copyScript);
+				m_copyRRBtn.addActionListener(copyScript);
+			}
 		}
 
-		JPanel configPanel = new JPanel();
-		topPanel.add(configPanel);
-		configPanel.setMaximumSize(new Dimension(32767, 100));
-		GridBagLayout gbl_configPanel = new GridBagLayout();
-		gbl_configPanel.columnWidths = new int[] { 0, 10, 0, 0, 0 };
-		gbl_configPanel.rowHeights = new int[] { 0, 0 };
-		gbl_configPanel.rowWeights = new double[] { 1.0, 1.0 };
-		gbl_configPanel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0 };
-		configPanel.setLayout(gbl_configPanel);
-
-		JLabel copyLbl = new JLabel("Copy To:");
-		GridBagConstraints gbc_copyLbl = new GridBagConstraints();
-		gbc_copyLbl.insets = new Insets(0, 0, 5, 5);
-		gbc_copyLbl.gridx = 0;
-		gbc_copyLbl.gridy = 0;
-		configPanel.add(copyLbl, gbc_copyLbl);
-
-		m_copyLLBtn = new JButton("LL");
-		GridBagConstraints gbc_copyLLBtn = new GridBagConstraints();
-		gbc_copyLLBtn.insets = new Insets(0, 0, 5, 5);
-		gbc_copyLLBtn.gridx = 1;
-		gbc_copyLLBtn.gridy = 0;
-		configPanel.add(m_copyLLBtn, gbc_copyLLBtn);
-
-		m_copyLRBtn = new JButton("LR");
-		GridBagConstraints gbc_copyLRBtn = new GridBagConstraints();
-		gbc_copyLRBtn.insets = new Insets(0, 0, 5, 5);
-		gbc_copyLRBtn.gridx = 2;
-		gbc_copyLRBtn.gridy = 0;
-		configPanel.add(m_copyLRBtn, gbc_copyLRBtn);
-
-		m_copyRLBtn = new JButton("RL");
-		GridBagConstraints gbc_copyRLBtn = new GridBagConstraints();
-		gbc_copyRLBtn.insets = new Insets(0, 0, 5, 5);
-		gbc_copyRLBtn.gridx = 3;
-		gbc_copyRLBtn.gridy = 0;
-		configPanel.add(m_copyRLBtn, gbc_copyRLBtn);
-
-		m_copyRRBtn = new JButton("RR");
-		GridBagConstraints gbc_copyRRBtn = new GridBagConstraints();
-		gbc_copyRRBtn.insets = new Insets(0, 0, 5, 0);
-		gbc_copyRRBtn.gridx = 4;
-		gbc_copyRRBtn.gridy = 0;
-		configPanel.add(m_copyRRBtn, gbc_copyRRBtn);
-
-		m_copyLLBtn.setEnabled(false);
-
-		m_copyLLBtn.addActionListener(copyScript);
-		m_copyLRBtn.addActionListener(copyScript);
-		m_copyRLBtn.addActionListener(copyScript);
-		m_copyRRBtn.addActionListener(copyScript);
-
 		JPanel actionPanel = new JPanel();
-		add(actionPanel);
 		actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
 		{
 			JLabel actionsLbl = new JLabel("Script Actions");
@@ -287,9 +289,10 @@ public class ControlPanel extends JPanel {
 			JScrollPane actionScroller = new JScrollPane();
 			actionScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			{
-				actionListPanel = new JPanel();
-				actionListPanel.setLayout(new BoxLayout(actionListPanel, BoxLayout.Y_AXIS));
-				actionScroller.setViewportView(actionListPanel);
+				m_actionListPanel = new JPanel();
+				m_actionListPanel.setLayout(new BoxLayout(m_actionListPanel, BoxLayout.Y_AXIS));
+				m_actionListPanel.add(Box.createVerticalGlue());
+				actionScroller.setViewportView(m_actionListPanel);
 			}
 
 			JPanel actionBtnPanel = new JPanel();
@@ -324,15 +327,40 @@ public class ControlPanel extends JPanel {
 
 		}
 
-		actionListPanel.add(Box.createVerticalGlue());
+		JPanel btnPanel = new JPanel();
+		{
+			JButton loadBtn = new JButton("Open (O)");
+			loadBtn.addActionListener(e -> load());
+
+			btnPanel.add(loadBtn);
+
+			JButton saveBtn = new JButton("Save (S)");
+			saveBtn.addActionListener(e -> save());
+			btnPanel.add(saveBtn);
+
+			JButton uploadBtn = new JButton("Upload (Space)");
+			uploadBtn.addActionListener(e -> upload());
+			btnPanel.add(uploadBtn);
+
+			JButton flipBtn = new JButton("Flip (F)");
+			flipBtn.addActionListener(e -> flip());
+			btnPanel.add(flipBtn);
+
+			JButton clearBtn = new JButton("Clear");
+			btnPanel.add(clearBtn);
+			clearBtn.addActionListener(e -> PathPlanner.main.getScript().clear());
+		}
+
+		add(topPanel, BorderLayout.NORTH);
+		add(actionPanel, BorderLayout.CENTER);
 		add(btnPanel, BorderLayout.SOUTH);
 	}
 
 	public void updateActionList(ObservableList<Action<?>> actions) {
-		actionListPanel.removeAll();
+		m_actionListPanel.removeAll();
 		for (Action<?> a : actions)
-			actionListPanel.add(new ActionEditorPanel(a));
-		actionListPanel.revalidate();
+			m_actionListPanel.add(new ActionEditorPanel(a));
+		m_actionListPanel.revalidate();
 	}
 
 	private void setupKeyListeners() {
@@ -361,20 +389,18 @@ public class ControlPanel extends JPanel {
 				else if (e.getKeyCode() == KeyEvent.VK_F)
 					flip();
 
-				else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					PathPlanner.main.setScriptName(scriptNameField.getText());
-					PathPlanner.main.upload(new File(scriptNameField.getText() + ".xml"));
-				}
+				else if (e.getKeyCode() == KeyEvent.VK_SPACE)
+					upload();
 			}
 
 			else if (e.getKeyCode() == KeyEvent.VK_F1)
-				fieldConfigDropdown.setSelectedIndex(0);
+				m_fieldConfigDropdown.setSelectedIndex(0);
 			else if (e.getKeyCode() == KeyEvent.VK_F2)
-				fieldConfigDropdown.setSelectedIndex(1);
+				m_fieldConfigDropdown.setSelectedIndex(1);
 			else if (e.getKeyCode() == KeyEvent.VK_F3)
-				fieldConfigDropdown.setSelectedIndex(2);
+				m_fieldConfigDropdown.setSelectedIndex(2);
 			else if (e.getKeyCode() == KeyEvent.VK_F4)
-				fieldConfigDropdown.setSelectedIndex(3);
+				m_fieldConfigDropdown.setSelectedIndex(3);
 			else
 				return false;
 
@@ -398,16 +424,17 @@ public class ControlPanel extends JPanel {
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			PathPlanner.main.load(file);
-			scriptNameField.setText(PathPlanner.main.getScriptName());
+			m_scriptNameField.setText(PathPlanner.main.getScriptName());
+			m_notesTxtPane.setText(PathPlanner.main.getScriptNotes());
 			setupListeners();
-
 		}
 	}
 
 	private void save() {
-		PathPlanner.main.setScriptName(scriptNameField.getText());
+		PathPlanner.main.setScriptName(m_scriptNameField.getText());
+		PathPlanner.main.setScriptNotes(m_notesTxtPane.getText());
 
-		JFileChooser fc = FileIO.getFileChooser(scriptNameField.getText() + ".xml");
+		JFileChooser fc = FileIO.getFileChooser(m_scriptNameField.getText() + ".xml");
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			if (!file.getName().endsWith(".xml"))
@@ -415,6 +442,12 @@ public class ControlPanel extends JPanel {
 
 			PathPlanner.main.save(file);
 		}
+	}
+
+	private void upload() {
+		PathPlanner.main.setScriptName(m_scriptNameField.getText());
+		PathPlanner.main.setScriptNotes(m_notesTxtPane.getText());
+		PathPlanner.main.upload(new File(m_scriptNameField.getText() + ".xml"));
 	}
 
 	private void flip() {
@@ -429,7 +462,7 @@ public class ControlPanel extends JPanel {
 	ActionListener copyScript = e -> {
 		String data = ((JButton) e.getSource()).getText();
 		PathPlanner.main.setScript(new Script(PathPlanner.main.getScript()), data);
-		fieldConfigDropdown.setSelectedItem(data);
+		m_fieldConfigDropdown.setSelectedItem(data);
 		setupListeners();
 	};
 

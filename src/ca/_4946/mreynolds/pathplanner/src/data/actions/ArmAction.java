@@ -25,4 +25,9 @@ public class ArmAction extends Action<ArmAction.Options> {
 		return "";
 	}
 
+	@Override
+	public Options getDefaultOption() {
+		return Options.kArmDown;
+	}
+
 }

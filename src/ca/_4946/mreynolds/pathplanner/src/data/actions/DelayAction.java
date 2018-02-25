@@ -27,5 +27,10 @@ public class DelayAction extends Action<DelayAction.Options> {
 	public String getDataLabel() {
 		return "";
 	}
+	
+	@Override
+	public Options getDefaultOption() {
+		return Options.kWait;
+	}
 
 }
