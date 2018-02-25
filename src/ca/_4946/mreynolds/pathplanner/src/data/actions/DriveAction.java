@@ -12,7 +12,7 @@ import ca._4946.mreynolds.util.ObservableList;
 public class DriveAction extends Action<DriveAction.Options> {
 
 	public static enum Options implements Action.ActionOptions {
-		kDrive
+		FollowPath
 	}
 
 	public ArrayList<Segment> left;
@@ -21,7 +21,7 @@ public class DriveAction extends Action<DriveAction.Options> {
 	public ArrayList<CubicBezier> curves = new ArrayList<>();
 
 	public DriveAction() {
-		this(Options.kDrive);
+		this(Options.FollowPath);
 	}
 
 	public DriveAction(Options options) {
@@ -37,6 +37,14 @@ public class DriveAction extends Action<DriveAction.Options> {
 
 	public int getNumPts() {
 		return waypoints.size();
+	}
+
+	public boolean isEmpty() {
+		return waypoints.isEmpty();
+	}
+
+	public double getDuration() {
+		return left.size() * PathParser.SAMPLE_PERIOD;
 	}
 
 	public void removePt(int index) {
@@ -171,14 +179,10 @@ public class DriveAction extends Action<DriveAction.Options> {
 	public String getDataLabel() {
 		return "Reverse";
 	}
-	
+
 	@Override
 	public Options getDefaultOption() {
-		return Options.kDrive;
-	}
-
-	public boolean isEmpty() {
-		return waypoints.isEmpty();
+		return Options.FollowPath;
 	}
 
 	@Override
@@ -192,10 +196,10 @@ public class DriveAction extends Action<DriveAction.Options> {
 
 		for (Waypoint pt : waypoints)
 			a.waypoints.add(pt.clone());
-		
+
 		for (CubicBezier c : curves)
 			a.curves.add(c.clone());
-		
+
 		a.generatePath();
 		return a;
 	}

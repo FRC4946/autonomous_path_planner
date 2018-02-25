@@ -25,7 +25,6 @@ import javax.swing.border.LineBorder;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action.Behaviour;
-import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
@@ -111,7 +110,7 @@ public class ActionEditorPanel extends JPanel {
 			if (action instanceof IntakeAction || action instanceof OutputAction) {
 				heightSpinner.setModel(new SpinnerNumberModel(action.data, 0, 1, 0.1));
 				data.setVisible(true);
-			} else if (action instanceof ElevatorAction && action.options == ElevatorAction.Options.kMoveToCustom) {
+			} else if (action instanceof ElevatorAction && action.options == ElevatorAction.Options.ToCustom) {
 				heightSpinner.setModel(new SpinnerNumberModel(action.data, 6.0, 90.0, 6.0));
 				data.setVisible(true);
 			} else
@@ -237,7 +236,7 @@ public class ActionEditorPanel extends JPanel {
 		btnDelete.addActionListener(e -> PathPlanner.main.getScript().removeAction(action));
 		add(btnDelete, gbc_btnDelete);
 
-		setBkgColor();
+		setBackground(Action.getBkgColor(action));
 	}
 
 	ActionListener actionSelectListener = new ActionListener() {
@@ -251,23 +250,9 @@ public class ActionEditorPanel extends JPanel {
 			if (action instanceof ElevatorAction) {
 				detailsLbl.setText(action.getDataLabel());
 				((JSpinner) data).setModel(new SpinnerNumberModel(action.data, 6.0, 90.0, 6.0));
-				data.setVisible(action.options == ElevatorAction.Options.kMoveToCustom);
+				data.setVisible(action.options == ElevatorAction.Options.ToCustom);
 			}
 		}
 	};
 
-	private void setBkgColor() {
-		if (action instanceof DriveAction)
-			this.setBackground(new Color(255, 200, 220));
-		else if (action instanceof ArmAction)
-			this.setBackground(new Color(204, 210, 255));
-		else if (action instanceof DelayAction)
-			this.setBackground(new Color(204, 239, 255));
-		else if (action instanceof ElevatorAction)
-			this.setBackground(new Color(204, 255, 227));
-		else if (action instanceof IntakeAction)
-			this.setBackground(new Color(240, 255, 204));
-		else if (action instanceof OutputAction)
-			this.setBackground(new Color(255, 225, 204));
-	}
 }

@@ -5,11 +5,11 @@ public class DelayAction extends Action<DelayAction.Options> {
 	// TODO: Add security so that you cannot have a 0s delay!
 
 	public static enum Options implements Action.ActionOptions {
-		kWait
+		Wait
 	}
 
 	public DelayAction() {
-		this(Options.kWait);
+		this(Options.Wait);
 	}
 
 	public DelayAction(Options options) {
@@ -30,7 +30,7 @@ public class DelayAction extends Action<DelayAction.Options> {
 	
 	@Override
 	public Options getDefaultOption() {
-		return Options.kWait;
+		return Options.Wait;
 	}
 
 }

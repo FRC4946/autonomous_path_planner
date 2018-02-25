@@ -3,11 +3,11 @@ package ca._4946.mreynolds.pathplanner.src.data.actions;
 public class ArmAction extends Action<ArmAction.Options> {
 
 	public static enum Options implements Action.ActionOptions {
-		kArmDown, kArmUp
+		ArmDown, ArmUp
 	}
 
 	public ArmAction() {
-		this(Options.kArmDown);
+		this(Options.ArmDown);
 	}
 
 	public ArmAction(Options options) {
@@ -27,7 +27,7 @@ public class ArmAction extends Action<ArmAction.Options> {
 
 	@Override
 	public Options getDefaultOption() {
-		return Options.kArmDown;
+		return Options.ArmDown;
 	}
 
 }

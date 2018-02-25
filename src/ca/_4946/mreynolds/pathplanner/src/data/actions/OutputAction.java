@@ -3,11 +3,11 @@ package ca._4946.mreynolds.pathplanner.src.data.actions;
 public class OutputAction extends Action<OutputAction.Options> {
 
 	public static enum Options implements Action.ActionOptions {
-		kOutput
+		Output
 	}
 
 	public OutputAction() {
-		this(Options.kOutput);
+		this(Options.Output);
 	}
 
 	public OutputAction(Options options) {
@@ -28,7 +28,7 @@ public class OutputAction extends Action<OutputAction.Options> {
 
 	@Override
 	public Options getDefaultOption() {
-		return Options.kOutput;
+		return Options.Output;
 	}
 
 }

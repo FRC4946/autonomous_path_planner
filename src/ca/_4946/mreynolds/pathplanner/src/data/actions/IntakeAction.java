@@ -3,11 +3,11 @@ package ca._4946.mreynolds.pathplanner.src.data.actions;
 public class IntakeAction extends Action<IntakeAction.Options> {
 
 	public static enum Options implements Action.ActionOptions {
-		kIntakeOn, kIntakeUntil
+		IntakeOn, IntakeUntil
 	}
 
 	public IntakeAction() {
-		this(Options.kIntakeOn);
+		this(Options.IntakeOn);
 	}
 
 	public IntakeAction(Options options) {
@@ -28,6 +28,6 @@ public class IntakeAction extends Action<IntakeAction.Options> {
 
 	@Override
 	public Options getDefaultOption() {
-		return Options.kIntakeOn;
+		return Options.IntakeOn;
 	}
 }

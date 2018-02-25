@@ -196,7 +196,7 @@ public class FileIO {
 		Element llElement = doc.createElement("ll");
 		root.appendChild(saveScript(doc, llElement, scBundle.LL, false));
 
-		for (DriveAction a : scBundle.LL.getDriveActions()) {
+		for (DriveAction a : scBundle.LL.getPathActions()) {
 			PathParser.smoothAccelJerk(a.left);
 			PathParser.smoothAccelJerk(a.right);
 			System.out.println(printPath(a));

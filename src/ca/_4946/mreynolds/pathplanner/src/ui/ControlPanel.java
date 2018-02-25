@@ -451,7 +451,7 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void flip() {
-		for (DriveAction a : PathPlanner.main.getScript().getDriveActions())
+		for (DriveAction a : PathPlanner.main.getScript().getPathActions())
 			for (int i = 0; i < a.getNumPts(); i++) {
 				Waypoint p = a.getPt(i);
 				p.setX(-p.getX());

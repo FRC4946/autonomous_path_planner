@@ -61,6 +61,11 @@ public class Point extends ObservableElement {
 		this.y = y;
 		fireElementChanged();
 	}
+	
+	public void setSize(int size) {
+		this.size = size;
+		fireElementChanged();
+	}
 
 	public double getX() {
 		return x;

@@ -18,7 +18,7 @@ public class Script {
 
 	public Script(Script s) {
 		script = new ObservableList<>();
-		for(Action<?> a : s.script)
+		for (Action<?> a : s.script)
 			script.add(a.clone());
 	}
 
@@ -26,7 +26,7 @@ public class Script {
 		DriveAction prevDrive = null;
 
 		// Iterate through each drive action
-		for (DriveAction a : getDriveActions()) {
+		for (DriveAction a : getPathActions()) {
 
 			if (prevDrive != null && prevDrive.getNumPts() > 1) {
 				Waypoint pt = new Waypoint(prevDrive.getPt(prevDrive.getNumPts() - 1));
@@ -75,17 +75,17 @@ public class Script {
 	}
 
 	public void addAction(Action<?> a) {
-		if (a instanceof DriveAction && !getDriveActions().isEmpty())
-			a.data = (int) getDriveActions().get(getDriveActions().size() - 1).data ^ 1;
+		if (a instanceof DriveAction && !getPathActions().isEmpty())
+			a.data = (int) getPathActions().get(getPathActions().size() - 1).data ^ 1;
 
 		if (a instanceof ArmAction && !getActionOfType(ArmAction.class).isEmpty()) {
 			ArmAction.Options opt = ArmAction.Options.valueOf(ArmAction.Options.class,
 					getActionOfType(ArmAction.class).get(getActionOfType(ArmAction.class).size() - 1).options
 							.toString());
-			if (opt == ArmAction.Options.kArmDown)
-				((ArmAction) a).options = ArmAction.Options.kArmUp;
+			if (opt == ArmAction.Options.ArmDown)
+				((ArmAction) a).options = ArmAction.Options.ArmUp;
 			else
-				((ArmAction) a).options = ArmAction.Options.kArmDown;
+				((ArmAction) a).options = ArmAction.Options.ArmDown;
 		}
 		script.add(a);
 	}
@@ -101,15 +101,13 @@ public class Script {
 		return list;
 	}
 
-	public ArrayList<DriveAction> getDriveActions() {
-		// ArrayList<DriveAction> list = new ArrayList<>();
-		// for (Action<?> a : script)
-		// if (a instanceof DriveAction)
-		// list.add((DriveAction) a);
-		//
-		// return list;
+	public ArrayList<DriveAction> getPathActions() {
+		ArrayList<DriveAction> list = new ArrayList<>();
+		for (DriveAction a : getActionOfType(DriveAction.class))
+			if (a.options == DriveAction.Options.FollowPath)
+				list.add((DriveAction) a);
+		return list;
 
-		return getActionOfType(DriveAction.class);
 	}
 
 	public Action<?> getAction(int index) {
