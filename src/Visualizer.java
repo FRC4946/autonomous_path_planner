@@ -50,11 +50,11 @@ public class Visualizer extends JFrame {
     public void paint(Graphics g){
         // Circular Surface
     	
-    	for(int i = 0; i < path.left.size(); i++) {
+    	for(int i = 0; i < path.getLeftPath().size(); i++) {
     		double scale = 50;
     		
-    		Point l = new Point((int)(path.left.get(i).x*scale), (int)(path.left.get(i).y*scale) + height/2);
-    		Point r = new Point((int)(path.right.get(i).x*scale), (int)(path.right.get(i).y*scale) + height/2);
+    		Point l = new Point((int)(path.getLeftPath().get(i).x*scale), (int)(path.getLeftPath().get(i).y*scale) + height/2);
+    		Point r = new Point((int)(path.getRightPath().get(i).x*scale), (int)(path.getRightPath().get(i).y*scale) + height/2);
 
     		Point c = new Point((l.x + r.x)/2, (l.y + r.y)/2);
 

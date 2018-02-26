@@ -15,10 +15,10 @@ public class DriveAction extends Action<DriveAction.Options> {
 		FollowPath
 	}
 
-	public ArrayList<Segment> left;
-	public ArrayList<Segment> right;
+	private ArrayList<Segment> left;
+	private ArrayList<Segment> right;
 	private ObservableList<Waypoint> waypoints = new ObservableList<>();
-	public ArrayList<CubicBezier> curves = new ArrayList<>();
+	private ArrayList<CubicBezier> curves = new ArrayList<>();
 
 	public DriveAction() {
 		this(Options.FollowPath);
@@ -26,9 +26,9 @@ public class DriveAction extends Action<DriveAction.Options> {
 
 	public DriveAction(Options options) {
 		super(options);
-		left = new ArrayList<>();
-		right = new ArrayList<>();
-		curves = new ArrayList<>();
+		setLeftPath(new ArrayList<>());
+		setRightPath(new ArrayList<>());
+		setCurves(new ArrayList<>());
 	}
 
 	public Waypoint getPt(int index) {
@@ -44,7 +44,7 @@ public class DriveAction extends Action<DriveAction.Options> {
 	}
 
 	public double getDuration() {
-		return left.size() * PathParser.SAMPLE_PERIOD;
+		return getLeftPath().size() * PathParser.SAMPLE_PERIOD;
 	}
 
 	public void removePt(int index) {
@@ -53,18 +53,18 @@ public class DriveAction extends Action<DriveAction.Options> {
 
 		// If this isn't the first or last pt...
 		if (0 < index && index < waypoints.size() - 1) {
-			curves.remove(index);
-			curves.get(index - 1).updateEnd(waypoints.get(index + 1));
+			getCurves().remove(index);
+			getCurves().get(index - 1).updateEnd(waypoints.get(index + 1));
 		}
 
 		// If this is the first...
 		else if (0 == index) {
-			if (curves.size() > 0)
-				curves.remove(index);
+			if (getCurves().size() > 0)
+				getCurves().remove(index);
 		}
 		// If this is the last...
 		else if (index == waypoints.size() - 1)
-			curves.remove(index - 1);
+			getCurves().remove(index - 1);
 
 		waypoints.remove(index);
 	}
@@ -81,13 +81,13 @@ public class DriveAction extends Action<DriveAction.Options> {
 
 		// If this isn't the first or last pt...
 		if (0 <= index && index < waypoints.size() - 1) {
-			curves.add(index, new CubicBezier(pt, waypoints.get(index + 1)));
-			curves.get(index - 1).updateEnd(pt);
+			getCurves().add(index, new CubicBezier(pt, waypoints.get(index + 1)));
+			getCurves().get(index - 1).updateEnd(pt);
 		}
 
 		// If this is the last...
 		if (index == waypoints.size() - 1 && waypoints.size() > 1)
-			curves.add(index - 1, new CubicBezier(waypoints.get(index - 1), pt));
+			getCurves().add(index - 1, new CubicBezier(waypoints.get(index - 1), pt));
 	}
 
 	public void setPt(int index, Waypoint pt) {
@@ -97,10 +97,10 @@ public class DriveAction extends Action<DriveAction.Options> {
 		waypoints.set(index, pt);
 
 		if (index > 0)
-			curves.get(index - 1).updateEnd(pt);
+			getCurves().get(index - 1).updateEnd(pt);
 
 		if (index < waypoints.size() - 1)
-			curves.get(index).updateStart(pt);
+			getCurves().get(index).updateStart(pt);
 	}
 
 	public void connectToPrev(Script sc) {
@@ -125,28 +125,28 @@ public class DriveAction extends Action<DriveAction.Options> {
 
 	private void updateCurves() {
 
-		curves.get(0).updateStart(waypoints.get(0));
+		getCurves().get(0).updateStart(waypoints.get(0));
 
 		for (int i = 1; i < waypoints.size() - 1; i++) {
-			curves.get(i - 1).updateEnd(waypoints.get(i));
-			curves.get(i).updateStart(waypoints.get(i));
+			getCurves().get(i - 1).updateEnd(waypoints.get(i));
+			getCurves().get(i).updateStart(waypoints.get(i));
 		}
 
-		curves.get(waypoints.size() - 2).updateEnd(waypoints.get(waypoints.size() - 1));
+		getCurves().get(waypoints.size() - 2).updateEnd(waypoints.get(waypoints.size() - 1));
 
 	}
 
 	public void addSegment(boolean isL, Segment seg) {
 		if (isL)
-			left.add(seg);
+			getLeftPath().add(seg);
 		else
-			right.add(seg);
+			getRightPath().add(seg);
 	}
 
 	public void generatePath() {
 		if (waypoints.size() < 2) {
-			left = new ArrayList<>();
-			right = new ArrayList<>();
+			setLeftPath(new ArrayList<>());
+			setRightPath(new ArrayList<>());
 			return;
 		}
 
@@ -159,15 +159,15 @@ public class DriveAction extends Action<DriveAction.Options> {
 
 		updateCurves();
 		DriveAction newPath = PathParser.generatePath(PathParser.smoothPath(this));
-		left = newPath.left;
-		right = newPath.right;
+		setLeftPath(newPath.getLeftPath());
+		setRightPath(newPath.getRightPath());
 	}
 
 	public void clear() {
-		left.clear();
-		right.clear();
+		getLeftPath().clear();
+		getRightPath().clear();
 		waypoints.clear();
-		curves.clear();
+		getCurves().clear();
 	}
 
 	@Override
@@ -197,10 +197,55 @@ public class DriveAction extends Action<DriveAction.Options> {
 		for (Waypoint pt : waypoints)
 			a.waypoints.add(pt.clone());
 
-		for (CubicBezier c : curves)
-			a.curves.add(c.clone());
+		for (CubicBezier c : getCurves())
+			a.getCurves().add(c.clone());
 
 		a.generatePath();
 		return a;
+	}
+
+	/**
+	 * @return the left path
+	 */
+	public ArrayList<Segment> getLeftPath() {
+		return left;
+	}
+
+	/**
+	 * @param path
+	 *            the left path to set
+	 */
+	public void setLeftPath(ArrayList<Segment> path) {
+		this.left = path;
+	}
+
+	/**
+	 * @return the right path
+	 */
+	public ArrayList<Segment> getRightPath() {
+		return right;
+	}
+
+	/**
+	 * @param path
+	 *            the right path to set
+	 */
+	public void setRightPath(ArrayList<Segment> path) {
+		this.right = path;
+	}
+
+	/**
+	 * @return the bezier curves
+	 */
+	public ArrayList<CubicBezier> getCurves() {
+		return curves;
+	}
+
+	/**
+	 * @param curves
+	 *            the curves to set
+	 */
+	public void setCurves(ArrayList<CubicBezier> curves) {
+		this.curves = curves;
 	}
 }

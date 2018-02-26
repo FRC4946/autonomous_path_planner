@@ -38,9 +38,11 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
+import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 import ca._4946.mreynolds.util.ObservableList;
+import javax.swing.border.EmptyBorder;
 
 public class ControlPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -303,20 +305,33 @@ public class ControlPanel extends JPanel {
 				JButton addArmBtn = new JButton("Add Arm (3)");
 				JButton addIntakeBtn = new JButton("Add Intake (4)");
 				JButton addOutputBtn = new JButton("Add Output (5)");
-				JButton addDelayBtn = new JButton("Add Delay (6)");
+				JButton addTurnBtn = new JButton("Add Turn (6)");
+				JButton addDelayBtn = new JButton("Add Delay (7)");
 
 				addPathBtn.addActionListener(addNewAction);
 				addElevatorBtn.addActionListener(addNewAction);
 				addArmBtn.addActionListener(addNewAction);
 				addIntakeBtn.addActionListener(addNewAction);
 				addOutputBtn.addActionListener(addNewAction);
+				addTurnBtn.addActionListener(addNewAction);
 				addDelayBtn.addActionListener(addNewAction);
+				
+				EmptyBorder border = new EmptyBorder(2, 4, 2, 4);
+				addPathBtn.setBorder(border);
+				addElevatorBtn.setBorder(border);
+				addArmBtn.setBorder(border);
+				addIntakeBtn.setBorder(border);
+				addOutputBtn.setBorder(border);
+				addTurnBtn.setBorder(border);
+				addDelayBtn.setBorder(border);
+
 
 				actionBtnPanel.add(addPathBtn);
 				actionBtnPanel.add(addElevatorBtn);
 				actionBtnPanel.add(addArmBtn);
 				actionBtnPanel.add(addIntakeBtn);
 				actionBtnPanel.add(addOutputBtn);
+				actionBtnPanel.add(addTurnBtn);
 				actionBtnPanel.add(addDelayBtn);
 
 			}
@@ -380,6 +395,8 @@ public class ControlPanel extends JPanel {
 				else if (e.getKeyCode() == KeyEvent.VK_5)
 					PathPlanner.main.getScript().addAction(new OutputAction());
 				else if (e.getKeyCode() == KeyEvent.VK_6)
+					PathPlanner.main.getScript().addAction(new TurnAction());
+				else if (e.getKeyCode() == KeyEvent.VK_7)
 					PathPlanner.main.getScript().addAction(new DelayAction());
 
 				else if (e.getKeyCode() == KeyEvent.VK_O)
@@ -451,7 +468,7 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void flip() {
-		for (DriveAction a : PathPlanner.main.getScript().getPathActions())
+		for (DriveAction a : PathPlanner.main.getScript().getDriveActions())
 			for (int i = 0; i < a.getNumPts(); i++) {
 				Waypoint p = a.getPt(i);
 				p.setX(-p.getX());
@@ -481,6 +498,8 @@ public class ControlPanel extends JPanel {
 			PathPlanner.main.getScript().addAction(new OutputAction());
 		else if (lbl.contains("Elevator"))
 			PathPlanner.main.getScript().addAction(new ElevatorAction());
+		else if (lbl.contains("Turn"))
+			PathPlanner.main.getScript().addAction(new TurnAction());
 		else if (lbl.contains("Delay"))
 			PathPlanner.main.getScript().addAction(new DelayAction());
 	};

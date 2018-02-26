@@ -196,9 +196,9 @@ public class FileIO {
 		Element llElement = doc.createElement("ll");
 		root.appendChild(saveScript(doc, llElement, scBundle.LL, false));
 
-		for (DriveAction a : scBundle.LL.getPathActions()) {
-			PathParser.smoothAccelJerk(a.left);
-			PathParser.smoothAccelJerk(a.right);
+		for (DriveAction a : scBundle.LL.getDriveActions()) {
+			PathParser.smoothAccelJerk(a.getLeftPath());
+			PathParser.smoothAccelJerk(a.getRightPath());
 			System.out.println(printPath(a));
 		}
 
@@ -271,8 +271,8 @@ public class FileIO {
 					}
 				} else {
 
-					PathParser.smoothAccelJerk(((DriveAction) a).left);
-					PathParser.smoothAccelJerk(((DriveAction) a).right);
+					PathParser.smoothAccelJerk(((DriveAction) a).getLeftPath());
+					PathParser.smoothAccelJerk(((DriveAction) a).getRightPath());
 					curElement.setTextContent(printPath((DriveAction) a));
 				}
 
@@ -467,8 +467,8 @@ public class FileIO {
 	private static String printPath(DriveAction a) {
 
 		String path = "";
-		path += a.left.size() + "\t";
-		for (Segment s : a.left) {
+		path += a.getLeftPath().size() + "\t";
+		for (Segment s : a.getLeftPath()) {
 			path += f.format(s.pos) + "\t";
 			path += f.format(s.vel) + "\t";
 			path += f.format(s.accel) + "\t";
@@ -478,8 +478,8 @@ public class FileIO {
 			path += f.format(s.x) + "\t";
 			path += f.format(s.y) + "\n";
 		}
-		path += a.right.size() + "\t";
-		for (Segment s : a.right) {
+		path += a.getRightPath().size() + "\t";
+		for (Segment s : a.getRightPath()) {
 			path += f.format(s.pos) + "\t";
 			path += f.format(s.vel) + "\t";
 			path += f.format(s.accel) + "\t";

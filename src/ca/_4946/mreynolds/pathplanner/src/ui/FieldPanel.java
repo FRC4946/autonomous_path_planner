@@ -22,6 +22,7 @@ import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action.Behaviour;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
+import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.MagnetPoint;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
@@ -145,16 +146,16 @@ public class FieldPanel extends JPanel {
 	}
 
 	public void drawPaths(Graphics g) {
-		for (DriveAction path : PathPlanner.main.getScript().getPathActions()) {
+		for (DriveAction path : PathPlanner.main.getScript().getDriveActions()) {
 
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setStroke(new BasicStroke(1));
 
 			path.generatePath();
 
-			for (int i = 0; i < path.left.size(); i++) {
-				Point l = pt2px(new Point(path.left.get(i).x, path.left.get(i).y));
-				Point r = pt2px(new Point(path.right.get(i).x, path.right.get(i).y));
+			for (int i = 0; i < path.getLeftPath().size(); i++) {
+				Point l = pt2px(new Point(path.getLeftPath().get(i).x, path.getLeftPath().get(i).y));
+				Point r = pt2px(new Point(path.getRightPath().get(i).x, path.getRightPath().get(i).y));
 
 				g.setColor(Color.GREEN);
 				g.drawLine((int) l.getX(), (int) l.getY(), (int) r.getX(), (int) r.getY());
@@ -165,7 +166,7 @@ public class FieldPanel extends JPanel {
 			}
 
 			g.setColor(Color.CYAN);
-			for (Segment s : PathParser.fillPath(path.curves))
+			for (Segment s : PathParser.fillPath(path.getCurves()))
 				pt2px(new Point(s.x, s.y)).draw(g);
 		}
 	}
@@ -186,10 +187,10 @@ public class FieldPanel extends JPanel {
 					continue;
 
 				int position = (int) (a.delay / PathParser.SAMPLE_PERIOD);
-				position = Math.min(((DriveAction) d).left.size() - 1, position);
+				position = Math.min(((DriveAction) d).getLeftPath().size() - 1, position);
 
-				Point l = ((DriveAction) d).left.get(position).toPt();
-				Point r = ((DriveAction) d).right.get(position).toPt();
+				Point l = ((DriveAction) d).getLeftPath().get(position).toPt();
+				Point r = ((DriveAction) d).getRightPath().get(position).toPt();
 				Point p = pt2px(new Point((l.getX() + r.getX()) / 2, (l.getY() + r.getY()) / 2));
 
 				g.setColor(Action.getBkgColor(a));
@@ -202,17 +203,33 @@ public class FieldPanel extends JPanel {
 	}
 
 	private void drawBots(Graphics g) {
-		List<DriveAction> list = PathPlanner.main.getScript().getPathActions();
 
-		if (!list.isEmpty()) {
-			DriveAction path = list.get(0);
-			if (!path.isEmpty())
-				drawBot(path.getPt(0), path.data == 1, (Graphics2D) g);
-		}
+		List<DriveAction> driveActions = PathPlanner.main.getScript().getActionOfType(DriveAction.class);
+		if (driveActions.isEmpty())
+			return;
 
-		for (DriveAction path : list) {
-			if (!path.isEmpty())
-				drawBot(path.getPt(path.getNumPts() - 1), path.data == 1, (Graphics2D) g);
+		// Draw the 1st bot
+		DriveAction origin = driveActions.get(0);
+		if (origin != null && !origin.isEmpty())
+			drawBot(origin.getPt(0), origin.data == 1, (Graphics2D) g);
+
+		List<Action<?>> list = PathPlanner.main.getScript().getActionOfType(DriveAction.class, TurnAction.class);
+
+		Waypoint prevPt = null;
+		for (Action<?> a : list) {
+
+			// Draw the endpoint of each path
+			if (a instanceof DriveAction && ((DriveAction) a).getNumPts() > 1) {
+
+				prevPt = new Waypoint(((DriveAction) a).getPt(((DriveAction) a).getNumPts() - 1));
+				drawBot(prevPt, a.data == 1, (Graphics2D) g);
+			}
+
+			// Draw any of the rotated robots
+			if (a instanceof TurnAction && a.data != 0 && prevPt != null) {
+				prevPt.setHeading(prevPt.getHeading() - a.data);
+				drawBot(prevPt, false, (Graphics2D) g);
+			}
 		}
 	}
 
@@ -274,7 +291,7 @@ public class FieldPanel extends JPanel {
 		drawBots(g);
 		drawMagnets(g);
 
-		for (DriveAction path : PathPlanner.main.getScript().getPathActions())
+		for (DriveAction path : PathPlanner.main.getScript().getDriveActions())
 			for (int i = 0; i < path.getNumPts(); i++)
 				drawWaypoint(path.getPt(i), g);
 	}
@@ -334,12 +351,12 @@ public class FieldPanel extends JPanel {
 			curAction = null;
 			Script script = PathPlanner.main.getScript();
 
-			if (script.getPathActions().isEmpty())
+			if (script.getDriveActions().isEmpty())
 				script.addAction(new DriveAction());
 
 			Point click = pt2in(new Point(e.getPoint()));
 
-			List<DriveAction> actions = script.getPathActions();
+			List<DriveAction> actions = script.getDriveActions();
 			for (int j = 0; j < actions.size(); j++) {
 				curAction = actions.get(j);
 
@@ -381,8 +398,8 @@ public class FieldPanel extends JPanel {
 					}
 
 					// Check each curve
-					for (int i = 0; i < curAction.curves.size(); i++) {
-						CubicBezier curve = curAction.curves.get(i);
+					for (int i = 0; i < curAction.getCurves().size(); i++) {
+						CubicBezier curve = curAction.getCurves().get(i);
 
 						if (curve.ptIsOnCurve(click, 0.15)) {
 							curAction.addPt(i + 1, new Waypoint(click));

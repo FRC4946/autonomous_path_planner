@@ -30,6 +30,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
+import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 
 public class ActionEditorPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -54,7 +55,7 @@ public class ActionEditorPanel extends JPanel {
 		action = a;
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 55, 120, 45, 45, 0, 30, 55, 30, 0, 0, 30, 45, 45, 45, 45, 0 };
+		gridBagLayout.columnWidths = new int[] { 55, 90, 45, 50, 0, 30, 55, 30, 0, 0, 30, 45, 45, 45, 45, 0 };
 		gridBagLayout.rowHeights = new int[] { 21, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0,
 				0.0, 0.0, Double.MIN_VALUE };
@@ -113,11 +114,14 @@ public class ActionEditorPanel extends JPanel {
 			} else if (action instanceof ElevatorAction && action.options == ElevatorAction.Options.ToCustom) {
 				heightSpinner.setModel(new SpinnerNumberModel(action.data, 6.0, 90.0, 6.0));
 				data.setVisible(true);
+			} else if (action instanceof TurnAction) {
+				heightSpinner.setModel(new SpinnerNumberModel((int) action.data, -180, 180, 5));
+				data.setVisible(true);
 			} else
 				data.setVisible(false);
 
 			heightSpinner.addChangeListener(e -> action.data = Double.parseDouble(heightSpinner.getValue().toString()));
-
+			((JSpinner.DefaultEditor) heightSpinner.getEditor()).getTextField().setColumns(2);
 		}
 
 		JLabel delayLbl = new JLabel("Delay");

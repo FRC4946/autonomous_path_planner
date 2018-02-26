@@ -60,7 +60,7 @@ public class PathParser {
 	public static ArrayList<Segment> smoothPath(DriveAction action) {
 		boolean isReverse = action.data == 1;
 
-		ArrayList<Segment> fill = fillPath(action.curves);
+		ArrayList<Segment> fill = fillPath(action.getCurves());
 		ArrayList<Segment> smooth = new ArrayList<>();
 
 		double dist = fill.get(fill.size() - 1).pos;
