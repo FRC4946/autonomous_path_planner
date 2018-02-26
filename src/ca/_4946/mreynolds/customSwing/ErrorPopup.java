@@ -51,6 +51,13 @@ public class ErrorPopup extends JDialog {
 	private JTextArea m_messageTextArea;
 	private JTextArea m_detailsTextArea;
 
+	public static void createPopup(String message, String details) {
+
+		// If there was an error, display a popup
+		ErrorPopup popup = new ErrorPopup(message, details);
+		popup.setVisible(true);
+	}
+
 	public static void createPopup(String desc, Exception e) {
 
 		StringWriter sw = new StringWriter();

@@ -70,7 +70,7 @@ public class PathPlanner {
 	}
 
 	public Script[] getScripts() {
-		return new Script[] { scBundle.LL, scBundle.LR, scBundle.RL, scBundle.RR };
+		return scBundle.asArray();
 	}
 
 	public Script getScript(String code) {
@@ -134,6 +134,12 @@ public class PathPlanner {
 	}
 
 	public void save(File file) {
+
+		if (!scBundle.validateParallelActions()) {
+			ErrorPopup.createPopup("Invalid Script", "Script contains illegal parallel actions!");
+			return;
+		}
+
 		try {
 			FileIO.saveScript(scBundle, file);
 		} catch (Exception e) {
@@ -142,6 +148,12 @@ public class PathPlanner {
 	}
 
 	public void upload(File file) {
+
+		if (!scBundle.validateParallelActions()) {
+			ErrorPopup.createPopup("Invalid Script", "Script contains illegal parallel actions!");
+			return;
+		}
+
 		try {
 			FileIO.uploadScript(scBundle, file);
 		} catch (Exception e) {
