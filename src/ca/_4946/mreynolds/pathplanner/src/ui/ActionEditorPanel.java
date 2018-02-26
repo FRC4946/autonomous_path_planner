@@ -31,6 +31,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
+import ca._4946.mreynolds.pathplanner.src.math.MathUtil;
 
 public class ActionEditorPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -109,13 +110,14 @@ public class ActionEditorPanel extends JPanel {
 			gbc_data.fill = 1;
 
 			if (action instanceof IntakeAction || action instanceof OutputAction) {
-				heightSpinner.setModel(new SpinnerNumberModel(action.data, 0, 1, 0.1));
+				heightSpinner.setModel(new SpinnerNumberModel(MathUtil.limit(0, action.data, 1), 0, 1, 0.1));
 				data.setVisible(true);
 			} else if (action instanceof ElevatorAction && action.options == ElevatorAction.Options.ToCustom) {
-				heightSpinner.setModel(new SpinnerNumberModel(action.data, 6.0, 90.0, 6.0));
+				heightSpinner.setModel(new SpinnerNumberModel(MathUtil.limit(6, action.data, 90), 6.0, 90.0, 6.0));
 				data.setVisible(true);
 			} else if (action instanceof TurnAction) {
-				heightSpinner.setModel(new SpinnerNumberModel((int) action.data, -180, 180, 5));
+				heightSpinner
+						.setModel(new SpinnerNumberModel((int) MathUtil.limit(-180, action.data, 180), -180, 180, 5));
 				data.setVisible(true);
 			} else
 				data.setVisible(false);
@@ -252,9 +254,14 @@ public class ActionEditorPanel extends JPanel {
 					((JComboBox<?>) e.getSource()).getSelectedItem().toString());
 
 			if (action instanceof ElevatorAction) {
-				detailsLbl.setText(action.getDataLabel());
-				((JSpinner) data).setModel(new SpinnerNumberModel(action.data, 6.0, 90.0, 6.0));
-				data.setVisible(action.options == ElevatorAction.Options.ToCustom);
+				if (action.options == ElevatorAction.Options.ToCustom) {
+					detailsLbl.setText(action.getDataLabel());
+					((JSpinner) data)
+							.setModel(new SpinnerNumberModel(MathUtil.limit(6, action.data, 90), 6.0, 90.0, 6.0));
+					data.setVisible(true);
+				} else {
+					data.setVisible(false);
+				}
 			}
 		}
 	};

@@ -2,17 +2,12 @@ package ca._4946.mreynolds.pathplanner.src;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.SAXException;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
@@ -133,7 +128,7 @@ public class PathPlanner {
 	public void load(File file) {
 		try {
 			scBundle = FileIO.loadScript(file);
-		} catch (ParserConfigurationException | SAXException | IOException e) {
+		} catch (Exception e) {
 			ErrorPopup.createPopup("Error loading file", e);
 		}
 	}
@@ -141,7 +136,7 @@ public class PathPlanner {
 	public void save(File file) {
 		try {
 			FileIO.saveScript(scBundle, file);
-		} catch (ParserConfigurationException | TransformerException e) {
+		} catch (Exception e) {
 			ErrorPopup.createPopup("Error saving file", e);
 		}
 	}
@@ -149,7 +144,7 @@ public class PathPlanner {
 	public void upload(File file) {
 		try {
 			FileIO.uploadScript(scBundle, file);
-		} catch (ParserConfigurationException | TransformerException | IOException e) {
+		} catch (Exception e) {
 			ErrorPopup.createPopup("Error uploading file", e);
 		}
 	}

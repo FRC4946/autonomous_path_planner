@@ -3,23 +3,27 @@ package ca._4946.mreynolds.pathplanner.src.math;
 public class MathUtil {
 
 	public static final double EPSILON = 1e-8;
-	
+
 	public static boolean isBetween(double left, double right, double a) {
-		if(left <= right)
+		if (left <= right)
 			return left <= a && a <= right;
-		
+
 		return right <= a && a <= left;
 	}
-	
+
+	public static double limit(double min, double a, double max) {
+		return Math.min(max, Math.min(min, a));
+	}
+
 	public static double toRange(double in, double min, double max) {
-		while(in < min)
-			in += (max-min);
-		
-		while(in > max)
-			in -= (max-min);
+		while (in < min)
+			in += (max - min);
+
+		while (in > max)
+			in -= (max - min);
 		return in;
 	}
-	
+
 	public static double quadratic(double a, double b, double c) {
 		return ((-b) + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
 	}

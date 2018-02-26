@@ -1,5 +1,6 @@
 package ca._4946.mreynolds.pathplanner.src.data;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
@@ -24,29 +25,6 @@ public class Script {
 	}
 
 	public void connectPaths() {
-		// DriveAction prevDrive = null;
-		//
-		// // Iterate through each drive action
-		// for (DriveAction a : getDriveActions()) {
-		//
-		// if (prevDrive != null && prevDrive.getNumPts() > 1) {
-		// Waypoint pt = new Waypoint(prevDrive.getPt(prevDrive.getNumPts() - 1));
-		//
-		// // If the isReversed flag differs on the prev and cur action, flip the
-		// heading
-		// if ((a.data == 1) ^ (prevDrive.data == 1))
-		// pt.setHeading(pt.getHeading() - 180);
-		//
-		// pt.setAutomaticHeading(false);
-		// if (a.isEmpty())
-		// a.addPt(pt);
-		// else
-		// a.setPt(0, pt);
-		// a.generatePath();
-		// }
-		// prevDrive = a;
-		// }
-
 		double offset = 0;
 		DriveAction prevPath = null;
 		for (int i = 0; i < script.size(); i++) {
@@ -67,8 +45,11 @@ public class Script {
 
 				pt.setHeading(pt.getHeading() - offset);
 				pt.setAutomaticHeading(false);
+
+				if (!((DriveAction) script.get(i)).isEmpty())
+					pt.setR(((DriveAction) script.get(i)).getPt(0).getR());
 				((DriveAction) script.get(i)).setPt(0, pt);
-				
+
 				prevPath.generatePath();
 				((DriveAction) script.get(i)).generatePath();
 
@@ -108,10 +89,26 @@ public class Script {
 	}
 
 	public void addAction(Action<?> a) {
-		if (a instanceof DriveAction && !getDriveActions().isEmpty())
-			a.data = (int) getDriveActions().get(getDriveActions().size() - 1).data ^ 1;
+		if (a instanceof DriveAction) {
+			List<Action<?>> actions = getActionOfType(DriveAction.class, TurnAction.class);
+			if (!actions.isEmpty()) {
 
-		if (a instanceof ArmAction && !getActionOfType(ArmAction.class).isEmpty()) {
+				boolean didTurn = false;
+				for (int i = actions.size() - 1; i >= 0; i--) {
+					if (actions.get(i) instanceof TurnAction && actions.get(i).data != 0)
+						didTurn = true;
+					if (actions.get(i) instanceof DriveAction)
+						break;
+				}
+
+				if (!didTurn)
+					a.data = (int) getDriveActions().get(getDriveActions().size() - 1).data ^ 1;
+				else
+					a.data = getDriveActions().get(getDriveActions().size() - 1).data;
+			}
+		}
+
+		else if (a instanceof ArmAction && !getActionOfType(ArmAction.class).isEmpty()) {
 			ArmAction.Options opt = ArmAction.Options.valueOf(ArmAction.Options.class,
 					getActionOfType(ArmAction.class).get(getActionOfType(ArmAction.class).size() - 1).options
 							.toString());

@@ -477,9 +477,23 @@ public class ControlPanel extends JPanel {
 	}
 
 	ActionListener copyScript = e -> {
-		String data = ((JButton) e.getSource()).getText();
+		String data = ((JButton) e.getSource()).getText().toLowerCase();
 		PathPlanner.main.setScript(new Script(PathPlanner.main.getScript()), data);
-		m_fieldConfigDropdown.setSelectedItem(data);
+
+		switch (data) {
+		case "ll":
+			m_fieldConfigDropdown.setSelectedItem("LL (F1)");
+			break;
+		case "lr":
+			m_fieldConfigDropdown.setSelectedItem("LR (F2)");
+			break;
+		case "rl":
+			m_fieldConfigDropdown.setSelectedItem("RL (F3)");
+			break;
+		case "rr":
+			m_fieldConfigDropdown.setSelectedItem("RR (F4)");
+			break;
+		}
 		setupListeners();
 	};
 

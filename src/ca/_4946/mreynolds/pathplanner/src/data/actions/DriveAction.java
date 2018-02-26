@@ -94,7 +94,10 @@ public class DriveAction extends Action<DriveAction.Options> {
 		if (index < 0 || index >= waypoints.size())
 			return;
 
-		waypoints.set(index, pt);
+		if (isEmpty())
+			waypoints.add(pt);
+		else
+			waypoints.set(index, pt);
 
 		if (index > 0)
 			getCurves().get(index - 1).updateEnd(pt);
