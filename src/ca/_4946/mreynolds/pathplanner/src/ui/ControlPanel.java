@@ -315,7 +315,7 @@ public class ControlPanel extends JPanel {
 				addOutputBtn.addActionListener(addNewAction);
 				addTurnBtn.addActionListener(addNewAction);
 				addDelayBtn.addActionListener(addNewAction);
-				
+
 				EmptyBorder border = new EmptyBorder(2, 4, 2, 4);
 				addPathBtn.setBorder(border);
 				addElevatorBtn.setBorder(border);
@@ -324,7 +324,6 @@ public class ControlPanel extends JPanel {
 				addOutputBtn.setBorder(border);
 				addTurnBtn.setBorder(border);
 				addDelayBtn.setBorder(border);
-
 
 				actionBtnPanel.add(addPathBtn);
 				actionBtnPanel.add(addElevatorBtn);
@@ -471,6 +470,7 @@ public class ControlPanel extends JPanel {
 		for (DriveAction a : PathPlanner.main.getScript().getDriveActions())
 			for (int i = 0; i < a.getNumPts(); i++) {
 				Waypoint p = a.getPt(i);
+				p.setHeading(180 - p.getHeading());
 				p.setX(-p.getX());
 				a.setPt(i, p);
 			}
