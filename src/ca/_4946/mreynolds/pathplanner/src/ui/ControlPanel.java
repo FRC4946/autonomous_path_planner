@@ -143,14 +143,14 @@ public class ControlPanel extends JPanel {
 				gbc_fieldConfigDropdown.gridx = 4;
 				gbc_fieldConfigDropdown.gridy = 0;
 				statusPanel.add(m_fieldConfigDropdown, gbc_fieldConfigDropdown);
-				m_fieldConfigDropdown
-						.setModel(new DefaultComboBoxModel<String>(new String[] { "LL", "LR", "RL", "RR" }));
+				m_fieldConfigDropdown.setModel(
+						new DefaultComboBoxModel<String>(new String[] { "LL (F1)", "LR (F2)", "RL (F3)", "RR (F4)" }));
 				m_fieldConfigDropdown.setSelectedIndex(0);
 				m_fieldConfigDropdown.setMaximumRowCount(4);
 				m_fieldConfigDropdown.addActionListener(e -> {
 
 					String msg = (String) ((JComboBox<?>) e.getSource()).getSelectedItem();
-					PathPlanner.main.gameData = msg.toLowerCase();
+					PathPlanner.main.gameData = msg.toLowerCase().substring(0, 2);
 					updateActionList(PathPlanner.main.getScript().getActions());
 
 					m_copyLLBtn.setEnabled(true);
