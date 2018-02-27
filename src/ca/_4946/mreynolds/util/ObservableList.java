@@ -13,10 +13,6 @@ import ca._4946.mreynolds.util.ObservableElement.ElementListener;
 
 public class ObservableList<E> implements List<E> {
 
-	public interface ListListener extends EventListener {
-		public void listChanged();
-	}
-
 	private ArrayList<E> list;
 	private boolean isQuiet = false;
 
@@ -158,7 +154,7 @@ public class ObservableList<E> implements List<E> {
 
 		if (e instanceof ObservableElement)
 			((ObservableElement) e).addElementListener(elementChangeListener);
-
+		
 		fireListChanged();
 	}
 
@@ -200,10 +196,14 @@ public class ObservableList<E> implements List<E> {
 
 	ElementListener elementChangeListener = new ElementListener() {
 		@Override
-		public void pointChanged() {
+		public void changed() {
 			fireListChanged();
 		}
 	};
+
+	public interface ListListener extends EventListener {
+		public void listChanged();
+	}
 
 	private EventListenerList listenerList = new EventListenerList();
 

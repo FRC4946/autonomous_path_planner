@@ -16,15 +16,16 @@ public class Script {
 
 	public Script() {
 		script = new ObservableList<>();
+		script.addListListener(() -> connectPaths());
 	}
 
 	public Script(Script s) {
-		script = new ObservableList<>();
+		this();
 		for (Action<?> a : s.script)
 			script.add(a.clone());
 	}
 
-	public void connectPaths() {
+	private void connectPaths() {
 		double offset = 0;
 		DriveAction prevPath = null;
 		for (int i = 0; i < script.size(); i++) {
@@ -35,12 +36,12 @@ public class Script {
 			}
 
 			if (script.get(i) instanceof TurnAction)
-				offset += script.get(i).data;
+				offset += script.get(i).getData();
 			else if (script.get(i) instanceof DriveAction) {
 				Waypoint pt = new Waypoint(prevPath.getPt(prevPath.getNumPts() - 1));
 
 				// If the isReversed flag differs on the prev and cur action, flip the heading
-				if ((script.get(i).data == 1) ^ (prevPath.data == 1))
+				if ((script.get(i).getData() == 1) ^ (prevPath.getData() == 1))
 					pt.setHeading(pt.getHeading() - 180);
 
 				pt.setHeading(pt.getHeading() - offset);
@@ -48,6 +49,8 @@ public class Script {
 
 				if (!((DriveAction) script.get(i)).isEmpty())
 					pt.setR(((DriveAction) script.get(i)).getPt(0).getR());
+				
+				script.quiet();
 				((DriveAction) script.get(i)).setPt(0, pt);
 
 				prevPath.generatePath();
@@ -95,27 +98,28 @@ public class Script {
 
 				boolean didTurn = false;
 				for (int i = actions.size() - 1; i >= 0; i--) {
-					if (actions.get(i) instanceof TurnAction && actions.get(i).data != 0)
+					if (actions.get(i) instanceof TurnAction && actions.get(i).getData() != 0)
 						didTurn = true;
 					if (actions.get(i) instanceof DriveAction)
 						break;
 				}
 
+				int prevDir = (int) getDriveActions().get(getDriveActions().size() - 1).getData();
 				if (!didTurn)
-					a.data = (int) getDriveActions().get(getDriveActions().size() - 1).data ^ 1;
+					a.setData(prevDir ^ 1);
 				else
-					a.data = getDriveActions().get(getDriveActions().size() - 1).data;
+					a.setData(prevDir);
+				connectPaths();
 			}
 		}
 
 		else if (a instanceof ArmAction && !getActionOfType(ArmAction.class).isEmpty()) {
-			ArmAction.Options opt = ArmAction.Options.valueOf(ArmAction.Options.class,
-					getActionOfType(ArmAction.class).get(getActionOfType(ArmAction.class).size() - 1).options
-							.toString());
+			ArmAction.Options opt = ArmAction.Options.valueOf(ArmAction.Options.class, getActionOfType(ArmAction.class)
+					.get(getActionOfType(ArmAction.class).size() - 1).getOptions().toString());
 			if (opt == ArmAction.Options.ArmDown)
-				((ArmAction) a).options = ArmAction.Options.ArmUp;
+				((ArmAction) a).setOptions(ArmAction.Options.ArmUp);
 			else
-				((ArmAction) a).options = ArmAction.Options.ArmDown;
+				((ArmAction) a).setOptions(ArmAction.Options.ArmDown);
 		}
 		script.add(a);
 	}

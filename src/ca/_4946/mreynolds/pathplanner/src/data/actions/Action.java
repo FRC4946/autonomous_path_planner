@@ -3,8 +3,9 @@ package ca._4946.mreynolds.pathplanner.src.data.actions;
 import java.awt.Color;
 
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action.ActionOptions;
+import ca._4946.mreynolds.util.ObservableElement;
 
-public abstract class Action<T extends Enum<T> & ActionOptions> {
+public abstract class Action<T extends Enum<T> & ActionOptions> extends ObservableElement {
 
 	public interface ActionOptions {
 	}
@@ -17,11 +18,11 @@ public abstract class Action<T extends Enum<T> & ActionOptions> {
 		this.options = options;
 	}
 
-	public Enum<T> options;
-	public Behaviour behaviour = Behaviour.kSequential;
-	public double delay = 0.0;
-	public double timeout = -1.0;
-	public double data = 0.0;
+	protected Enum<T> options;
+	protected Behaviour behaviour = Behaviour.kSequential;
+	protected double delay = 0.0;
+	protected double timeout = -1.0;
+	protected double data = 0.0;
 
 	public abstract String getName();
 
@@ -29,6 +30,81 @@ public abstract class Action<T extends Enum<T> & ActionOptions> {
 
 	public abstract String getDataLabel();
 
+	/**
+	 * @return the options
+	 */
+	public Enum<T> getOptions() {
+		return options;
+	}
+
+	/**
+	 * @param options the options to set
+	 */
+	public void setOptions(Enum<T> options) {
+		this.options = options;
+		fireElementChanged();
+	}
+
+	/**
+	 * @return the behaviour
+	 */
+	public Behaviour getBehaviour() {
+		return behaviour;
+	}
+
+	/**
+	 * @param behaviour the behaviour to set
+	 */
+	public void setBehaviour(Behaviour behaviour) {
+		this.behaviour = behaviour;
+		fireElementChanged();
+	}
+
+	/**
+	 * @return the delay
+	 */
+	public double getDelay() {
+		return delay;
+	}
+
+	/**
+	 * @param delay the delay to set
+	 */
+	public void setDelay(double delay) {
+		this.delay = delay;
+		fireElementChanged();
+	}
+
+	/**
+	 * @return the timeout
+	 */
+	public double getTimeout() {
+		return timeout;
+	}
+
+	/**
+	 * @param timeout the timeout to set
+	 */
+	public void setTimeout(double timeout) {
+		this.timeout = timeout;
+		fireElementChanged();
+	}
+
+	/**
+	 * @return the data
+	 */
+	public double getData() {
+		return data;
+	}
+
+	/**
+	 * @param data the data to set
+	 */
+	public void setData(double data) {
+		this.data = data;
+		fireElementChanged();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public Action<T> clone() {
 		Action<T> a = null;

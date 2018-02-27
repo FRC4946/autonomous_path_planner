@@ -140,21 +140,21 @@ public class FileIO {
 					continue;
 
 				try {
-					curAction.options = Enum.valueOf(curAction.options.getDeclaringClass(),
-							curEl.getAttribute("options"));
+					curAction.setOptions(
+							Enum.valueOf(curAction.getOptions().getDeclaringClass(), curEl.getAttribute("options")));
 				} catch (IllegalArgumentException e) {
-					curAction.options = curAction.getDefaultOption();
+					curAction.setOptions(curAction.getDefaultOption());
 				}
 
 				try {
-					curAction.behaviour = Enum.valueOf(curAction.behaviour.getDeclaringClass(),
-							curEl.getAttribute("behaviour"));
+					curAction.setBehaviour(Enum.valueOf(curAction.getBehaviour().getDeclaringClass(),
+							curEl.getAttribute("behaviour")));
 				} catch (IllegalArgumentException e) {
-					curAction.behaviour = Behaviour.kSequential;
+					curAction.setBehaviour(Behaviour.kSequential);
 				}
-				curAction.delay = Double.parseDouble(curEl.getAttribute("delay") + "0");
-				curAction.data = Double.parseDouble(curEl.getAttribute("data") + "0");
-				curAction.timeout = Double.parseDouble(curEl.getAttribute("timeout") + "0");
+				curAction.setDelay(Double.parseDouble(curEl.getAttribute("delay") + "0"));
+				curAction.setData(Double.parseDouble(curEl.getAttribute("data") + "0"));
+				curAction.setTimeout(Double.parseDouble(curEl.getAttribute("timeout") + "0"));
 
 				if (curAction instanceof DriveAction) {
 					NodeList waypoints = curEl.getElementsByTagName("waypoint");
@@ -200,11 +200,11 @@ public class FileIO {
 		Element llElement = doc.createElement("ll");
 		root.appendChild(saveScript(doc, llElement, scBundle.LL, false));
 
-//		for (DriveAction a : scBundle.LL.getDriveActions()) {
-//			PathParser.smoothAccelJerk(a.getLeftPath());
-//			PathParser.smoothAccelJerk(a.getRightPath());
-//			System.out.println(printPath(a));
-//		}
+		// for (DriveAction a : scBundle.LL.getDriveActions()) {
+		// PathParser.smoothAccelJerk(a.getLeftPath());
+		// PathParser.smoothAccelJerk(a.getRightPath());
+		// System.out.println(printPath(a));
+		// }
 
 		Element lrElement = doc.createElement("lr");
 		root.appendChild(saveScript(doc, lrElement, scBundle.LR, false));
@@ -241,19 +241,19 @@ public class FileIO {
 			curElement.setAttribute("type", a.getName());
 
 			// Set the new element's "options" attribute (eg. kIntakeOn, etc)
-			curElement.setAttribute("options", a.options.toString());
+			curElement.setAttribute("options", a.getOptions().toString());
 
 			// Set the new element's "timeout" attribute
-			curElement.setAttribute("timeout", "" + a.timeout);
+			curElement.setAttribute("timeout", "" + a.getTimeout());
 
 			// Set the new element's "delay" attribute
-			curElement.setAttribute("delay", "" + a.delay);
+			curElement.setAttribute("delay", "" + a.getDelay());
 
 			// Set the new element's "data" attribute
-			curElement.setAttribute("data", "" + a.data);
+			curElement.setAttribute("data", "" + a.getData());
 
 			// Set the new element's "behaviour" attribute (Sequential or Parallel)
-			curElement.setAttribute("behaviour", a.behaviour.toString());
+			curElement.setAttribute("behaviour", a.getBehaviour().toString());
 
 			// Print out the path
 			if (a instanceof DriveAction) {

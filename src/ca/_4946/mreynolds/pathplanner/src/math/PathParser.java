@@ -58,7 +58,7 @@ public class PathParser {
 	 * @return The list of center points
 	 */
 	public static ArrayList<Segment> smoothPath(DriveAction action) {
-		boolean isReverse = action.data == 1;
+		boolean isReverse = action.getData() == 1;
 
 		ArrayList<Segment> fill = fillPath(action.getCurves());
 		ArrayList<Segment> smooth = new ArrayList<>();

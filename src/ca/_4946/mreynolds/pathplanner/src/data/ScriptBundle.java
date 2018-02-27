@@ -28,7 +28,7 @@ public class ScriptBundle {
 
 			List<Class<?>> parallelActions = new ArrayList<>();
 			for (Action<?> a : s.getActions()) {
-				if (a.behaviour == Action.Behaviour.kParallel) {
+				if (a.getBehaviour() == Action.Behaviour.kParallel) {
 					parallelActions.add(a.getClass());
 					continue;
 				}

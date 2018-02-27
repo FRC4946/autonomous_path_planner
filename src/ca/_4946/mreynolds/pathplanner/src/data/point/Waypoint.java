@@ -92,6 +92,7 @@ public class Waypoint extends Point {
 	 */
 	public void setMagnet(boolean isMagnet) {
 		this.isMagnet = isMagnet;
+		fireElementChanged();
 	}
 
 	/**
@@ -107,6 +108,7 @@ public class Waypoint extends Point {
 	 */
 	public void setAutomaticHeading(boolean automaticHeading) {
 		this.automaticHeading = automaticHeading;
+		fireElementChanged();
 	}
 
 	/**
@@ -122,6 +124,7 @@ public class Waypoint extends Point {
 	 */
 	public void setHeading(double heading) {
 		this.heading = heading;
+		fireElementChanged();
 	}
 
 	/**
@@ -137,6 +140,7 @@ public class Waypoint extends Point {
 	 */
 	public void setR(double r) {
 		this.r = r;
+		fireElementChanged();
 	}
 
 	@Override

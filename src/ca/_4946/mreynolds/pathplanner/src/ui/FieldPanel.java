@@ -181,12 +181,12 @@ public class FieldPanel extends JPanel {
 
 			for (int j = i - 1; j >= 0; j--) {
 				Action<?> a = PathPlanner.main.getScript().getAction(j);
-				if (a.behaviour == Behaviour.kSequential || a instanceof DriveAction)
+				if (a.getBehaviour() == Behaviour.kSequential || a instanceof DriveAction)
 					break;
-				if (a.delay == 0)
+				if (a.getDelay() == 0)
 					continue;
 
-				int position = (int) (a.delay / PathParser.SAMPLE_PERIOD);
+				int position = (int) (a.getDelay() / PathParser.SAMPLE_PERIOD);
 				position = Math.min(((DriveAction) d).getLeftPath().size() - 1, position);
 
 				Point l = ((DriveAction) d).getLeftPath().get(position).toPt();
@@ -211,7 +211,7 @@ public class FieldPanel extends JPanel {
 		// Draw the 1st bot
 		DriveAction origin = driveActions.get(0);
 		if (origin != null && !origin.isEmpty())
-			drawBot(origin.getPt(0), origin.data == 1, (Graphics2D) g);
+			drawBot(origin.getPt(0), origin.getData() == 1, (Graphics2D) g);
 
 		List<Action<?>> list = PathPlanner.main.getScript().getActionOfType(DriveAction.class, TurnAction.class);
 
@@ -222,12 +222,12 @@ public class FieldPanel extends JPanel {
 			if (a instanceof DriveAction && ((DriveAction) a).getNumPts() > 1) {
 
 				prevPt = new Waypoint(((DriveAction) a).getPt(((DriveAction) a).getNumPts() - 1));
-				drawBot(prevPt, a.data == 1, (Graphics2D) g);
+				drawBot(prevPt, a.getData() == 1, (Graphics2D) g);
 			}
 
 			// Draw any of the rotated robots
-			if (a instanceof TurnAction && a.data != 0 && prevPt != null) {
-				prevPt.setHeading(prevPt.getHeading() - a.data);
+			if (a instanceof TurnAction && a.getData() != 0 && prevPt != null) {
+				prevPt.setHeading(prevPt.getHeading() - a.getData());
 				drawBot(prevPt, false, (Graphics2D) g);
 			}
 		}
@@ -342,8 +342,6 @@ public class FieldPanel extends JPanel {
 				if (!foundMagnet)
 					curPt().setMagnet(false);
 			}
-
-			PathPlanner.main.getScript().connectPaths();
 		}
 
 		@Override
@@ -421,14 +419,11 @@ public class FieldPanel extends JPanel {
 						if (mag.contains(click))
 							mag.latch(curAction.getPt(ref));
 				}
-
-				PathPlanner.main.getScript().connectPaths();
 			}
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			PathPlanner.main.getScript().connectPaths();
 			ref = -1;
 			curAction = null;
 		}

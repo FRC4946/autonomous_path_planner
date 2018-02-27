@@ -147,33 +147,8 @@ public class ControlPanel extends JPanel {
 						new DefaultComboBoxModel<String>(new String[] { "LL (F1)", "LR (F2)", "RL (F3)", "RR (F4)" }));
 				m_fieldConfigDropdown.setSelectedIndex(0);
 				m_fieldConfigDropdown.setMaximumRowCount(4);
-				m_fieldConfigDropdown.addActionListener(e -> {
-
-					String msg = (String) ((JComboBox<?>) e.getSource()).getSelectedItem();
-					PathPlanner.main.gameData = msg.toLowerCase().substring(0, 2);
-					updateActionList(PathPlanner.main.getScript().getActions());
-
-					m_copyLLBtn.setEnabled(true);
-					m_copyLRBtn.setEnabled(true);
-					m_copyRLBtn.setEnabled(true);
-					m_copyRRBtn.setEnabled(true);
-
-					switch (PathPlanner.main.gameData.toLowerCase()) {
-					case "ll":
-						m_copyLLBtn.setEnabled(false);
-						break;
-					case "lr":
-						m_copyLRBtn.setEnabled(false);
-						break;
-					case "rl":
-						m_copyRLBtn.setEnabled(false);
-						break;
-					case "rr":
-						m_copyRRBtn.setEnabled(false);
-						break;
-					}
-
-				});
+				m_fieldConfigDropdown
+						.addActionListener(e -> setConfig((String) ((JComboBox<?>) e.getSource()).getSelectedItem()));
 
 				JButton toggleColor = new JButton("Red");
 				toggleColor.addActionListener(e -> {
@@ -370,6 +345,31 @@ public class ControlPanel extends JPanel {
 		add(btnPanel, BorderLayout.SOUTH);
 	}
 
+	private void setConfig(String msg) {
+		PathPlanner.main.gameData = msg.toLowerCase().substring(0, 2);
+		updateActionList(PathPlanner.main.getScript().getActions());
+
+		m_copyLLBtn.setEnabled(true);
+		m_copyLRBtn.setEnabled(true);
+		m_copyRLBtn.setEnabled(true);
+		m_copyRRBtn.setEnabled(true);
+
+		switch (PathPlanner.main.gameData.toLowerCase()) {
+		case "ll":
+			m_copyLLBtn.setEnabled(false);
+			break;
+		case "lr":
+			m_copyLRBtn.setEnabled(false);
+			break;
+		case "rl":
+			m_copyRLBtn.setEnabled(false);
+			break;
+		case "rr":
+			m_copyRRBtn.setEnabled(false);
+			break;
+		}
+	}
+
 	public void updateActionList(ObservableList<Action<?>> actions) {
 		m_actionListPanel.removeAll();
 		for (Action<?> a : actions)
@@ -384,7 +384,7 @@ public class ControlPanel extends JPanel {
 			if (e.isControlDown() && e.getID() == KeyEvent.KEY_PRESSED) {
 				if (e.getKeyCode() == KeyEvent.VK_1) {
 					PathPlanner.main.getScript().addAction(new DriveAction());
-					PathPlanner.main.getScript().connectPaths();
+					// PathPlanner.main.getScript().connectPaths();
 				} else if (e.getKeyCode() == KeyEvent.VK_2)
 					PathPlanner.main.getScript().addAction(new ElevatorAction());
 				else if (e.getKeyCode() == KeyEvent.VK_3)
@@ -428,7 +428,8 @@ public class ControlPanel extends JPanel {
 	private void setupListeners() {
 
 		for (Script curScript : PathPlanner.main.getScripts()) {
-			curScript.getActions().removeAllListListeners();
+			curScript.getActions()
+					.removeListListener(() -> updateActionList(PathPlanner.main.getScript().getActions()));
 			curScript.getActions().addListListener(() -> updateActionList(PathPlanner.main.getScript().getActions()));
 		}
 
@@ -482,16 +483,16 @@ public class ControlPanel extends JPanel {
 
 		switch (data) {
 		case "ll":
-			m_fieldConfigDropdown.setSelectedItem("LL (F1)");
+			m_fieldConfigDropdown.setSelectedIndex(0);
 			break;
 		case "lr":
-			m_fieldConfigDropdown.setSelectedItem("LR (F2)");
+			m_fieldConfigDropdown.setSelectedIndex(1);
 			break;
 		case "rl":
-			m_fieldConfigDropdown.setSelectedItem("RL (F3)");
+			m_fieldConfigDropdown.setSelectedIndex(2);
 			break;
 		case "rr":
-			m_fieldConfigDropdown.setSelectedItem("RR (F4)");
+			m_fieldConfigDropdown.setSelectedIndex(3);
 			break;
 		}
 		setupListeners();
@@ -502,18 +503,18 @@ public class ControlPanel extends JPanel {
 
 		if (lbl.contains("Drive")) {
 			PathPlanner.main.getScript().addAction(new DriveAction());
-			PathPlanner.main.getScript().connectPaths();
-		} else if (lbl.contains("Arm")) {
-
+			// PathPlanner.main.getScript().connectPaths();
+		} else if (lbl.contains("Turn")) {
+			PathPlanner.main.getScript().addAction(new TurnAction());
+			// PathPlanner.main.getScript().connectPaths();
+		} else if (lbl.contains("Arm"))
 			PathPlanner.main.getScript().addAction(new ArmAction());
-		} else if (lbl.contains("Intake"))
+		else if (lbl.contains("Intake"))
 			PathPlanner.main.getScript().addAction(new IntakeAction());
 		else if (lbl.contains("Output"))
 			PathPlanner.main.getScript().addAction(new OutputAction());
 		else if (lbl.contains("Elevator"))
 			PathPlanner.main.getScript().addAction(new ElevatorAction());
-		else if (lbl.contains("Turn"))
-			PathPlanner.main.getScript().addAction(new TurnAction());
 		else if (lbl.contains("Delay"))
 			PathPlanner.main.getScript().addAction(new DelayAction());
 	};

@@ -37,23 +37,19 @@ public class ActionEditorPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("rawtypes")
-	private Action action;
+	private Action m_action;
 
-	private JLabel detailsLbl;
-	private JComponent data = null;
-
-	private ButtonGroup behaviourBtns = new ButtonGroup();
+	private JLabel m_dataLbl;
+	private JComponent m_data = null;
 
 	/**
 	 * Create the panel.
 	 */
-	@SuppressWarnings("unchecked")
 	public ActionEditorPanel(Action<?> a) {
 		setBorder(new LineBorder(Color.LIGHT_GRAY));
-		// setPreferredSize(new Dimension(1000, 25));
 		setMaximumSize(new Dimension(1000, 28));
 
-		action = a;
+		m_action = a;
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 55, 90, 45, 50, 0, 30, 55, 30, 0, 0, 30, 45, 45, 45, 45, 0 };
@@ -63,7 +59,7 @@ public class ActionEditorPanel extends JPanel {
 		gridBagLayout.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
-		JLabel actionTypeLbl = new JLabel(action.getName());
+		JLabel actionTypeLbl = new JLabel(m_action.getName());
 		actionTypeLbl.setFont(new Font("Tahoma", Font.BOLD, 10));
 		GridBagConstraints gbc_actionTypeLbl = new GridBagConstraints();
 		gbc_actionTypeLbl.gridy = 0;
@@ -73,17 +69,17 @@ public class ActionEditorPanel extends JPanel {
 
 		JComboBox<String> actionSelector = new JComboBox<String>();
 		actionSelector.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		for (Object o : a.options.getDeclaringClass().getEnumConstants())
+		for (Object o : a.getOptions().getDeclaringClass().getEnumConstants())
 			actionSelector.addItem(o.toString());
 		GridBagConstraints gbc_actionSelector = new GridBagConstraints();
 		gbc_actionSelector.gridy = 0;
 		gbc_actionSelector.insets = new Insets(0, 0, 0, 5);
 		gbc_actionSelector.fill = GridBagConstraints.BOTH;
 		gbc_actionSelector.gridx = 1;
-		actionSelector.setSelectedItem(action.options.toString());
+		actionSelector.setSelectedItem(m_action.getOptions().toString());
 
-		detailsLbl = new JLabel(action.getDataLabel());
-		detailsLbl.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		m_dataLbl = new JLabel(m_action.getDataLabel());
+		m_dataLbl.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		GridBagConstraints gbc_detailsLbl = new GridBagConstraints();
 		gbc_detailsLbl.gridy = 0;
 		gbc_detailsLbl.anchor = GridBagConstraints.WEST;
@@ -95,34 +91,36 @@ public class ActionEditorPanel extends JPanel {
 		gbc_data.anchor = GridBagConstraints.WEST;
 		gbc_data.gridx = 3;
 
-		if (action instanceof DriveAction) {
+		if (m_action instanceof DriveAction) {
 			JCheckBox reverseBox = new JCheckBox("");
 			reverseBox.setOpaque(false);
-			reverseBox.setSelected(action.data == 1.0);
+			reverseBox.setSelected(m_action.getData() == 1.0);
 			reverseBox.addActionListener(e -> {
-				action.data = reverseBox.isSelected() ? 1 : 0;
-				PathPlanner.main.getScript().connectPaths();
+				m_action.setData(reverseBox.isSelected() ? 1 : 0);
+//				PathPlanner.main.getScript().connectPaths();
 			});
-			data = reverseBox;
+			m_data = reverseBox;
 		} else {
 			JSpinner heightSpinner = new JSpinner();
-			data = heightSpinner;
+			m_data = heightSpinner;
 			gbc_data.fill = 1;
 
-			if (action instanceof IntakeAction || action instanceof OutputAction) {
-				heightSpinner.setModel(new SpinnerNumberModel(MathUtil.limit(0, action.data, 1), 0, 1, 0.1));
-				data.setVisible(true);
-			} else if (action instanceof ElevatorAction && action.options == ElevatorAction.Options.ToCustom) {
-				heightSpinner.setModel(new SpinnerNumberModel(MathUtil.limit(6, action.data, 90), 6.0, 90.0, 6.0));
-				data.setVisible(true);
-			} else if (action instanceof TurnAction) {
+			if (m_action instanceof IntakeAction || m_action instanceof OutputAction) {
+				heightSpinner.setModel(new SpinnerNumberModel(MathUtil.limit(0, m_action.getData(), 1), 0, 1, 0.1));
+				m_data.setVisible(true);
+			} else if (m_action instanceof ElevatorAction && m_action.getOptions() == ElevatorAction.Options.ToCustom) {
 				heightSpinner
-						.setModel(new SpinnerNumberModel((int) MathUtil.limit(-180, action.data, 180), -180, 180, 5));
-				data.setVisible(true);
+						.setModel(new SpinnerNumberModel(MathUtil.limit(6, m_action.getData(), 90), 6.0, 90.0, 6.0));
+				m_data.setVisible(true);
+			} else if (m_action instanceof TurnAction) {
+				heightSpinner.setModel(
+						new SpinnerNumberModel((int) MathUtil.limit(-180, m_action.getData(), 180), -180, 180, 5));
+				m_data.setVisible(true);
 			} else
-				data.setVisible(false);
+				m_data.setVisible(false);
 
-			heightSpinner.addChangeListener(e -> action.data = Double.parseDouble(heightSpinner.getValue().toString()));
+			heightSpinner
+					.addChangeListener(e -> m_action.setData(Double.parseDouble(heightSpinner.getValue().toString())));
 			((JSpinner.DefaultEditor) heightSpinner.getEditor()).getTextField().setColumns(2);
 		}
 
@@ -134,7 +132,7 @@ public class ActionEditorPanel extends JPanel {
 		gbc_delayLbl.gridy = 0;
 
 		JSpinner delaySpinner = new JSpinner();
-		delaySpinner.setModel(new SpinnerNumberModel(action.delay, 0, 15.0, 0.5));
+		delaySpinner.setModel(new SpinnerNumberModel(m_action.getDelay(), 0, 15.0, 0.5));
 		GridBagConstraints gbc_delaySpinner = new GridBagConstraints();
 		gbc_delaySpinner.fill = GridBagConstraints.HORIZONTAL;
 		gbc_delaySpinner.insets = new Insets(0, 0, 0, 5);
@@ -151,7 +149,7 @@ public class ActionEditorPanel extends JPanel {
 		gbc_timeoutLbl.gridx = 6;
 
 		JSpinner timeoutSpinner = new JSpinner();
-		timeoutSpinner.setModel(new SpinnerNumberModel(action.timeout, -1, 15.0, 0.5));
+		timeoutSpinner.setModel(new SpinnerNumberModel(m_action.getTimeout(), -1, 15.0, 0.5));
 		GridBagConstraints gbc_timeoutSpinner = new GridBagConstraints();
 		gbc_timeoutSpinner.gridy = 0;
 		gbc_timeoutSpinner.fill = GridBagConstraints.VERTICAL;
@@ -159,8 +157,10 @@ public class ActionEditorPanel extends JPanel {
 		gbc_timeoutSpinner.anchor = GridBagConstraints.WEST;
 		gbc_timeoutSpinner.gridx = 7;
 
+		ButtonGroup behaviourBtns = new ButtonGroup();
+
 		JRadioButton rdbtnSequential = new JRadioButton("Seq");
-		rdbtnSequential.setSelected(action.behaviour == Behaviour.kSequential);
+		rdbtnSequential.setSelected(m_action.getBehaviour() == Behaviour.kSequential);
 		rdbtnSequential.setOpaque(false);
 		behaviourBtns.add(rdbtnSequential);
 		GridBagConstraints gbc_rdbtnSequential = new GridBagConstraints();
@@ -168,7 +168,7 @@ public class ActionEditorPanel extends JPanel {
 		gbc_rdbtnSequential.gridx = 9;
 
 		JRadioButton rdbtnParallel = new JRadioButton("Par");
-		rdbtnParallel.setSelected(action.behaviour == Behaviour.kParallel);
+		rdbtnParallel.setSelected(m_action.getBehaviour() == Behaviour.kParallel);
 		rdbtnParallel.setOpaque(false);
 		behaviourBtns.add(rdbtnParallel);
 		GridBagConstraints gbc_rdbtnParallel = new GridBagConstraints();
@@ -199,31 +199,31 @@ public class ActionEditorPanel extends JPanel {
 		gbc_btnReset.fill = GridBagConstraints.BOTH;
 		gbc_btnReset.gridx = 13;
 
-		if (!(action instanceof DriveAction))
+		if (!(m_action instanceof DriveAction))
 			btnClear.setEnabled(false);
 
 		// Setup all the listeners
 		actionSelector.addActionListener(actionSelectListener);
-		delaySpinner.addChangeListener(e -> action.delay = (double) delaySpinner.getValue());
-		timeoutSpinner.addChangeListener(e -> action.timeout = (double) timeoutSpinner.getValue());
-		rdbtnSequential.addActionListener(e -> action.behaviour = Behaviour.kSequential);
-		rdbtnParallel.addActionListener(e -> action.behaviour = Behaviour.kParallel);
-		btnUp.addActionListener(e -> PathPlanner.main.getScript().moveActionUp(action));
-		btnDown.addActionListener(e -> PathPlanner.main.getScript().moveActionDown(action));
-		btnClear.addActionListener(e -> ((DriveAction) action).clear());
+		delaySpinner.addChangeListener(e -> m_action.setDelay((double) delaySpinner.getValue()));
+		timeoutSpinner.addChangeListener(e -> m_action.setTimeout((double) timeoutSpinner.getValue()));
+		rdbtnSequential.addActionListener(e -> m_action.setBehaviour(Behaviour.kSequential));
+		rdbtnParallel.addActionListener(e -> m_action.setBehaviour(Behaviour.kParallel));
+		btnUp.addActionListener(e -> PathPlanner.main.getScript().moveActionUp(m_action));
+		btnDown.addActionListener(e -> PathPlanner.main.getScript().moveActionDown(m_action));
+		btnClear.addActionListener(e -> ((DriveAction) m_action).clear());
 
 		// Add the action label
 		add(actionTypeLbl, gbc_actionTypeLbl);
 		add(actionSelector, gbc_actionSelector);
-		add(detailsLbl, gbc_detailsLbl);
-		add(data, gbc_data);
+		add(m_dataLbl, gbc_detailsLbl);
+		add(m_data, gbc_data);
 		add(delayLbl, gbc_delayLbl);
 		add(delaySpinner, gbc_delaySpinner);
 		add(timeoutLbl, gbc_timeoutLbl);
 		add(timeoutSpinner, gbc_timeoutSpinner);
 
 		// Add the action behaviour
-		if (!(action instanceof DelayAction)) {
+		if (!(m_action instanceof DelayAction)) {
 			add(rdbtnSequential, gbc_rdbtnSequential);
 			add(rdbtnParallel, gbc_rdbtnParallel);
 		}
@@ -239,10 +239,10 @@ public class ActionEditorPanel extends JPanel {
 		gbc_btnDelete.gridy = 0;
 		gbc_btnDelete.fill = GridBagConstraints.BOTH;
 		gbc_btnDelete.gridx = 14;
-		btnDelete.addActionListener(e -> PathPlanner.main.getScript().removeAction(action));
+		btnDelete.addActionListener(e -> PathPlanner.main.getScript().removeAction(m_action));
 		add(btnDelete, gbc_btnDelete);
 
-		setBackground(Action.getBkgColor(action));
+		setBackground(Action.getBkgColor(m_action));
 	}
 
 	ActionListener actionSelectListener = new ActionListener() {
@@ -250,17 +250,17 @@ public class ActionEditorPanel extends JPanel {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			action.options = Enum.valueOf(action.options.getDeclaringClass(),
-					((JComboBox<?>) e.getSource()).getSelectedItem().toString());
+			m_action.setOptions(Enum.valueOf(m_action.getOptions().getDeclaringClass(),
+					((JComboBox<?>) e.getSource()).getSelectedItem().toString()));
 
-			if (action instanceof ElevatorAction) {
-				if (action.options == ElevatorAction.Options.ToCustom) {
-					detailsLbl.setText(action.getDataLabel());
-					((JSpinner) data)
-							.setModel(new SpinnerNumberModel(MathUtil.limit(6, action.data, 90), 6.0, 90.0, 6.0));
-					data.setVisible(true);
+			if (m_action instanceof ElevatorAction) {
+				if (m_action.getOptions() == ElevatorAction.Options.ToCustom) {
+					m_dataLbl.setText(m_action.getDataLabel());
+					((JSpinner) m_data).setModel(
+							new SpinnerNumberModel(MathUtil.limit(6, m_action.getData(), 90), 6.0, 90.0, 6.0));
+					m_data.setVisible(true);
 				} else {
-					data.setVisible(false);
+					m_data.setVisible(false);
 				}
 			}
 		}

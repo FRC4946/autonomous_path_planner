@@ -7,7 +7,7 @@ import javax.swing.event.EventListenerList;
 public class ObservableElement {
 
 	public interface ElementListener extends EventListener {
-		public void pointChanged();
+		public void changed();
 	}
 
 	private EventListenerList listenerList = new EventListenerList();
@@ -29,7 +29,7 @@ public class ObservableElement {
 		// those that are interested in this event
 		for (int i = listeners.length - 2; i >= 0; i -= 2) {
 			if (listeners[i] == ElementListener.class) {
-				((ElementListener) listeners[i + 1]).pointChanged();
+				((ElementListener) listeners[i + 1]).changed();
 			}
 		}
 	}
