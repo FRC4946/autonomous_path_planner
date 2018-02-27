@@ -40,6 +40,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
+import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
 import ca._4946.mreynolds.pathplanner.src.math.PathParser;
 
@@ -130,6 +131,9 @@ public class FileIO {
 				case "Drive":
 					curAction = new DriveAction();
 					break;
+				case "Turn":
+					curAction = new TurnAction();
+					break;
 				}
 
 				if (curAction == null)
@@ -196,11 +200,11 @@ public class FileIO {
 		Element llElement = doc.createElement("ll");
 		root.appendChild(saveScript(doc, llElement, scBundle.LL, false));
 
-		for (DriveAction a : scBundle.LL.getDriveActions()) {
-			PathParser.smoothAccelJerk(a.getLeftPath());
-			PathParser.smoothAccelJerk(a.getRightPath());
-			System.out.println(printPath(a));
-		}
+//		for (DriveAction a : scBundle.LL.getDriveActions()) {
+//			PathParser.smoothAccelJerk(a.getLeftPath());
+//			PathParser.smoothAccelJerk(a.getRightPath());
+//			System.out.println(printPath(a));
+//		}
 
 		Element lrElement = doc.createElement("lr");
 		root.appendChild(saveScript(doc, lrElement, scBundle.LR, false));
