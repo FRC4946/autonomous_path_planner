@@ -12,7 +12,7 @@ public class MathUtil {
 	}
 
 	public static double limit(double min, double a, double max) {
-		return Math.min(max, Math.min(min, a));
+		return Math.min(max, Math.max(min, a));
 	}
 
 	public static double toRange(double in, double min, double max) {
