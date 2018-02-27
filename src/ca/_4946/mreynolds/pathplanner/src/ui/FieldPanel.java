@@ -186,7 +186,7 @@ public class FieldPanel extends JPanel {
 				if (a.getDelay() == 0)
 					continue;
 
-				int position = (int) (a.getDelay() / PathParser.SAMPLE_PERIOD);
+				int position = (int) ((a.getDelay()-d.getDelay()) / PathParser.SAMPLE_PERIOD);
 				position = Math.min(((DriveAction) d).getLeftPath().size() - 1, position);
 
 				Point l = ((DriveAction) d).getLeftPath().get(position).toPt();

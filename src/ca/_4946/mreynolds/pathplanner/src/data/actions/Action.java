@@ -126,18 +126,20 @@ public abstract class Action<T extends Enum<T> & ActionOptions> extends Observab
 
 	public static Color getBkgColor(Action<?> a) {
 		if (a instanceof DriveAction)
-			return new Color(255, 200, 220);
-		else if (a instanceof ArmAction)
-			return new Color(204, 210, 255);
-		else if (a instanceof DelayAction)
-			return new Color(204, 239, 255);
+			return new Color(255, 0, 0);
 		else if (a instanceof ElevatorAction)
-			return new Color(204, 255, 227);
+			return new Color(255, 127, 0);
+		else if (a instanceof ArmAction)
+			return new Color(255, 255, 0);
 		else if (a instanceof IntakeAction)
-			return new Color(240, 255, 204);
+			return new Color(0, 255, 0);
 		else if (a instanceof OutputAction)
-			return new Color(255, 225, 204);
+			return new Color(0, 255, 255);
+		else if (a instanceof TurnAction)
+			return new Color(0, 127, 255);
+		else if (a instanceof DelayAction)
+			return new Color(255, 0, 255);
 
-		return new Color(255, 0, 255);
+		return new Color(127, 127, 127);
 	}
 }
