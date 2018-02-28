@@ -92,27 +92,24 @@ public class Script {
 	}
 
 	public void addAction(Action<?> a) {
-		if (a instanceof DriveAction) {
+		if (a instanceof DriveAction && !getDriveActions().isEmpty()) {
 			List<Action<?>> actions = getActionOfType(DriveAction.class, TurnAction.class);
-			if (!getDriveActions().isEmpty()) {
 
-				boolean didTurn = false;
-				for (int i = actions.size() - 1; i >= 0; i--) {
-					if (actions.get(i) instanceof TurnAction && actions.get(i).getData() != 0)
-						didTurn = true;
-					if (actions.get(i) instanceof DriveAction)
-						break;
-				}
-
-				int prevDir = (int) getDriveActions().get(getDriveActions().size() - 1).getData();
-				if (!didTurn)
-					a.setData(prevDir ^ 1);
-				else
-					a.setData(prevDir);
-				connectPaths();
+			boolean didTurn = false;
+			for (int i = actions.size() - 1; i >= 0; i--) {
+				if (actions.get(i) instanceof TurnAction && actions.get(i).getData() != 0)
+					didTurn = true;
+				if (actions.get(i) instanceof DriveAction)
+					break;
 			}
-		}
 
+			int prevDir = (int) getDriveActions().get(getDriveActions().size() - 1).getData();
+			if (!didTurn)
+				a.setData(prevDir ^ 1);
+			else
+				a.setData(prevDir);
+			connectPaths();
+		}
 		else if (a instanceof ArmAction && !getActionOfType(ArmAction.class).isEmpty()) {
 			ArmAction.Options opt = ArmAction.Options.valueOf(ArmAction.Options.class, getActionOfType(ArmAction.class)
 					.get(getActionOfType(ArmAction.class).size() - 1).getOptions().toString());
