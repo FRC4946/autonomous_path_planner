@@ -49,7 +49,7 @@ public class Script {
 
 				if (!((DriveAction) script.get(i)).isEmpty())
 					pt.setR(((DriveAction) script.get(i)).getPt(0).getR());
-				
+
 				script.quiet();
 				((DriveAction) script.get(i)).setPt(0, pt);
 
@@ -94,7 +94,7 @@ public class Script {
 	public void addAction(Action<?> a) {
 		if (a instanceof DriveAction) {
 			List<Action<?>> actions = getActionOfType(DriveAction.class, TurnAction.class);
-			if (!actions.isEmpty()) {
+			if (!getDriveActions().isEmpty()) {
 
 				boolean didTurn = false;
 				for (int i = actions.size() - 1; i >= 0; i--) {
