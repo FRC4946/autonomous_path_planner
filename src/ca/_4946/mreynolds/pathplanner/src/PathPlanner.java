@@ -2,9 +2,6 @@ package ca._4946.mreynolds.pathplanner.src;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -12,18 +9,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
-import ca._4946.mreynolds.pathplanner.src.data.point.MagnetPoint;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 import ca._4946.mreynolds.pathplanner.src.ui.PrimaryWindow;
 
 public class PathPlanner {
 
-	public static final double ROBOT_LENGTH_IN = 39.375;
-	public static final double ROBOT_WIDTH_IN = 34.375;
-	public static final double WHEEL_WIDTH_IN = 32;
-
 	private ScriptBundle scBundle = new ScriptBundle();
-	private ArrayList<MagnetPoint> magnets = new ArrayList<>();
 
 	public boolean fieldIsBlue = true;
 
@@ -33,12 +24,6 @@ public class PathPlanner {
 	private PrimaryWindow window;
 
 	public PathPlanner() {
-		magnets.add(new MagnetPoint(-116, ROBOT_LENGTH_IN / 2, 90));
-		magnets.add(new MagnetPoint(-73, ROBOT_LENGTH_IN / 2, 90));
-		magnets.add(new MagnetPoint(2, ROBOT_LENGTH_IN / 2, 90));
-		magnets.add(new MagnetPoint(44, ROBOT_LENGTH_IN / 2, 90));
-		magnets.add(new MagnetPoint(73, ROBOT_LENGTH_IN / 2, 90));
-		magnets.add(new MagnetPoint(116, ROBOT_LENGTH_IN / 2, 90));
 
 		// Set the project's Look And Feel to the default cross-platform (Metal)
 		try {
@@ -63,10 +48,6 @@ public class PathPlanner {
 	 */
 	public static void main(String[] args) {
 		main = new PathPlanner();
-	}
-
-	public List<MagnetPoint> getMagnets() {
-		return Collections.unmodifiableList(magnets);
 	}
 
 	public Script[] getScripts() {

@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
+import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
@@ -141,7 +142,7 @@ public class FieldPanel extends JPanel {
 
 	public void drawMagnets(Graphics g) {
 		g.setColor(Color.YELLOW);
-		for (MagnetPoint p : PathPlanner.main.getMagnets())
+		for (MagnetPoint p : PathPlannerSettings.getMagnets())
 			pt2px(p).draw(g);
 	}
 
@@ -186,7 +187,7 @@ public class FieldPanel extends JPanel {
 				if (a.getDelay() == 0)
 					continue;
 
-				int position = (int) ((a.getDelay()-d.getDelay()) / PathParser.SAMPLE_PERIOD);
+				int position = (int) ((a.getDelay()-d.getDelay()) / PathPlannerSettings.SAMPLE_PERIOD);
 				position = Math.min(((DriveAction) d).getLeftPath().size() - 1, position);
 
 				Point l = ((DriveAction) d).getLeftPath().get(position).toPt();
@@ -242,7 +243,7 @@ public class FieldPanel extends JPanel {
 
 		// Scale the image
 		double pxPerIn = (double) (getWidth()) / IMG_WIDTH * PIXELS_PER_INCH;
-		double widthPx = pxPerIn * PathPlanner.ROBOT_WIDTH_IN;
+		double widthPx = pxPerIn * PathPlannerSettings.ROBOT_WIDTH_IN;
 		double factor = widthPx / robot.getWidth(null);
 		tx.scale(factor, factor);
 
@@ -258,7 +259,7 @@ public class FieldPanel extends JPanel {
 		tx.rotate(angle, x, y);
 
 		// Align the back of the robot
-		double dpos = (robot.getWidth(null) / PathPlanner.ROBOT_WIDTH_IN * PathPlanner.ROBOT_LENGTH_IN
+		double dpos = (robot.getWidth(null) / PathPlannerSettings.ROBOT_WIDTH_IN * PathPlannerSettings.ROBOT_LENGTH_IN
 				- robot.getHeight(null)) / 2;
 		tx.translate(0, -dpos);
 
@@ -327,7 +328,7 @@ public class FieldPanel extends JPanel {
 
 				// Check for magnets
 				boolean foundMagnet = false;
-				for (MagnetPoint mag : PathPlanner.main.getMagnets())
+				for (MagnetPoint mag : PathPlannerSettings.getMagnets())
 					if (mag.contains(curPt())) {
 						foundMagnet = true;
 
@@ -415,7 +416,7 @@ public class FieldPanel extends JPanel {
 					refIsHandle = false;
 
 					// Check for magnet points
-					for (MagnetPoint mag : PathPlanner.main.getMagnets())
+					for (MagnetPoint mag : PathPlannerSettings.getMagnets())
 						if (mag.contains(click))
 							mag.latch(curAction.getPt(ref));
 				}

@@ -3,18 +3,13 @@ package ca._4946.mreynolds.pathplanner.src.math;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca._4946.mreynolds.pathplanner.src.PathPlanner;
+import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
 import ca._4946.mreynolds.pathplanner.src.math.bezier.CubicBezier;
 
 public class PathParser {
-
-	public static final double MAX_JERK = 120; // in/s^2
-	public static final double MAX_ACCEL = 60; // in/s^2 // 1.1sec to max
-	public static final double MAX_VEL = 60; // in/s
-	public static final double SAMPLE_PERIOD = 0.02; // 20ms
 
 	/**
 	 * Create one continuous path of segments from the specified list of curves
@@ -68,7 +63,7 @@ public class PathParser {
 			dist *= -1;
 
 		// Create the motion profile
-		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(dist, MAX_VEL, MAX_ACCEL, MAX_JERK);
+		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(dist, PathPlannerSettings.MAX_VEL, PathPlannerSettings.MAX_ACCEL, PathPlannerSettings.MAX_JERK);
 		double time = 0;
 		int lastSeg = 0;
 
@@ -97,7 +92,7 @@ public class PathParser {
 
 					double percent = (Math.abs(s.pos) - fill.get(i).pos) / dp;
 
-					s.dt = SAMPLE_PERIOD;
+					s.dt = PathPlannerSettings.SAMPLE_PERIOD;
 					s.x = fill.get(i).x + dx * percent;
 					s.y = fill.get(i).y + dy * percent;
 					s.heading = Math.toDegrees(fill.get(i).heading + dh * percent);
@@ -109,7 +104,7 @@ public class PathParser {
 
 			}
 
-			time += SAMPLE_PERIOD;
+			time += PathPlannerSettings.SAMPLE_PERIOD;
 		}
 
 		return smooth;
@@ -128,7 +123,7 @@ public class PathParser {
 		DriveAction path = new DriveAction();
 
 		Segment l, r, lastL, lastR;
-		double botRadius = PathPlanner.WHEEL_WIDTH_IN / 2;
+		double botRadius = PathPlannerSettings.WHEEL_WIDTH_IN / 2;
 		double perp = MathUtil.toRange(Math.toRadians(list.get(0).heading) - (Math.PI / 2), 0, 2 * Math.PI);
 		l = new Segment(list.get(0));
 		r = new Segment(list.get(0));
@@ -164,7 +159,7 @@ public class PathParser {
 				dtheta += Math.PI * 2;
 
 			// Calc pos and vel as a result of rotation
-			double omega = dtheta / SAMPLE_PERIOD;
+			double omega = dtheta / PathPlannerSettings.SAMPLE_PERIOD;
 			l.pos = lastL.pos + Math.copySign(l.toPt().distance(lastL.toPt()), s.pos);
 			r.pos = lastR.pos + Math.copySign(r.toPt().distance(lastR.toPt()), s.pos);
 
@@ -191,7 +186,7 @@ public class PathParser {
 
 		for (int i = smoothSize; i < path.size() - smoothSize; i++) {
 			double dv = path.get(i + smoothSize).vel - path.get(i - smoothSize).vel;
-			path.get(i).accel = dv / (SAMPLE_PERIOD * smoothSize * 2);
+			path.get(i).accel = dv / (PathPlannerSettings.SAMPLE_PERIOD * smoothSize * 2);
 		}
 
 		// for (int i = smoothSize; i < path.size() - smoothSize; i++) {

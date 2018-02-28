@@ -2,6 +2,7 @@ package ca._4946.mreynolds.pathplanner.src.data.actions;
 
 import java.util.ArrayList;
 
+import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
@@ -47,7 +48,7 @@ public class DriveAction extends Action<DriveAction.Options> {
 	}
 
 	public double getDuration() {
-		return getLeftPath().size() * PathParser.SAMPLE_PERIOD;
+		return getLeftPath().size() * PathPlannerSettings.SAMPLE_PERIOD;
 	}
 
 	public void removePt(int index) {
