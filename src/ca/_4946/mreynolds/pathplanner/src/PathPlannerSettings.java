@@ -11,10 +11,13 @@ public class PathPlannerSettings {
 	public static final double ROBOT_LENGTH_IN = 39.375;
 	public static final double ROBOT_WIDTH_IN = 34.375;
 	public static final double WHEEL_WIDTH_IN = 32;
+
 	
-	public static final double MAX_JERK = 120; // in/s^2
-	public static final double MAX_ACCEL = 60; // in/s^2 // 1.1sec to max
+	// https://www.desmos.com/calculator/r25h6mn7h4
 	public static final double MAX_VEL = 60; // in/s
+	public static final double MAX_ACCEL = MAX_VEL / 1.0; // in/s^2 // ~1sec to accelerate
+	public static final double MAX_JERK = MAX_ACCEL * 2; // in/s^3 // Must be greater than or equal to maxaccel
+
 	public static final double SAMPLE_PERIOD = 0.02; // 20ms
 
 	private static ArrayList<MagnetPoint> magnets = new ArrayList<>();
@@ -33,6 +36,5 @@ public class PathPlannerSettings {
 			setupMagnets();
 		return Collections.unmodifiableList(magnets);
 	}
-
 
 }

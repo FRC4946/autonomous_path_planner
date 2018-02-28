@@ -45,9 +45,6 @@ public class TrapezoidMotionProfile {
 		amax = amax_param;
 		vmax = vmax_param;
 
-		// I modeled all of this in Desmos first to figure out the correct timing
-		// https://www.desmos.com/calculator/6vfqgo69uz
-
 		// Parameters of phase 1
 		double t1 = amax / jmax;
 		double d1 = pos(0, 0, jmax, t1);
