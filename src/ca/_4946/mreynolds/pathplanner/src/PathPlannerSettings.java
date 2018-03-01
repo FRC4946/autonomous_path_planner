@@ -10,12 +10,12 @@ public class PathPlannerSettings {
 
 	public static final double ROBOT_LENGTH_IN = 39.375;
 	public static final double ROBOT_WIDTH_IN = 34.375;
-	public static final double WHEEL_WIDTH_IN = 32;
+	public static final double WHEEL_WIDTH_IN = 28;
 
 	// desmos.com/calculator/bovxrwsidp
-	private static final double kApproxAccelTime = 1.0; // ~1.0 sec to accelerate to max vel
-	private static final double kJerkMultiplier = 2.0; // Must be greater than 1.0. Larger = more aggresive jerk
-	public static final double MAX_VEL = 60; // in/s
+	private static final double kApproxAccelTime = 0.75; // ~0.75 sec to accelerate to max vel
+	private static final double kJerkMultiplier = 3.0; // Must be greater than 1.0. Larger = more aggresive jerk
+	public static final double MAX_VEL = 120; // in/s
 	public static final double MAX_ACCEL = MAX_VEL / kApproxAccelTime; // in/s^2
 	public static final double MAX_JERK = MAX_ACCEL / kApproxAccelTime * kJerkMultiplier; // in/s^3
 
