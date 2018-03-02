@@ -382,6 +382,7 @@ public class ControlPanel extends JPanel {
 		for (Action<?> a : actions)
 			m_actionListPanel.add(new ActionEditorPanel(a));
 		m_actionListPanel.revalidate();
+		repaint();
 	}
 
 	private void setupKeyListeners() {
@@ -442,6 +443,7 @@ public class ControlPanel extends JPanel {
 		}
 
 		updateActionList(PathPlanner.main.getScript().getActions());
+		repaint();
 	}
 
 	private void open() {

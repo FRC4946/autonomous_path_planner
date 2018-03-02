@@ -44,22 +44,32 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
 import ca._4946.mreynolds.pathplanner.src.math.PathParser;
 
+/**
+ * Contains the utilities for reading and writing {@code XML} data to the host
+ * computer and uploading files to the robot using
+ * {@link org.apache.commons.net}
+ * 
+ * @author Matthew Reynolds
+ * 
+ */
 public class FileIO {
+	private static DecimalFormat f = new DecimalFormat("0.0#####");
+
+	/**
+	 * The default directory for scripts on the host machine
+	 */
 	public static String DEFAULT_DIR = System.getProperty("user.home") + System.getProperty("file.separator")
 			+ "Documents" + System.getProperty("file.separator") + "AutoPathPlanner";
 
-	private static DecimalFormat f = new DecimalFormat("0.0#####");
-
 	// Pulled from
-	// https://wpilib.screenstepslive.com/s/currentCS/m/cs_hardware/l/282299-roborio-ftp
+	// wpilib.screenstepslive.com/s/currentCS/m/cs_hardware/l/282299-roborio-ftp
 	public static String FTP_SERVER = "roboRIO-4946-frc.local";
 	public static String FTP_USERNAME = "anonymous";// "lvuser";
 	public static String FTP_PASSWORD = "";
 
-	// public static String FTP_SERVER = "ftp.dlptest.com";
-	// public static String FTP_USERNAME = "dlpuser@dlptest.com";
-	// public static String FTP_PASSWORD = "hZ3Xr8alJPl8TtE";
-
+	/**
+	 * 
+	 */
 	public static void createDefaultDir() {
 		File dir = new File(DEFAULT_DIR);
 

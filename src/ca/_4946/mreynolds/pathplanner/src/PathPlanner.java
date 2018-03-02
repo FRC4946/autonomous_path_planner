@@ -55,6 +55,8 @@ public class PathPlanner {
 		} catch (Exception e) {
 			ErrorPopup.createPopup("Error loading file", e);
 		}
+		
+		m_gameData = "ll";
 		window.getFieldPanel().setScript(getScript(), getGameData());
 	}
 

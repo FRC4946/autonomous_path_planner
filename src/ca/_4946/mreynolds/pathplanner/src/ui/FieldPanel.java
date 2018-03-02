@@ -487,5 +487,6 @@ public class FieldPanel extends JPanel {
 
 		if (m_script != null)
 			m_script.getActions().addListListener(() -> m_hasFresh = true);
+		repaint();
 	}
 }
