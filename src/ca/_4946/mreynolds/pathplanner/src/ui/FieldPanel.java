@@ -27,8 +27,8 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.MagnetPoint;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
+import ca._4946.mreynolds.pathplanner.src.math.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.math.PathParser;
-import ca._4946.mreynolds.pathplanner.src.math.bezier.CubicBezier;
 
 public class FieldPanel extends JPanel {
 	private static final long serialVersionUID = 1L;

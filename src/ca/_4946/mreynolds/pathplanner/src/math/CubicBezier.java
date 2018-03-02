@@ -1,9 +1,9 @@
-package ca._4946.mreynolds.pathplanner.src.math.bezier;
+package ca._4946.mreynolds.pathplanner.src.math;
 
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
-import ca._4946.mreynolds.pathplanner.src.math.MathUtil;
+import ca._4946.mreynolds.util.MathUtil;
 
 public class CubicBezier {
 

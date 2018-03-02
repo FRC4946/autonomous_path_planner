@@ -1,4 +1,4 @@
-package ca._4946.mreynolds.pathplanner.src.math;
+package ca._4946.mreynolds.util;
 
 public class MathUtil {
 

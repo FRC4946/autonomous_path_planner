@@ -7,7 +7,7 @@ import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
-import ca._4946.mreynolds.pathplanner.src.math.bezier.CubicBezier;
+import ca._4946.mreynolds.util.MathUtil;
 
 public class PathParser {
 

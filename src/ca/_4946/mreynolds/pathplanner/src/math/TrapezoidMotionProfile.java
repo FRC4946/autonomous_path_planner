@@ -1,6 +1,7 @@
 package ca._4946.mreynolds.pathplanner.src.math;
 
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
+import ca._4946.mreynolds.util.MathUtil;
 
 public class TrapezoidMotionProfile {
 

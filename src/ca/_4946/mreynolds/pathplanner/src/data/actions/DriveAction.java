@@ -6,8 +6,8 @@ import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
+import ca._4946.mreynolds.pathplanner.src.math.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.math.PathParser;
-import ca._4946.mreynolds.pathplanner.src.math.bezier.CubicBezier;
 import ca._4946.mreynolds.util.ObservableList;
 
 public class DriveAction extends Action<DriveAction.Options> {

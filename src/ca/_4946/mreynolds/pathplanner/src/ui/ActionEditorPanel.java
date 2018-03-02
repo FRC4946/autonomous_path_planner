@@ -25,13 +25,13 @@ import javax.swing.border.LineBorder;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action.Behaviour;
+import ca._4946.mreynolds.util.MathUtil;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
-import ca._4946.mreynolds.pathplanner.src.math.MathUtil;
 
 public class ActionEditorPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
