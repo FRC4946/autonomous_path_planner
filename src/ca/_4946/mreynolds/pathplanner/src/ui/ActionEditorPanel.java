@@ -76,14 +76,14 @@ public class ActionEditorPanel extends JPanel {
 
 		JComboBox<String> actionSelector = new JComboBox<String>();
 		actionSelector.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		for (Object o : m_action.getOptions().getDeclaringClass().getEnumConstants())
+		for (Object o : m_action.getOption().getDeclaringClass().getEnumConstants())
 			actionSelector.addItem(o.toString());
 		GridBagConstraints gbc_actionSelector = new GridBagConstraints();
 		gbc_actionSelector.gridy = 0;
 		gbc_actionSelector.insets = new Insets(0, 0, 0, 5);
 		gbc_actionSelector.fill = GridBagConstraints.BOTH;
 		gbc_actionSelector.gridx = 1;
-		actionSelector.setSelectedItem(m_action.getOptions().toString());
+		actionSelector.setSelectedItem(m_action.getOption().toString());
 
 		m_dataLbl = new JLabel(m_action.getDataLabel());
 		m_dataLbl.setFont(new Font("Tahoma", Font.PLAIN, 10));
@@ -115,7 +115,7 @@ public class ActionEditorPanel extends JPanel {
 			if (m_action instanceof IntakeAction || m_action instanceof OutputAction) {
 				heightSpinner.setModel(new SpinnerNumberModel(MathUtil.limit(0, m_action.getData(), 1), 0, 1, 0.1));
 				m_data.setVisible(true);
-			} else if (m_action instanceof ElevatorAction && m_action.getOptions() == ElevatorAction.Options.ToCustom) {
+			} else if (m_action instanceof ElevatorAction && m_action.getOption() == ElevatorAction.Option.ToCustom) {
 				heightSpinner
 						.setModel(new SpinnerNumberModel(MathUtil.limit(6, m_action.getData(), 90), 6.0, 90.0, 6.0));
 				m_data.setVisible(true);
@@ -255,11 +255,11 @@ public class ActionEditorPanel extends JPanel {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			m_action.setOptions(Enum.valueOf(m_action.getOptions().getDeclaringClass(),
+			m_action.setOptions(Enum.valueOf(m_action.getOption().getDeclaringClass(),
 					((JComboBox<?>) e.getSource()).getSelectedItem().toString()));
 
 			if (m_action instanceof ElevatorAction) {
-				if (m_action.getOptions() == ElevatorAction.Options.ToCustom) {
+				if (m_action.getOption() == ElevatorAction.Option.ToCustom) {
 					m_dataLbl.setText(m_action.getDataLabel());
 					((JSpinner) m_data).setModel(
 							new SpinnerNumberModel(MathUtil.limit(6, m_action.getData(), 90), 6.0, 90.0, 6.0));

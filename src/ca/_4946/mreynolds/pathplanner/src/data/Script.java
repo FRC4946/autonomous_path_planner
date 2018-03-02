@@ -143,7 +143,7 @@ public class Script {
 	 * {@code DriveAction}s, use the same direction
 	 * <li>If there are no {@code TurnAction}s, reverse the new action <br>
 	 * If the new Action is a {@link ArmAction}, the default
-	 * {@link ArmAction.Options} will be the opposite of the previous
+	 * {@link ArmAction.Option} will be the opposite of the previous
 	 * {@code ArmAction}
 	 * 
 	 * @param a
@@ -176,12 +176,12 @@ public class Script {
 		// If the new action is an ArmAction and there exist previous ArmActions, we
 		// need to flip the state of the arm
 		else if (a instanceof ArmAction && !getActionOfType(ArmAction.class).isEmpty()) {
-			ArmAction.Options opt = ArmAction.Options.valueOf(ArmAction.Options.class, getActionOfType(ArmAction.class)
-					.get(getActionOfType(ArmAction.class).size() - 1).getOptions().toString());
-			if (opt == ArmAction.Options.ArmDown)
-				((ArmAction) a).setOptions(ArmAction.Options.ArmUp);
+			ArmAction.Option opt = ArmAction.Option.valueOf(ArmAction.Option.class, getActionOfType(ArmAction.class)
+					.get(getActionOfType(ArmAction.class).size() - 1).getOption().toString());
+			if (opt == ArmAction.Option.ArmDown)
+				((ArmAction) a).setOptions(ArmAction.Option.ArmUp);
 			else
-				((ArmAction) a).setOptions(ArmAction.Options.ArmDown);
+				((ArmAction) a).setOptions(ArmAction.Option.ArmDown);
 		}
 
 		// Add the new action to the list

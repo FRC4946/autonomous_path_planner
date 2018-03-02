@@ -141,7 +141,7 @@ public class FileIO {
 
 				try {
 					curAction.setOptions(
-							Enum.valueOf(curAction.getOptions().getDeclaringClass(), curEl.getAttribute("options")));
+							Enum.valueOf(curAction.getOption().getDeclaringClass(), curEl.getAttribute("options")));
 				} catch (IllegalArgumentException e) {
 					curAction.setOptions(curAction.getDefaultOption());
 				}
@@ -242,7 +242,7 @@ public class FileIO {
 			curElement.setAttribute("type", a.getName());
 
 			// Set the new element's "options" attribute (eg. kIntakeOn, etc)
-			curElement.setAttribute("options", a.getOptions().toString());
+			curElement.setAttribute("options", a.getOption().toString());
 
 			// Set the new element's "timeout" attribute
 			curElement.setAttribute("timeout", "" + a.getTimeout());

@@ -1,16 +1,29 @@
 package ca._4946.mreynolds.pathplanner.src.data.actions;
 
-public class ArmAction extends Action<ArmAction.Options> {
+/**
+ * An {@link Action} describing the actuation of an arm
+ * 
+ * @author Matthew Reynolds
+ *
+ */
+public class ArmAction extends Action<ArmAction.Option> {
 
-	public static enum Options implements Action.ActionOptions {
+	/**
+	 * <li>{@link Option#ArmDown} puts the arm in the down position
+	 * <li>{@link Option#ArmUp} puts the arm in the upright position
+	 *
+	 * @author Matthew Reynolds
+	 * @see Action.ActionOption
+	 */
+	public static enum Option implements Action.ActionOption {
 		ArmDown, ArmUp
 	}
 
 	public ArmAction() {
-		this(Options.ArmDown);
+		this(Option.ArmDown);
 	}
 
-	public ArmAction(Options options) {
+	public ArmAction(Option options) {
 		super(options);
 		timeout = 0.5;
 	}
@@ -26,8 +39,8 @@ public class ArmAction extends Action<ArmAction.Options> {
 	}
 
 	@Override
-	public Options getDefaultOption() {
-		return Options.ArmDown;
+	public Option getDefaultOption() {
+		return Option.ArmDown;
 	}
 
 }

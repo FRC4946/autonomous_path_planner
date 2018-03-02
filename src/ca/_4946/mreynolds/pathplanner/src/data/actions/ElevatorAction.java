@@ -1,16 +1,35 @@
 package ca._4946.mreynolds.pathplanner.src.data.actions;
 
-public class ElevatorAction extends Action<ElevatorAction.Options> {
+/**
+ * An {@link Action} describing elevator movement to specified heights
+ * 
+ * @author Matthew Reynolds
+ *
+ */
+public class ElevatorAction extends Action<ElevatorAction.Option> {
 
-	public static enum Options implements Action.ActionOptions {
+	/**
+	 * <li>{@link Option#ToBottom} moves the elevator to its minimum height
+	 * <li>{@link Option#ToSwitch} moves the elevator to the height needed to score
+	 * on the switch
+	 * <li>{@link Option#ToScaleLow} moves the elevator to the height needed to
+	 * score on the scale when it is tipped down
+	 * <li>{@link Option#ToScaleHigh} moves the elevator to the height needed to
+	 * score on the scale when it is tipped up
+	 * <li>{@link Option#ToCustom} moves the elevator to a custom height
+	 * 
+	 * @author Matthew Reynolds
+	 * @see Action.ActionOption
+	 */
+	public static enum Option implements Action.ActionOption {
 		ToBottom, ToSwitch, ToScaleLow, ToScaleHigh, ToCustom
 	}
 
 	public ElevatorAction() {
-		this(Options.ToBottom);
+		this(Option.ToBottom);
 	}
 
-	public ElevatorAction(Options options) {
+	public ElevatorAction(Option options) {
 		super(options);
 		data = 12;
 	}
@@ -22,14 +41,14 @@ public class ElevatorAction extends Action<ElevatorAction.Options> {
 
 	@Override
 	public String getDataLabel() {
-		if (options == Options.ToCustom)
+		if (option == Option.ToCustom)
 			return "Height:";
 
 		return "";
 	}
-	
+
 	@Override
-	public Options getDefaultOption() {
-		return Options.ToBottom;
+	public Option getDefaultOption() {
+		return Option.ToBottom;
 	}
 }
