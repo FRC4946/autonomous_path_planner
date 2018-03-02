@@ -38,6 +38,8 @@ public class FieldPanel extends JPanel {
 	private boolean m_isBlue = true;
 	private boolean m_isInteractive = true;
 
+	private boolean m_hasFresh = false;
+
 	private Image blueField;
 	private Image redField;
 	private Image switchRedL;
@@ -55,7 +57,8 @@ public class FieldPanel extends JPanel {
 
 	// Refresh at 15fps
 	private Timer m_refreshTimer = new Timer(1000 / 15, e -> {
-		repaint();
+		if (m_hasFresh)
+			repaint();
 	});
 
 	private double px2in_x(double a) {
@@ -173,7 +176,7 @@ public class FieldPanel extends JPanel {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setStroke(new BasicStroke(1));
 
-			path.generatePath();
+			// path.generatePath();
 
 			for (int i = 0; i < path.getLeftPath().size(); i++) {
 				Point l = pt2px(new Point(path.getLeftPath().get(i).x, path.getLeftPath().get(i).y));
@@ -473,5 +476,8 @@ public class FieldPanel extends JPanel {
 	public void setScript(Script script, String data) {
 		m_script = script;
 		m_data = data;
+
+		if (m_script != null)
+			m_script.getActions().addListListener(() -> m_hasFresh = true);
 	}
 }

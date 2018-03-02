@@ -30,8 +30,10 @@ public class Script {
 		DriveAction prevPath = null;
 		for (int i = 0; i < script.size(); i++) {
 			if (prevPath == null) {
-				if (script.get(i) instanceof DriveAction)
+				if (script.get(i) instanceof DriveAction) {
 					prevPath = (DriveAction) script.get(i);
+					prevPath.generatePath();
+				}
 				continue;
 			}
 
