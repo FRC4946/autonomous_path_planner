@@ -153,11 +153,11 @@ public class ControlPanel extends JPanel {
 
 				JButton toggleColor = new JButton("Red");
 				toggleColor.addActionListener(e -> {
-					PathPlanner.main.fieldIsBlue = !PathPlanner.main.fieldIsBlue;
-					if (PathPlanner.main.fieldIsBlue)
-						toggleColor.setText("Red");
-					else
+					PathPlanner.main.setFieldColor(!PathPlanner.main.getFieldColor());
+					if (PathPlanner.main.getFieldColor())
 						toggleColor.setText("Blue");
+					else
+						toggleColor.setText("Red");
 				});
 				GridBagConstraints gbc_toggleColor = new GridBagConstraints();
 				gbc_toggleColor.insets = new Insets(0, 0, 0, 5);
@@ -351,7 +351,7 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void setConfig(String msg) {
-		PathPlanner.main.gameData = msg.toLowerCase().substring(0, 2);
+		PathPlanner.main.setGameData(msg.toLowerCase().substring(0, 2));
 		updateActionList(PathPlanner.main.getScript().getActions());
 
 		m_copyLLBtn.setEnabled(true);
@@ -359,7 +359,7 @@ public class ControlPanel extends JPanel {
 		m_copyRLBtn.setEnabled(true);
 		m_copyRRBtn.setEnabled(true);
 
-		switch (PathPlanner.main.gameData.toLowerCase()) {
+		switch (PathPlanner.main.getGameData().toLowerCase()) {
 		case "ll":
 			m_copyLLBtn.setEnabled(false);
 			break;
@@ -456,7 +456,7 @@ public class ControlPanel extends JPanel {
 	private void load() {
 		LoadScriptDialog ls = new LoadScriptDialog();
 		ls.setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
-		ls.setLocationRelativeTo(PathPlanner.main.window);
+		ls.setLocationRelativeTo(PathPlanner.main.getWindow());
 		ls.setVisible(true);
 	}
 

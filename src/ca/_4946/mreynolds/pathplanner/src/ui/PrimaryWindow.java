@@ -4,7 +4,6 @@ import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.Timer;
 
 public class PrimaryWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -12,22 +11,14 @@ public class PrimaryWindow extends JFrame {
 	int width = 1350;
 	int height = 675;
 
-	private FieldPanel pathPanel;
+	public FieldPanel pathPanel;
 	private ControlPanel controlPanel;
-
-	// Refresh at 15fps
-	private Timer refreshTimer = new Timer(1000 / 15, e -> {
-		repaint();
-		revalidate();
-	});
 
 	/**
 	 * Create the application.
 	 */
 	public PrimaryWindow() {
 		initialize();
-
-		refreshTimer.start();
 	}
 
 	/**
@@ -43,7 +34,7 @@ public class PrimaryWindow extends JFrame {
 
 		setLayout(new BoxLayout(this.getContentPane(), BoxLayout.X_AXIS));
 
-		pathPanel = new FieldPanel();
+		pathPanel = new FieldPanel(true);
 		pathPanel.setMinimumSize(new Dimension((int) (height / 1.08556149733), height));
 		pathPanel.setPreferredSize(new Dimension((int) (height / 1.08556149733), height));
 		pathPanel.setMaximumSize(new Dimension((int) (height / 1.08556149733), height));

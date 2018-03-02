@@ -9,17 +9,17 @@ public class Waypoint extends Point {
 
 	public Waypoint() {
 		super();
-		size = 5;
+		size = 6;
 	}
 
 	public Waypoint(double x, double y) {
 		super(x, y);
-		size = 5;
+		size = 6;
 	}
 
 	public Waypoint(java.awt.Point point) {
 		super(point);
-		size = 5;
+		size = 6;
 	}
 
 	public Waypoint(Waypoint point) {
@@ -28,12 +28,12 @@ public class Waypoint extends Point {
 		automaticHeading = point.automaticHeading;
 		heading = point.heading;
 		r = point.r;
-		size = 5;
+		size = 6;
 	}
 
 	public Waypoint(Point point) {
 		super(point);
-		size = 5;
+		size = 6;
 	}
 
 	public double updateAutoHeading(Waypoint prev, Waypoint next) {
@@ -64,7 +64,7 @@ public class Waypoint extends Point {
 
 		p.x += r * Math.cos(Math.toRadians(heading));
 		p.y += r * Math.sin(Math.toRadians(heading));
-		p.size = 5;
+		p.size = 6;
 
 		return p;
 	}
@@ -74,7 +74,7 @@ public class Waypoint extends Point {
 
 		p.x -= r * Math.cos(Math.toRadians(heading));
 		p.y -= r * Math.sin(Math.toRadians(heading));
-		p.size = 5;
+		p.size = 6;
 
 		return p;
 	}

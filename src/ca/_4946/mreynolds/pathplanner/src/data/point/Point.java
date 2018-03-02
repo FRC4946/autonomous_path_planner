@@ -1,7 +1,5 @@
 package ca._4946.mreynolds.pathplanner.src.data.point;
 
-import java.awt.Graphics;
-
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 import ca._4946.mreynolds.util.ObservableElement;
 
@@ -9,7 +7,7 @@ public class Point extends ObservableElement {
 
 	protected double x;
 	protected double y;
-	protected int size = 2;
+	protected int size = 3;
 
 	public Point() {
 		this(0, 0);
@@ -44,14 +42,6 @@ public class Point extends ObservableElement {
 		return distance(p) < size;
 	}
 
-	public void draw(Graphics g) {
-		draw(g, size);
-	}
-
-	public void draw(Graphics g, int radius) {
-		g.fillOval((int) Math.round(x - radius), (int) Math.round(y - radius), 2 * radius, 2 * radius);
-	}
-
 	public void setX(double x) {
 		this.x = x;
 		fireElementChanged();
@@ -61,7 +51,7 @@ public class Point extends ObservableElement {
 		this.y = y;
 		fireElementChanged();
 	}
-	
+
 	public void setSize(int size) {
 		this.size = size;
 		fireElementChanged();
@@ -73,6 +63,10 @@ public class Point extends ObservableElement {
 
 	public double getY() {
 		return y;
+	}
+
+	public double getSize() {
+		return size;
 	}
 
 }

@@ -29,7 +29,7 @@ public class LoadScriptDialog extends JDialog {
 
 	ScriptBundle bundle = null;
 	String src = "ll";
-	FieldPanel2 field;
+	FieldPanel field;
 
 	/**
 	 * Create the dialog.
@@ -48,9 +48,9 @@ public class LoadScriptDialog extends JDialog {
 			fc.setFileFilter(new FileNameExtensionFilter("XML", "xml"));
 			fc.setControlButtonsAreShown(false);
 			fc.addActionListener(e -> {
-				if(fc.getSelectedFile() == null)
+				if (fc.getSelectedFile() == null)
 					return;
-				
+
 				try {
 					bundle = FileIO.loadScript(fc.getSelectedFile());
 					updateField();
@@ -59,7 +59,7 @@ public class LoadScriptDialog extends JDialog {
 				}
 			});
 
-			field = new FieldPanel2(null, "ll");
+			field = new FieldPanel(false);
 
 			splitPane.setLeftComponent(fc);
 			splitPane.setRightComponent(field);
@@ -129,8 +129,7 @@ public class LoadScriptDialog extends JDialog {
 	}
 
 	private void updateField() {
-		field.m_data = src;
-		field.m_script = bundle.getScript(src);
+		field.setScript(bundle.getScript(src), src);
 		field.repaint();
 	}
 

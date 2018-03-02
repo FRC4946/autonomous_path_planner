@@ -14,9 +14,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
-import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
@@ -33,6 +33,11 @@ import ca._4946.mreynolds.pathplanner.src.math.bezier.CubicBezier;
 public class FieldPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
+	private Script m_script = null;
+	private String m_data = "ll";
+	private boolean m_isBlue = true;
+	private boolean m_isInteractive = true;
+
 	private Image blueField;
 	private Image redField;
 	private Image switchRedL;
@@ -47,6 +52,11 @@ public class FieldPanel extends JPanel {
 	public static final double PIXELS_PER_INCH = 2.09350808615;
 	public static final int ORIGIN_X_PX = IMG_WIDTH / 2;
 	public static final int ORIGIN_Y_PX = 752;
+
+	// Refresh at 15fps
+	private Timer m_refreshTimer = new Timer(1000 / 15, e -> {
+		repaint();
+	});
 
 	private double px2in_x(double a) {
 		double scaling = (double) (getWidth()) / IMG_WIDTH * PIXELS_PER_INCH;
@@ -89,7 +99,7 @@ public class FieldPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public FieldPanel() {
+	public FieldPanel(boolean isInteractive) {
 		try {
 			String fieldDir = "/ca/_4946/mreynolds/pathplanner/resources/field/";
 			String robotDir = "/ca/_4946/mreynolds/pathplanner/resources/robot/";
@@ -108,19 +118,30 @@ public class FieldPanel extends JPanel {
 			e.printStackTrace();
 		}
 
-		addMouseListener(mouse);
-		addMouseMotionListener(mouse);
+		m_isInteractive = isInteractive;
+		if (m_isInteractive) {
+			addMouseListener(mouse);
+			addMouseMotionListener(mouse);
+		}
+
+		m_refreshTimer.start();
+	}
+
+	public void drawPt(Graphics g, Point pt) {
+		int radius = (int) (pt.getSize() * ((double) getWidth() / (double) IMG_WIDTH));
+
+		g.fillOval((int) Math.round(pt.getX() - radius), (int) Math.round(pt.getY() - radius), 2 * radius, 2 * radius);
 	}
 
 	public void drawBackground(Graphics g) {
-		if (PathPlanner.main.fieldIsBlue) {
+		if (m_isBlue) {
 			g.drawImage(blueField, 0, 0, getWidth(), getHeight(), this);
-			if (PathPlanner.main.gameData.charAt(1) == 'l')
+			if (m_data.charAt(1) == 'l')
 				g.drawImage(scaleBlueL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(scaleRedL, 0, 0, getWidth(), getHeight(), this);
 
-			if (PathPlanner.main.gameData.charAt(0) == 'l')
+			if (m_data.charAt(0) == 'l')
 				g.drawImage(switchBlueL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(switchRedL, 0, 0, getWidth(), getHeight(), this);
@@ -128,12 +149,12 @@ public class FieldPanel extends JPanel {
 
 		else {
 			g.drawImage(redField, 0, 0, getWidth(), getHeight(), this);
-			if (PathPlanner.main.gameData.charAt(1) == 'l')
+			if (m_data.charAt(1) == 'l')
 				g.drawImage(scaleRedL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(scaleBlueL, 0, 0, getWidth(), getHeight(), this);
 
-			if (PathPlanner.main.gameData.charAt(0) == 'l')
+			if (m_data.charAt(0) == 'l')
 				g.drawImage(switchRedL, 0, 0, getWidth(), getHeight(), this);
 			else
 				g.drawImage(switchBlueL, 0, 0, getWidth(), getHeight(), this);
@@ -143,11 +164,11 @@ public class FieldPanel extends JPanel {
 	public void drawMagnets(Graphics g) {
 		g.setColor(Color.YELLOW);
 		for (MagnetPoint p : PathPlannerSettings.getMagnets())
-			pt2px(p).draw(g);
+			drawPt(g, pt2px(p));
 	}
 
 	public void drawPaths(Graphics g) {
-		for (DriveAction path : PathPlanner.main.getScript().getDriveActions()) {
+		for (DriveAction path : m_script.getDriveActions()) {
 
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setStroke(new BasicStroke(1));
@@ -162,32 +183,32 @@ public class FieldPanel extends JPanel {
 				g.drawLine((int) l.getX(), (int) l.getY(), (int) r.getX(), (int) r.getY());
 
 				g.setColor(Color.RED);
-				l.draw(g);
-				r.draw(g);
+				drawPt(g, l);
+				drawPt(g, r);
 			}
 
 			g.setColor(Color.CYAN);
 			for (Segment s : PathParser.fillPath(path.getCurves()))
-				pt2px(new Point(s.x, s.y)).draw(g);
+				drawPt(g, pt2px(new Point(s.x, s.y)));
 		}
 	}
 
 	public void drawActions(Graphics g) {
 
-		for (int i = PathPlanner.main.getScript().getActions().size() - 1; i >= 0; i--) {
+		for (int i = m_script.getActions().size() - 1; i >= 0; i--) {
 
-			Action<?> d = PathPlanner.main.getScript().getAction(i);
+			Action<?> d = m_script.getAction(i);
 			if (!(d instanceof DriveAction))
 				continue;
 
 			for (int j = i - 1; j >= 0; j--) {
-				Action<?> a = PathPlanner.main.getScript().getAction(j);
+				Action<?> a = m_script.getAction(j);
 				if (a.getBehaviour() == Behaviour.kSequential || a instanceof DriveAction)
 					break;
 				if (a.getDelay() == 0)
 					continue;
 
-				int position = (int) ((a.getDelay()-d.getDelay()) / PathPlannerSettings.SAMPLE_PERIOD);
+				int position = (int) ((a.getDelay() - d.getDelay()) / PathPlannerSettings.SAMPLE_PERIOD);
 				position = Math.min(((DriveAction) d).getLeftPath().size() - 1, position);
 
 				Point l = ((DriveAction) d).getLeftPath().get(position).toPt();
@@ -196,7 +217,7 @@ public class FieldPanel extends JPanel {
 
 				g.setColor(Action.getBkgColor(a));
 				p.setSize(10);
-				p.draw(g);
+				drawPt(g, p);
 			}
 
 		}
@@ -205,7 +226,7 @@ public class FieldPanel extends JPanel {
 
 	private void drawBots(Graphics g) {
 
-		List<DriveAction> driveActions = PathPlanner.main.getScript().getActionOfType(DriveAction.class);
+		List<DriveAction> driveActions = m_script.getActionOfType(DriveAction.class);
 		if (driveActions.isEmpty())
 			return;
 
@@ -214,7 +235,7 @@ public class FieldPanel extends JPanel {
 		if (origin != null && !origin.isEmpty())
 			drawBot(origin.getPt(0), origin.getData() == 1, (Graphics2D) g);
 
-		List<Action<?>> list = PathPlanner.main.getScript().getActionOfType(DriveAction.class, TurnAction.class);
+		List<Action<?>> list = m_script.getActionOfType(DriveAction.class, TurnAction.class);
 
 		Waypoint prevPt = null;
 		for (Action<?> a : list) {
@@ -235,7 +256,7 @@ public class FieldPanel extends JPanel {
 	}
 
 	private void drawBot(Waypoint o, boolean isFlipped, Graphics2D g) {
-		Image robot = PathPlanner.main.fieldIsBlue ? blueRobot : redRobot;
+		Image robot = m_isBlue ? blueRobot : redRobot;
 
 		// Move the image to the point
 		AffineTransform tx = new AffineTransform();
@@ -278,23 +299,28 @@ public class FieldPanel extends JPanel {
 		g2.setStroke(new BasicStroke(2));
 		g2.setColor(Color.BLUE);
 		g.drawLine((int) h1.getX(), (int) h1.getY(), (int) h2.getX(), (int) h2.getY());
-		pt2px(p).draw(g);
+		drawPt(g, pt2px(p));
 
 		g2.setColor(Color.MAGENTA);
-		h1.draw(g2, 4);
-		h2.draw(g2, 4);
+		drawPt(g2, h1);
+		drawPt(g2, h2);
 	}
 
 	public void paintComponent(Graphics g) {
 		drawBackground(g);
-		drawPaths(g);
-		drawActions(g);
-		drawBots(g);
-		drawMagnets(g);
 
-		for (DriveAction path : PathPlanner.main.getScript().getDriveActions())
-			for (int i = 0; i < path.getNumPts(); i++)
-				drawWaypoint(path.getPt(i), g);
+		if (m_script != null) {
+			drawPaths(g);
+			drawActions(g);
+			drawBots(g);
+
+			if (m_isInteractive) {
+				drawMagnets(g);
+			}
+			for (DriveAction path : m_script.getDriveActions())
+				for (int i = 0; i < path.getNumPts(); i++)
+					drawWaypoint(path.getPt(i), g);
+		}
 	}
 
 	MouseAdapter mouse = new MouseAdapter() {
@@ -348,14 +374,13 @@ public class FieldPanel extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			curAction = null;
-			Script script = PathPlanner.main.getScript();
 
-			if (script.getDriveActions().isEmpty())
-				script.addAction(new DriveAction());
+			if (m_script.getDriveActions().isEmpty())
+				m_script.addAction(new DriveAction());
 
 			Point click = pt2in(new Point(e.getPoint()));
 
-			List<DriveAction> actions = script.getDriveActions();
+			List<DriveAction> actions = m_script.getDriveActions();
 			for (int j = 0; j < actions.size(); j++) {
 				curAction = actions.get(j);
 
@@ -371,7 +396,6 @@ public class FieldPanel extends JPanel {
 
 				// Left click
 				else {
-
 					// Check handles
 					for (int i = 0; i < curAction.getNumPts(); i++) {
 						if (curAction.getPt(i).getHandle().contains(click)) {
@@ -429,4 +453,25 @@ public class FieldPanel extends JPanel {
 			curAction = null;
 		}
 	};
+
+	/**
+	 * @return the color
+	 */
+	public boolean isBlue() {
+		return m_isBlue;
+	}
+
+	/**
+	 * @param isBlue
+	 *            the color to set
+	 */
+	public void setBlue(boolean isBlue) {
+		this.m_isBlue = isBlue;
+		repaint();
+	}
+
+	public void setScript(Script script, String data) {
+		m_script = script;
+		m_data = data;
+	}
 }
