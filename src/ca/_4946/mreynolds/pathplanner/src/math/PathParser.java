@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
+import ca._4946.mreynolds.pathplanner.src.data.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
@@ -26,7 +27,7 @@ public class PathParser {
 		double dist = 0;
 		for (CubicBezier c : list) {
 			for (double pos = 0; pos < c.length(); pos += spacing) {
-				Segment seg = c.getSegOnCurve(pos / c.length());
+				Segment seg = new Segment(c.getPtOnCurve(pos / c.length()));
 				seg.pos = dist + pos;
 				fill.add(seg);
 			}
@@ -63,7 +64,8 @@ public class PathParser {
 			dist *= -1;
 
 		// Create the motion profile
-		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(dist, PathPlannerSettings.MAX_VEL, PathPlannerSettings.MAX_ACCEL, PathPlannerSettings.MAX_JERK);
+		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(dist, PathPlannerSettings.MAX_VEL,
+				PathPlannerSettings.MAX_ACCEL, PathPlannerSettings.MAX_JERK);
 		double time = 0;
 		int lastSeg = 0;
 

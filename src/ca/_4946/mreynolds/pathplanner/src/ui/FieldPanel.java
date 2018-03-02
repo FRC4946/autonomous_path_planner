@@ -18,6 +18,7 @@ import javax.swing.Timer;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
+import ca._4946.mreynolds.pathplanner.src.data.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
@@ -27,7 +28,6 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.MagnetPoint;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
 import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
-import ca._4946.mreynolds.pathplanner.src.math.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.math.PathParser;
 
 public class FieldPanel extends JPanel {

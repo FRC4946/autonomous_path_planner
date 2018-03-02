@@ -3,9 +3,9 @@ package ca._4946.mreynolds.pathplanner.src.data.actions;
 import java.util.ArrayList;
 
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
+import ca._4946.mreynolds.pathplanner.src.data.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
-import ca._4946.mreynolds.pathplanner.src.math.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.math.PathParser;
 import ca._4946.mreynolds.pathplanner.src.math.TrapezoidMotionProfile;
 import ca._4946.mreynolds.util.ObservableList;
