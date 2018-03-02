@@ -10,108 +10,171 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
 import ca._4946.mreynolds.util.ObservableList;
 
+/**
+ * An ordered collection of {@link Actions} representing an autonomous behavior
+ * 
+ * @author Matthew
+ *
+ */
 public class Script {
+	private ObservableList<Action<?>> m_script;
 
-	private ObservableList<Action<?>> script;
-
+	/**
+	 * Create an empty {@code Script}
+	 */
 	public Script() {
-		script = new ObservableList<>();
-		script.addListListener(() -> connectPaths());
+		m_script = new ObservableList<>();
+		m_script.addListListener(() -> connectPaths());
 	}
 
+	/**
+	 * Create a {@code Script} with all the same {@code Action}s as s
+	 * 
+	 * @paam s the {@link Script} to clone
+	 */
 	public Script(Script s) {
 		this();
-		for (Action<?> a : s.script)
-			script.add(a.clone());
+		for (Action<?> a : s.m_script)
+			m_script.add(a.clone());
 	}
 
+	/**
+	 * Ensure that consecutive paths start/end at the same point, taking into
+	 * account alternative directions and any intermediate {@link TurnAction}
+	 */
 	private void connectPaths() {
 		double offset = 0;
 		DriveAction prevPath = null;
-		for (int i = 0; i < script.size(); i++) {
+		for (int i = 0; i < m_script.size(); i++) {
 			if (prevPath == null) {
-				if (script.get(i) instanceof DriveAction) {
-					prevPath = (DriveAction) script.get(i);
+				if (m_script.get(i) instanceof DriveAction) {
+					prevPath = (DriveAction) m_script.get(i);
 					prevPath.generatePath();
 				}
 				continue;
 			}
 
-			if (script.get(i) instanceof TurnAction)
-				offset += script.get(i).getData();
-			else if (script.get(i) instanceof DriveAction) {
+			if (m_script.get(i) instanceof TurnAction)
+				offset += m_script.get(i).getData();
+			else if (m_script.get(i) instanceof DriveAction) {
 				Waypoint pt = new Waypoint(prevPath.getPt(prevPath.getNumPts() - 1));
 
 				// If the isReversed flag differs on the prev and cur action, flip the heading
-				if ((script.get(i).getData() == 1) ^ (prevPath.getData() == 1))
+				if ((m_script.get(i).getData() == 1) ^ (prevPath.getData() == 1))
 					pt.setHeading(pt.getHeading() - 180);
 
 				pt.setHeading(pt.getHeading() - offset);
 				pt.setAutomaticHeading(false);
 
-				if (!((DriveAction) script.get(i)).isEmpty())
-					pt.setR(((DriveAction) script.get(i)).getPt(0).getR());
+				if (!((DriveAction) m_script.get(i)).isEmpty())
+					pt.setR(((DriveAction) m_script.get(i)).getPt(0).getR());
 
-				script.quiet();
-				((DriveAction) script.get(i)).setPt(0, pt);
+				m_script.quiet();
+				((DriveAction) m_script.get(i)).setPt(0, pt);
 
 				prevPath.generatePath();
-				((DriveAction) script.get(i)).generatePath();
+				((DriveAction) m_script.get(i)).generatePath();
 
-				prevPath = (DriveAction) script.get(i);
+				prevPath = (DriveAction) m_script.get(i);
 				offset = 0;
 			}
 
 		}
 	}
 
+	/**
+	 * @return the {@link ObservableList} of generic {@link Action}
+	 */
 	public ObservableList<Action<?>> getActions() {
-		return script;
+		return m_script;
 	}
 
+	/**
+	 * Move the specified action up one position in the script. If the script is
+	 * already at the top, nothing is done.
+	 * 
+	 * @param a
+	 *            the {@link Action} to move
+	 */
 	public void moveActionUp(Action<?> a) {
-		int index = script.indexOf(a);
+		int index = m_script.indexOf(a);
 		if (index == 0)
 			return;
 
-		script.quiet();
-		script.remove(a);
-		script.add(index - 1, a);
+		m_script.quiet();
+		m_script.remove(a);
+		m_script.add(index - 1, a);
 	}
 
+	/**
+	 * Move the specified action down one position in the script. If the script is
+	 * already at the bottom, nothing is done.
+	 * 
+	 * @param a
+	 *            the {@link Action} to move
+	 */
 	public void moveActionDown(Action<?> a) {
-		int index = script.indexOf(a);
-		if (index == script.size() - 1)
+		int index = m_script.indexOf(a);
+		if (index == m_script.size() - 1)
 			return;
 
-		script.quiet();
-		script.remove(a);
-		script.add(index + 1, a);
+		m_script.quiet();
+		m_script.remove(a);
+		m_script.add(index + 1, a);
 	}
 
+	/**
+	 * Remove an Action from the script, and reconnect the paths with
+	 * {@link Script#connectPaths()}
+	 * 
+	 * @param a
+	 *            the {@link Action} to remove
+	 */
 	public void removeAction(Action<?> a) {
-		script.remove(a);
+		m_script.remove(a);
+		connectPaths();
 	}
 
+	/**
+	 * Add an Action to the script, and reconnect the paths with
+	 * {@link Script#connectPaths()} <br>
+	 * If the new Action is a {@link DriveAction}, one of the two cases will occur:
+	 * <li>If there exists any {@link TurnAction}s between the new and previous
+	 * {@code DriveAction}s, use the same direction
+	 * <li>If there are no {@code TurnAction}s, reverse the new action <br>
+	 * If the new Action is a {@link ArmAction}, the default
+	 * {@link ArmAction.Options} will be the opposite of the previous
+	 * {@code ArmAction}
+	 * 
+	 * @param a
+	 *            the {@link Action} to add
+	 */
 	public void addAction(Action<?> a) {
+
+		// If the new action is a DriveAction and there exist previous DriveActions, we
+		// need to determine which direction to point the new action.
 		if (a instanceof DriveAction && !getDriveActions().isEmpty()) {
 			List<Action<?>> actions = getActionOfType(DriveAction.class, TurnAction.class);
 
+			// Determine if there were any TurnActions between then end of the script and
+			// the last DriveAction
 			boolean didTurn = false;
 			for (int i = actions.size() - 1; i >= 0; i--) {
 				if (actions.get(i) instanceof TurnAction && actions.get(i).getData() != 0)
 					didTurn = true;
-				if (actions.get(i) instanceof DriveAction)
+				else if (actions.get(i) instanceof DriveAction)
 					break;
 			}
 
+			// If there were any turns, do NOT flip the direction. Otherwise, flip it.
 			int prevDir = (int) getDriveActions().get(getDriveActions().size() - 1).getData();
-			if (!didTurn)
-				a.setData(prevDir ^ 1);
-			else
-				a.setData(prevDir);
+			a.setData(didTurn ? prevDir : prevDir ^ 1);
 			connectPaths();
+
 		}
+
+		// If the new action is an ArmAction and there exist previous ArmActions, we
+		// need to flip the state of the arm
 		else if (a instanceof ArmAction && !getActionOfType(ArmAction.class).isEmpty()) {
 			ArmAction.Options opt = ArmAction.Options.valueOf(ArmAction.Options.class, getActionOfType(ArmAction.class)
 					.get(getActionOfType(ArmAction.class).size() - 1).getOptions().toString());
@@ -120,13 +183,23 @@ public class Script {
 			else
 				((ArmAction) a).setOptions(ArmAction.Options.ArmDown);
 		}
-		script.add(a);
+
+		// Add the new action to the list
+		m_script.add(a);
 	}
 
+	/**
+	 * Get all of the {@code Action}s in the script of the specified types
+	 * 
+	 * @param types
+	 *            the {@link Class} of every {@link Action} we want for the search
+	 *            for
+	 * @return an {@link ArrayList} of the {@code Action}s
+	 */
 	public ArrayList<Action<?>> getActionOfType(Class<?>... types) {
 
 		ArrayList<Action<?>> list = new ArrayList<>();
-		for (Action<?> a : script)
+		for (Action<?> a : m_script)
 			for (Class<?> type : types)
 				if (type.isAssignableFrom(a.getClass()))
 					list.add(a);
@@ -134,36 +207,55 @@ public class Script {
 		return list;
 	}
 
+	/**
+	 * Get all of the {@code Action}s in the script of the specified type
+	 * 
+	 * @param types
+	 *            the {@link Class} of the {@link Action} type we want to the search
+	 *            for
+	 * @return an {@link ArrayList} of the {@code Action}s
+	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Action<?>> ArrayList<T> getActionOfType(Class<T> type) {
 
 		ArrayList<T> list = new ArrayList<>();
-		for (Action<?> a : script)
+		for (Action<?> a : m_script)
 			if (type.isAssignableFrom(a.getClass()))
 				list.add((T) a);
 
 		return list;
 	}
 
+	/**
+	 * @return all of the {@link DriveAction}s in the script
+	 */
 	public ArrayList<DriveAction> getDriveActions() {
-		// ArrayList<DriveAction> list = new ArrayList<>();
-		// for (DriveAction a : getActionOfType(DriveAction.class))
-		// if (a.options == DriveAction.Options.FollowPath)
-		// list.add((DriveAction) a);
-		// return list;
 		return getActionOfType(DriveAction.class);
 	}
 
+	/**
+	 * @param index
+	 *            the index of the desired {@link Action}
+	 * @return the {@code Action} at index {@code index}
+	 */
 	public Action<?> getAction(int index) {
-		return script.get(index);
+		return m_script.get(index);
 	}
 
+	/**
+	 * @param a
+	 *            the {@link Action} to search for
+	 * @return the index of the specified {@code Action} in the script
+	 */
 	public int indexOf(Action<?> a) {
-		return script.indexOf(a);
+		return m_script.indexOf(a);
 	}
 
+	/**
+	 * Remove all {@code Action}s from the script
+	 */
 	public void clear() {
-		script.clear();
+		m_script.clear();
 	}
 
 }
