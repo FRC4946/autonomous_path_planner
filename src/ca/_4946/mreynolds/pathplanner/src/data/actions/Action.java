@@ -13,7 +13,7 @@ import ca._4946.mreynolds.util.ObservableElement;
  * @author Matthew Reynolds
  *
  * @param <T>
- *            The {@link ActionOption} that the overriding subclass implements
+ *            The {@link ActionOption} that the implementing subclass implements
  * @see Action.ActionOption
  * @see Action.Behaviour
  */
