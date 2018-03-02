@@ -25,7 +25,7 @@ import javax.swing.event.EventListenerList;
  * An extension of the {@link JPanel} class, adding functionality for the
  * {@link PanelRemovedListener}
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * @see ca._4946.mreynolds.customSwing.PanelRemovedListener
  * 
  */

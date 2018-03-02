@@ -32,7 +32,7 @@ import javax.swing.border.BevelBorder;
 /**
  * A {@link JPanel} that can be folded/collapsed vertically.
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * 
  */
 public class CollapsablePanel extends JPanel {

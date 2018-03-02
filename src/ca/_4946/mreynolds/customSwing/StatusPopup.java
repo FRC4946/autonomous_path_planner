@@ -40,7 +40,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * A {@link JDialog} used to display a status during an operation.
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * 
  */
 public class StatusPopup extends JDialog {

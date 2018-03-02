@@ -14,7 +14,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
  * A bundle of 4 {@link Script}s, one representing each of the 4 possible field
  * configurations ("LLL", "LRL", "RLR", "RRR")
  * 
- * @author Matthew
+ * @author Matthew Reynolds
  *
  */
 public class ScriptBundle {

@@ -28,7 +28,7 @@ import javax.swing.SwingConstants;
 /**
  * A {@link JPanel} implementation of the {@link Scrollable} interface
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * @see JPanel
  * @see Scrollable
  * 

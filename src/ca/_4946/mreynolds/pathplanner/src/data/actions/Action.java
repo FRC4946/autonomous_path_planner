@@ -5,6 +5,14 @@ import java.awt.Color;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action.ActionOptions;
 import ca._4946.mreynolds.util.ObservableElement;
 
+/**
+ * Abstract class describing an action the robot can perform in autonomous.
+ * These roughly correspond to WPILib Commands
+ * 
+ * @author Matthew Reynolds
+ *
+ * @param <T>
+ */
 public abstract class Action<T extends Enum<T> & ActionOptions> extends ObservableElement {
 
 	public interface ActionOptions {
@@ -38,7 +46,8 @@ public abstract class Action<T extends Enum<T> & ActionOptions> extends Observab
 	}
 
 	/**
-	 * @param options the options to set
+	 * @param options
+	 *            the options to set
 	 */
 	public void setOptions(Enum<T> options) {
 		this.options = options;
@@ -53,7 +62,8 @@ public abstract class Action<T extends Enum<T> & ActionOptions> extends Observab
 	}
 
 	/**
-	 * @param behaviour the behaviour to set
+	 * @param behaviour
+	 *            the behaviour to set
 	 */
 	public void setBehaviour(Behaviour behaviour) {
 		this.behaviour = behaviour;
@@ -68,7 +78,8 @@ public abstract class Action<T extends Enum<T> & ActionOptions> extends Observab
 	}
 
 	/**
-	 * @param delay the delay to set
+	 * @param delay
+	 *            the delay to set
 	 */
 	public void setDelay(double delay) {
 		this.delay = delay;
@@ -83,7 +94,8 @@ public abstract class Action<T extends Enum<T> & ActionOptions> extends Observab
 	}
 
 	/**
-	 * @param timeout the timeout to set
+	 * @param timeout
+	 *            the timeout to set
 	 */
 	public void setTimeout(double timeout) {
 		this.timeout = timeout;
@@ -98,13 +110,14 @@ public abstract class Action<T extends Enum<T> & ActionOptions> extends Observab
 	}
 
 	/**
-	 * @param data the data to set
+	 * @param data
+	 *            the data to set
 	 */
 	public void setData(double data) {
 		this.data = data;
 		fireElementChanged();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Action<T> clone() {
 		Action<T> a = null;

@@ -26,7 +26,7 @@ import javax.swing.JComponent;
  * To be used in conjunction with the {@link RemovableJPanel} class. This
  * listener listens for a panel losing its parent component.
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * 
  */
 public interface PanelRemovedListener extends EventListener {

@@ -13,7 +13,7 @@ import ca._4946.mreynolds.util.ObservableList;
 /**
  * An ordered collection of {@link Actions} representing an autonomous behavior
  * 
- * @author Matthew
+ * @author Matthew Reynolds
  *
  */
 public class Script {

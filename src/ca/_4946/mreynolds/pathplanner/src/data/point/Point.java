@@ -7,7 +7,7 @@ import ca._4946.mreynolds.util.ObservableElement;
 /**
  * A simple 2D point representation (x, y) with double precision
  * 
- * @author Matthew
+ * @author Matthew Reynolds
  *
  */
 public class Point extends ObservableElement {

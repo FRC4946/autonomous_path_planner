@@ -21,7 +21,7 @@
  * <p>
  * <b>Fully commented.<b>
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  *
  */
 package ca._4946.mreynolds.customSwing;

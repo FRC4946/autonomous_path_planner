@@ -4,7 +4,7 @@ package ca._4946.mreynolds.pathplanner.src.data.point;
  * A {@link Point} that contains a heading and radius that can be locked to
  * {@link MagnetPoint}s
  * 
- * @author Matthew
+ * @author Matthew Reynolds
  *
  */
 public class ControlPoint extends Point {

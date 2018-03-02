@@ -41,7 +41,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * A {@link JDialog} used to display an error message.
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * 
  */
 public class ErrorPopup extends JDialog {

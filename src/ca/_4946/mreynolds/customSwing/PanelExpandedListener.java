@@ -24,7 +24,7 @@ import java.util.EventListener;
  * To be used in conjunction with the {@link CollapsablePanel} class. This
  * listener listens for a panel being expanded
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * 
  */
 public interface PanelExpandedListener extends EventListener {

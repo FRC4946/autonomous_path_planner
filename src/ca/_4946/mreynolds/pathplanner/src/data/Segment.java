@@ -11,7 +11,7 @@ import ca._4946.mreynolds.pathplanner.src.data.point.Point;
  * <li>Motion: position travelled, velocity, acceleration, and jerk
  * <li>Other: delta time
  * 
- * @author Matthew
+ * @author Matthew Reynolds
  *
  */
 public class Segment {

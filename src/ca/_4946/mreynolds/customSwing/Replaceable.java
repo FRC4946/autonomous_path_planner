@@ -25,7 +25,7 @@ package ca._4946.mreynolds.customSwing;
  * {@code existingObject = objWithNewValues}) without changing the reference,
  * only the object's values.
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * 
  * @param <E>
  *            the type of object that is allowed to replace the current object.

@@ -44,7 +44,7 @@ import javax.swing.border.EmptyBorder;
  * the window's frame and adds a mandatory 'Dismiss' button to the south of the
  * frame
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * 
  */
 public class FramelessDialog extends JDialog {

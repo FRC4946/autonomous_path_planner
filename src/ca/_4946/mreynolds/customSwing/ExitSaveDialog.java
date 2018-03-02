@@ -36,7 +36,7 @@ import javax.swing.border.EmptyBorder;
  * A custom {@code JDialog} that prompts the user to save their work before
  * exiting.
  * 
- * @author Matthew Reynolds
+ * @author Matthew Reynolds Reynolds
  * @see JDialog
  * 
  */

@@ -4,7 +4,7 @@ package ca._4946.mreynolds.pathplanner.src.data.point;
  * A point that {@link ControlPoint}s can snap to. May or may not have a heading
  * that will also snap the {@code ControlPoint}'s heading
  * 
- * @author Matthew
+ * @author Matthew Reynolds
  *
  */
 public class MagnetPoint extends Point {
