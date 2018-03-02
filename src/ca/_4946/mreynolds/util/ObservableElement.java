@@ -12,11 +12,11 @@ public class ObservableElement {
 
 	private EventListenerList listenerList = new EventListenerList();
 
-	protected void addElementListener(ElementListener l) {
+	public void addElementListener(ElementListener l) {
 		listenerList.add(ElementListener.class, l);
 	}
 
-	protected void removeElementListener(ElementListener l) {
+	public void removeElementListener(ElementListener l) {
 		listenerList.remove(ElementListener.class, l);
 	}
 

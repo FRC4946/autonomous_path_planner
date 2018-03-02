@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -25,13 +26,13 @@ import javax.swing.border.LineBorder;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action.Behaviour;
-import ca._4946.mreynolds.util.MathUtil;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DelayAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
+import ca._4946.mreynolds.util.MathUtil;
 
 public class ActionEditorPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -59,7 +60,7 @@ public class ActionEditorPanel extends JPanel {
 		setMaximumSize(new Dimension(1000, 28));
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 55, 90, 45, 50, 0, 30, 55, 30, 0, 0, 30, 45, 45, 45, 45, 0 };
+		gridBagLayout.columnWidths = new int[] { 55, 90, 45, 50, 0, 30, 55, 50, 0, 0, 30, 45, 45, 45, 45, 0 };
 		gridBagLayout.rowHeights = new int[] { 21, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0,
 				0.0, 0.0, Double.MIN_VALUE };
@@ -157,12 +158,12 @@ public class ActionEditorPanel extends JPanel {
 
 		JSpinner timeoutSpinner = new JSpinner();
 		timeoutSpinner.setModel(new SpinnerNumberModel(m_action.getTimeout(), -1, 15.0, 0.5));
-		GridBagConstraints gbc_timeoutSpinner = new GridBagConstraints();
-		gbc_timeoutSpinner.gridy = 0;
-		gbc_timeoutSpinner.fill = GridBagConstraints.VERTICAL;
-		gbc_timeoutSpinner.insets = new Insets(0, 0, 0, 5);
-		gbc_timeoutSpinner.anchor = GridBagConstraints.WEST;
-		gbc_timeoutSpinner.gridx = 7;
+		GridBagConstraints gbc_timeout = new GridBagConstraints();
+		gbc_timeout.gridy = 0;
+		gbc_timeout.fill = GridBagConstraints.BOTH;
+		gbc_timeout.insets = new Insets(0, 0, 0, 5);
+		gbc_timeout.anchor = GridBagConstraints.WEST;
+		gbc_timeout.gridx = 7;
 
 		ButtonGroup behaviourBtns = new ButtonGroup();
 
@@ -227,7 +228,32 @@ public class ActionEditorPanel extends JPanel {
 		add(delayLbl, gbc_delayLbl);
 		add(delaySpinner, gbc_delaySpinner);
 		add(timeoutLbl, gbc_timeoutLbl);
-		add(timeoutSpinner, gbc_timeoutSpinner);
+
+		if (m_action instanceof DriveAction) {
+			DecimalFormat f = new DecimalFormat("0.0");
+			timeoutLbl.setText("Duration");
+			JLabel durationLbl = new JLabel(f.format(((DriveAction) m_action).getDuration()));
+			durationLbl.setBackground(Color.WHITE);
+			durationLbl.setOpaque(true);
+
+			//TODO: Make this not trash
+			Thread ftpThread = new Thread(() -> {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				durationLbl.setText(f.format(((DriveAction) m_action).getDuration()));
+				revalidate();
+				repaint();
+			});
+			ftpThread.start();
+
+			add(durationLbl, gbc_timeout);
+		} else {
+			add(timeoutLbl, gbc_timeoutLbl);
+			add(timeoutSpinner, gbc_timeout);
+		}
 
 		// Add the action behaviour
 		if (!(m_action instanceof DelayAction)) {
@@ -258,6 +284,7 @@ public class ActionEditorPanel extends JPanel {
 			m_action.setOptions(Enum.valueOf(m_action.getOption().getDeclaringClass(),
 					((JComboBox<?>) e.getSource()).getSelectedItem().toString()));
 
+			
 			if (m_action instanceof ElevatorAction) {
 				if (m_action.getOption() == ElevatorAction.Option.ToCustom) {
 					m_dataLbl.setText(m_action.getDataLabel());
