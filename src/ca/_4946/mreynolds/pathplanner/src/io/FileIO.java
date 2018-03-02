@@ -498,6 +498,7 @@ public class FileIO {
 	}
 
 	public static JFileChooser getFileChooser() {
+
 		FileIO.createDefaultDir();
 		JFileChooser fileChooser = new JFileChooser(FileIO.DEFAULT_DIR);
 

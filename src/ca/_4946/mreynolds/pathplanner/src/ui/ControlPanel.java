@@ -20,6 +20,7 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,6 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
@@ -42,7 +44,6 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 import ca._4946.mreynolds.util.ObservableList;
-import javax.swing.border.EmptyBorder;
 
 public class ControlPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -318,26 +319,30 @@ public class ControlPanel extends JPanel {
 
 		JPanel btnPanel = new JPanel();
 		{
-			JButton loadBtn = new JButton("Open (O)");
-			loadBtn.addActionListener(e -> load());
+			JButton openBtn = new JButton("Open (O)");
+			openBtn.addActionListener(e -> open());
 
-			btnPanel.add(loadBtn);
+			JButton newBtn = new JButton("New");
+			newBtn.addActionListener(e -> PathPlanner.main.getScript().clear());
 
 			JButton saveBtn = new JButton("Save (S)");
 			saveBtn.addActionListener(e -> save());
-			btnPanel.add(saveBtn);
+
+			JButton loadBtn = new JButton("Load (L)");
+			loadBtn.addActionListener(e -> load());
 
 			JButton uploadBtn = new JButton("Upload (Space)");
 			uploadBtn.addActionListener(e -> upload());
-			btnPanel.add(uploadBtn);
 
 			JButton flipBtn = new JButton("Flip (F)");
 			flipBtn.addActionListener(e -> flip());
-			btnPanel.add(flipBtn);
 
-			JButton clearBtn = new JButton("Clear");
-			btnPanel.add(clearBtn);
-			clearBtn.addActionListener(e -> PathPlanner.main.getScript().clear());
+			btnPanel.add(newBtn);
+			btnPanel.add(openBtn);
+			btnPanel.add(loadBtn);
+			btnPanel.add(saveBtn);
+			btnPanel.add(uploadBtn);
+			btnPanel.add(flipBtn);
 		}
 
 		add(topPanel, BorderLayout.NORTH);
@@ -398,13 +403,14 @@ public class ControlPanel extends JPanel {
 				else if (e.getKeyCode() == KeyEvent.VK_7)
 					PathPlanner.main.getScript().addAction(new DelayAction());
 
-				else if (e.getKeyCode() == KeyEvent.VK_O)
+				else if (e.getKeyCode() == KeyEvent.VK_L)
 					load();
+				else if (e.getKeyCode() == KeyEvent.VK_O)
+					open();
 				else if (e.getKeyCode() == KeyEvent.VK_S)
 					save();
 				else if (e.getKeyCode() == KeyEvent.VK_F)
 					flip();
-
 				else if (e.getKeyCode() == KeyEvent.VK_SPACE)
 					upload();
 			}
@@ -436,15 +442,22 @@ public class ControlPanel extends JPanel {
 		updateActionList(PathPlanner.main.getScript().getActions());
 	}
 
-	private void load() {
+	private void open() {
 		JFileChooser fc = FileIO.getFileChooser();
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			PathPlanner.main.load(file);
+			PathPlanner.main.open(file);
 			m_scriptNameField.setText(PathPlanner.main.getScriptName());
 			m_notesTxtPane.setText(PathPlanner.main.getScriptNotes());
 			setupListeners();
 		}
+	}
+
+	private void load() {
+		LoadScriptDialog ls = new LoadScriptDialog();
+		ls.setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
+		ls.setLocationRelativeTo(PathPlanner.main.window);
+		ls.setVisible(true);
 	}
 
 	private void save() {

@@ -19,6 +19,21 @@ public class ScriptBundle {
 	public Script RL = new Script();
 	public Script RR = new Script();
 
+	public Script getScript(String code) {
+		switch (code.toLowerCase()) {
+		case "ll":
+			return LL;
+		case "lr":
+			return LR;
+		case "rl":
+			return RL;
+		case "rr":
+			return RR;
+		}
+		
+		return null;
+	}
+
 	public Script[] asArray() {
 		return new Script[] { LL, LR, RL, RR };
 	}

@@ -21,7 +21,7 @@ public class PathPlanner {
 	public String gameData = "ll";
 
 	public static PathPlanner main;
-	private PrimaryWindow window;
+	public PrimaryWindow window;
 
 	public PathPlanner() {
 
@@ -106,7 +106,7 @@ public class PathPlanner {
 		return scBundle.notes;
 	}
 
-	public void load(File file) {
+	public void open(File file) {
 		try {
 			scBundle = FileIO.loadScript(file);
 		} catch (Exception e) {
