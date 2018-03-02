@@ -19,10 +19,23 @@ public class TurnAction extends Action<TurnAction.Option> {
 		TurnOnSpot
 	}
 
+	/**
+	 * Create a {@code TurnAction} with:
+	 * <li>Default {@link Option} of {@link Option#TurnOnSpot}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 */
 	public TurnAction() {
 		this(Option.TurnOnSpot);
 	}
 
+	/**
+	 * Create a {@code TurnAction} with:
+	 * <li>The specified {@link Option}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 * 
+	 * @param options
+	 *            the desired {@code Option}
+	 */
 	public TurnAction(Option options) {
 		super(options);
 		data = 90;

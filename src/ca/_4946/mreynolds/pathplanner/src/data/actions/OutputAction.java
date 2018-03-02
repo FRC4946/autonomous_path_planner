@@ -18,10 +18,23 @@ public class OutputAction extends Action<OutputAction.Option> {
 		Output
 	}
 
+	/**
+	 * Create an {@code OutputAction} with:
+	 * <li>Default {@link Option} of {@link Option#Output}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 */
 	public OutputAction() {
 		this(Option.Output);
 	}
 
+	/**
+	 * Create a {@code OutputAction} with:
+	 * <li>The specified {@link Option}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 * 
+	 * @param options
+	 *            the desired {@code Option}
+	 */
 	public OutputAction(Option options) {
 		super(options);
 		data = 1;

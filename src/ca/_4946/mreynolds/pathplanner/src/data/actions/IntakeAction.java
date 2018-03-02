@@ -20,10 +20,23 @@ public class IntakeAction extends Action<IntakeAction.Option> {
 		IntakeOn, IntakeUntil
 	}
 
+	/**
+	 * Create an {@code IntakeAction} with:
+	 * <li>Default {@link Option} of {@link Option#IntakeOn}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 */
 	public IntakeAction() {
 		this(Option.IntakeOn);
 	}
 
+	/**
+	 * Create a {@code IntakeAction} with:
+	 * <li>The specified {@link Option}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 * 
+	 * @param options
+	 *            the desired {@code Option}
+	 */
 	public IntakeAction(Option options) {
 		super(options);
 		data = 1;

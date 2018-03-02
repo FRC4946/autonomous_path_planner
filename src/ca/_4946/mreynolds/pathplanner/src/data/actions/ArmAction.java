@@ -19,10 +19,23 @@ public class ArmAction extends Action<ArmAction.Option> {
 		ArmDown, ArmUp
 	}
 
+	/**
+	 * Create an {@code ArmAction} with:
+	 * <li>Default {@link Option} of {@link Option#ArmDown}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 */
 	public ArmAction() {
 		this(Option.ArmDown);
 	}
 
+	/**
+	 * Create an {@code ArmAction} with:
+	 * <li>The specified {@link Option}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 * 
+	 * @param options
+	 *            the desired {@code Option}
+	 */
 	public ArmAction(Option options) {
 		super(options);
 		timeout = 0.5;

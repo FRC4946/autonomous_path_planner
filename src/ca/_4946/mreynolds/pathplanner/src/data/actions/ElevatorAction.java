@@ -25,10 +25,23 @@ public class ElevatorAction extends Action<ElevatorAction.Option> {
 		ToBottom, ToSwitch, ToScaleLow, ToScaleHigh, ToCustom
 	}
 
+	/**
+	 * Create an {@code ElevatorAction} with:
+	 * <li>Default {@link Option} of {@link Option#ToBottom}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 */
 	public ElevatorAction() {
 		this(Option.ToBottom);
 	}
 
+	/**
+	 * Create a {@code ElevatorAction} with:
+	 * <li>The specified {@link Option}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 * 
+	 * @param options
+	 *            the desired {@code Option}
+	 */
 	public ElevatorAction(Option options) {
 		super(options);
 		data = 12;

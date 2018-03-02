@@ -20,10 +20,23 @@ public class DelayAction extends Action<DelayAction.Option> {
 		Wait
 	}
 
+	/**
+	 * Create a {@code DelayAction} with:
+	 * <li>Default {@link Option} of {@link Option#Wait}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 */
 	public DelayAction() {
 		this(Option.Wait);
 	}
 
+	/**
+	 * Create a {@code DelayAction} with:
+	 * <li>The specified {@link Option}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 * 
+	 * @param options
+	 *            the desired {@code Option}
+	 */
 	public DelayAction(Option options) {
 		super(options);
 		behaviour = Behaviour.kSequential;

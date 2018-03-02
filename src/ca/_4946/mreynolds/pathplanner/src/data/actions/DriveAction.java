@@ -3,7 +3,6 @@ package ca._4946.mreynolds.pathplanner.src.data.actions;
 import java.util.ArrayList;
 
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
-import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
 import ca._4946.mreynolds.pathplanner.src.math.CubicBezier;
@@ -30,126 +29,175 @@ public class DriveAction extends Action<DriveAction.Option> {
 		FollowPath
 	}
 
-	private ArrayList<Segment> left;
-	private ArrayList<Segment> right;
-	private ObservableList<ControlPoint> controlpts;
-	private ArrayList<CubicBezier> curves;
+	private ArrayList<Segment> m_left;
+	private ArrayList<Segment> m_right;
+	private ObservableList<ControlPoint> m_controlpts;
+	private ArrayList<CubicBezier> m_curves;
 
+	/**
+	 * Create a {@code DriveAction} with:
+	 * <li>Default {@link Option} of {@link Option#FollowPath}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 */
 	public DriveAction() {
 		this(Option.FollowPath);
 	}
 
+	/**
+	 * Create a {@code DriveAction} with:
+	 * <li>The specified {@link Option}
+	 * <li>Default {@link Behaviour} of {@link Behaviour#kSequential}
+	 * 
+	 * @param options
+	 *            the desired {@code Option}
+	 */
 	public DriveAction(Option options) {
 		super(options);
-		controlpts = new ObservableList<>();
-		left = new ArrayList<>();
-		right = new ArrayList<>();
-		curves = new ArrayList<>();
+		m_controlpts = new ObservableList<>();
+		m_left = new ArrayList<>();
+		m_right = new ArrayList<>();
+		m_curves = new ArrayList<>();
 
-		controlpts.addListListener(() -> fireElementChanged());
+		m_controlpts.addListListener(() -> fireElementChanged());
 	}
 
+	/**
+	 * Get the {@link ControlPoint} at the specified index
+	 * 
+	 * @param index
+	 *            the {@code index} to retrieve
+	 * @return the {@code ControlPoint}
+	 */
 	public ControlPoint getPt(int index) {
-		return controlpts.get(index);
+		return m_controlpts.get(index);
 	}
 
+	/**
+	 * @return the number of {@link ControlPoints} on this path
+	 */
 	public int getNumPts() {
-		return controlpts.size();
+		return m_controlpts.size();
 	}
 
+	/**
+	 * @return {@code true} if the path contains no {@link ControlPoints}
+	 */
 	public boolean isEmpty() {
-		return controlpts.isEmpty();
+		return m_controlpts.isEmpty();
 	}
 
+	/**
+	 * @return the time it will take to navigate this path, in seconds
+	 */
 	public double getDuration() {
 		return getLeftPath().size() * PathPlannerSettings.SAMPLE_PERIOD;
 	}
 
+	/**
+	 * @param index
+	 *            the index of the {@link ControlPoint} to remove
+	 */
 	public void removePt(int index) {
-		if (index < 0 || index >= controlpts.size())
+		if (index < 0 || index >= m_controlpts.size())
 			return;
 
-		// If this isn't the first or last pt...
-		if (0 < index && index < controlpts.size() - 1) {
-			getCurves().remove(index);
-			getCurves().get(index - 1).updateEnd(controlpts.get(index + 1));
+		// If this isn't the first or last pt, remove the curve that originates at this
+		// point
+		if (0 < index && index < m_controlpts.size() - 1) {
+			m_curves.remove(index);
+			m_curves.get(index - 1).updateEnd(m_controlpts.get(index + 1));
 		}
 
-		// If this is the first...
+		// If this is the first point, only remove the first curve if it exists
 		else if (0 == index) {
-			if (getCurves().size() > 0)
-				getCurves().remove(index);
+			if (m_curves.size() > 0)
+				m_curves.remove(index);
 		}
-		// If this is the last...
-		else if (index == controlpts.size() - 1)
-			getCurves().remove(index - 1);
+		// If this is the last point, remove the last curve
+		else if (index == m_controlpts.size() - 1)
+			m_curves.remove(index - 1);
 
-		controlpts.remove(index);
+		// Remove the point
+		m_controlpts.remove(index);
 	}
 
+	/**
+	 * Add a {@link ControlPoint} to the end of the path
+	 * 
+	 * @param pt
+	 *            the {@code ControlPoint} to add
+	 */
 	public void addPt(ControlPoint pt) {
-		addPt(controlpts.size(), pt);
+		addPt(m_controlpts.size(), pt);
 	}
 
+	/**
+	 * Add a {@link ControlPoint} to the specified location on the path
+	 * 
+	 * @param index
+	 *            the location to insert the new {@code ControlPoint}
+	 * @param pt
+	 *            the {@code ControlPoint} to add
+	 */
 	public void addPt(int index, ControlPoint pt) {
-		if (index < 0 || index > controlpts.size())
+		if (index < 0 || index > m_controlpts.size())
 			return;
 
-		controlpts.quiet();
-		controlpts.add(index, pt);
+		// Add the element, but do not fire an element changed until we have also
+		// updated the curves
+		m_controlpts.quiet();
+		m_controlpts.add(index, pt);
 
 		// If this isn't the first or last pt...
-		if (0 <= index && index < controlpts.size() - 1) {
-			getCurves().add(index, new CubicBezier(pt, controlpts.get(index + 1)));
+		if (0 <= index && index < m_controlpts.size() - 1) {
+			getCurves().add(index, new CubicBezier(pt, m_controlpts.get(index + 1)));
 			getCurves().get(index - 1).updateEnd(pt);
 		}
 
 		// If this is the last...
-		if (index == controlpts.size() - 1 && controlpts.size() > 1)
-			getCurves().add(index - 1, new CubicBezier(controlpts.get(index - 1), pt));
+		if (index == m_controlpts.size() - 1 && m_controlpts.size() > 1)
+			getCurves().add(index - 1, new CubicBezier(m_controlpts.get(index - 1), pt));
 
 		fireElementChanged();
 	}
 
+	/**
+	 * Set the {@link ControlPoint} at index {@code index} to the specified
+	 * {@code ControlPoint}
+	 * 
+	 * @param index
+	 *            the index of the {@code ControlPoint} to set
+	 * @param pt
+	 *            the {@code ControlPoint} to set
+	 */
 	public void setPt(int index, ControlPoint pt) {
-		if (index < 0 || index > controlpts.size())
+		if (index < 0 || index > m_controlpts.size())
 			return;
 
-		controlpts.quiet();
-		if (index == controlpts.size())
-			controlpts.add(pt);
+		m_controlpts.quiet();
+		if (index == m_controlpts.size())
+			m_controlpts.add(pt);
 		else
-			controlpts.set(index, pt);
+			m_controlpts.set(index, pt);
 
 		if (index > 0)
 			getCurves().get(index - 1).updateEnd(pt);
 
-		if (index < controlpts.size() - 1)
+		if (index < m_controlpts.size() - 1)
 			getCurves().get(index).updateStart(pt);
 
 		fireElementChanged();
 	}
 
-	public void connectToPrev(Script sc) {
-		int index = sc.indexOf(this);
-		if (index < 0)
-			return;
-
-		for (int i = index - 1; i >= 0; i--) {
-			if (sc.getAction(i) instanceof DriveAction) {
-				ObservableList<ControlPoint> pts = ((DriveAction) sc.getAction(i)).controlpts;
-				if (pts.size() < 1)
-					continue;
-
-				ControlPoint origin = pts.get(pts.size() - 1);
-				if (controlpts.get(0) != origin) {
-					controlpts.add(0, origin);
-					controlpts.get(0).setAutomaticHeading(false);
-				}
-			}
-		}
-	}
-
+	/**
+	 * Add a {@link Segment} to the generated path to be uploaded
+	 * 
+	 * @param isL
+	 *            {@code true} if this {@code Segment} should be appended to the
+	 *            left wheel path
+	 * @param seg
+	 *            the {@code Segment} to append
+	 */
 	public void addSegment(boolean isL, Segment seg) {
 		if (isL)
 			getLeftPath().add(seg);
@@ -157,30 +205,44 @@ public class DriveAction extends Action<DriveAction.Option> {
 			getRightPath().add(seg);
 	}
 
+	/**
+	 * Generate two parallel paths specifying the movement of the left and right
+	 * wheels of a differential drive robot. This is the path that will be uploaded
+	 * to the robot for it to follow
+	 */
 	public void generatePath() {
-		if (controlpts.size() < 2) {
-			left = new ArrayList<>();
-			right = new ArrayList<>();
+
+		// If we have less than 2 control points, we can't generate a path. Set both
+		// left and right paths empty.
+		if (m_controlpts.size() < 2) {
+			m_left = new ArrayList<>();
+			m_right = new ArrayList<>();
 			return;
 		}
 
-		controlpts.get(0).updateAutoHeading(controlpts.get(0), controlpts.get(1));
-		controlpts.get(controlpts.size() - 1).updateAutoHeading(controlpts.get(controlpts.size() - 2),
-				controlpts.get(controlpts.size() - 1));
+		// Automatically determine the optimal heading for every control point that has
+		// not been manually set or overridden by a magnet
+		m_controlpts.get(0).updateAutoHeading(m_controlpts.get(0), m_controlpts.get(1));
+		for (int i = 1; i < m_controlpts.size() - 1; i++)
+			m_controlpts.get(i).updateAutoHeading(m_controlpts.get(i - 1), m_controlpts.get(i + 1));
+		m_controlpts.get(m_controlpts.size() - 1).updateAutoHeading(m_controlpts.get(m_controlpts.size() - 2),
+				m_controlpts.get(m_controlpts.size() - 1));
 
-		for (int i = 1; i < controlpts.size() - 1; i++)
-			controlpts.get(i).updateAutoHeading(controlpts.get(i - 1), controlpts.get(i + 1));
-
+		// Update the bezier curves based on these new headings, and generate the math
+		// using a TrapezoidMotionProfile
 		updateCurves();
 		DriveAction newPath = PathParser.generatePath(PathParser.smoothPath(this));
-		left = newPath.getLeftPath();
-		right = newPath.getRightPath();
+		m_left = newPath.getLeftPath();
+		m_right = newPath.getRightPath();
 	}
 
+	/**
+	 * Remove all {@link ControlPoint}s
+	 */
 	public void clear() {
 		getLeftPath().clear();
 		getRightPath().clear();
-		controlpts.clear();
+		m_controlpts.clear();
 		getCurves().clear();
 	}
 
@@ -208,8 +270,8 @@ public class DriveAction extends Action<DriveAction.Option> {
 		a.timeout = timeout;
 		a.data = data;
 
-		for (ControlPoint pt : controlpts)
-			a.controlpts.add(pt.clone());
+		for (ControlPoint pt : m_controlpts)
+			a.m_controlpts.add(pt.clone());
 
 		for (CubicBezier c : getCurves())
 			a.getCurves().add(c.clone());
@@ -222,33 +284,35 @@ public class DriveAction extends Action<DriveAction.Option> {
 	 * @return the left path
 	 */
 	public ArrayList<Segment> getLeftPath() {
-		return left;
+		return m_left;
 	}
 
 	/**
 	 * @return the right path
 	 */
 	public ArrayList<Segment> getRightPath() {
-		return right;
+		return m_right;
 	}
 
 	/**
 	 * @return the bezier curves
 	 */
 	public ArrayList<CubicBezier> getCurves() {
-		return curves;
+		return m_curves;
 	}
 
+	/**
+	 * Update the list of {@link CubicBezier}s specified by the
+	 * {@link ControlPoint}s
+	 */
 	private void updateCurves() {
+		getCurves().get(0).updateStart(m_controlpts.get(0));
 
-		getCurves().get(0).updateStart(controlpts.get(0));
-
-		for (int i = 1; i < controlpts.size() - 1; i++) {
-			getCurves().get(i - 1).updateEnd(controlpts.get(i));
-			getCurves().get(i).updateStart(controlpts.get(i));
+		for (int i = 1; i < m_controlpts.size() - 1; i++) {
+			getCurves().get(i - 1).updateEnd(m_controlpts.get(i));
+			getCurves().get(i).updateStart(m_controlpts.get(i));
 		}
 
-		getCurves().get(controlpts.size() - 2).updateEnd(controlpts.get(controlpts.size() - 1));
-
+		getCurves().get(m_controlpts.size() - 2).updateEnd(m_controlpts.get(m_controlpts.size() - 1));
 	}
 }
