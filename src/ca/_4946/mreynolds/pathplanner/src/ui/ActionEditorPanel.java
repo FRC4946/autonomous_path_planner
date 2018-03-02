@@ -46,10 +46,17 @@ public class ActionEditorPanel extends JPanel {
 	 * Create the panel.
 	 */
 	public ActionEditorPanel(Action<?> a) {
+		m_action = a;
+		setupUI();
+		setBackground(Action.getBkgColor(m_action));
+	}
+
+	/**
+	 * Create the panel
+	 */
+	private void setupUI() {
 		setBorder(new LineBorder(Color.LIGHT_GRAY));
 		setMaximumSize(new Dimension(1000, 28));
-
-		m_action = a;
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 55, 90, 45, 50, 0, 30, 55, 30, 0, 0, 30, 45, 45, 45, 45, 0 };
@@ -69,7 +76,7 @@ public class ActionEditorPanel extends JPanel {
 
 		JComboBox<String> actionSelector = new JComboBox<String>();
 		actionSelector.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		for (Object o : a.getOptions().getDeclaringClass().getEnumConstants())
+		for (Object o : m_action.getOptions().getDeclaringClass().getEnumConstants())
 			actionSelector.addItem(o.toString());
 		GridBagConstraints gbc_actionSelector = new GridBagConstraints();
 		gbc_actionSelector.gridy = 0;
@@ -97,7 +104,7 @@ public class ActionEditorPanel extends JPanel {
 			reverseBox.setSelected(m_action.getData() == 1.0);
 			reverseBox.addActionListener(e -> {
 				m_action.setData(reverseBox.isSelected() ? 1 : 0);
-//				PathPlanner.main.getScript().connectPaths();
+				// PathPlanner.main.getScript().connectPaths();
 			});
 			m_data = reverseBox;
 		} else {
@@ -241,8 +248,6 @@ public class ActionEditorPanel extends JPanel {
 		gbc_btnDelete.gridx = 14;
 		btnDelete.addActionListener(e -> PathPlanner.main.getScript().removeAction(m_action));
 		add(btnDelete, gbc_btnDelete);
-
-		setBackground(Action.getBkgColor(m_action));
 	}
 
 	ActionListener actionSelectListener = new ActionListener() {

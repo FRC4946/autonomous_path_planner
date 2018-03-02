@@ -8,40 +8,44 @@ import javax.swing.JFrame;
 public class PrimaryWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	int width = 1350;
-	int height = 675;
+	private int m_width = 1350;
+	private int m_height = 675;
 
-	public FieldPanel pathPanel;
-	private ControlPanel controlPanel;
+	private FieldPanel m_fieldPanel;
+	private ControlPanel m_controlPanel;
 
 	/**
 	 * Create the application.
 	 */
 	public PrimaryWindow() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
 		setTitle("Team 4946 - Autonomous Path Planner");
-		getContentPane().setPreferredSize(new Dimension(width, height));
+		getContentPane().setPreferredSize(new Dimension(m_width, m_height));
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		setLocationRelativeTo(null);
 
+		setupUI();
+	}
+
+	/**
+	 * Create the panel
+	 */
+	private void setupUI() {
 		setLayout(new BoxLayout(this.getContentPane(), BoxLayout.X_AXIS));
 
-		pathPanel = new FieldPanel(true);
-		pathPanel.setMinimumSize(new Dimension((int) (height / 1.08556149733), height));
-		pathPanel.setPreferredSize(new Dimension((int) (height / 1.08556149733), height));
-		pathPanel.setMaximumSize(new Dimension((int) (height / 1.08556149733), height));
+		m_fieldPanel = new FieldPanel(true);
+		m_fieldPanel.setMinimumSize(new Dimension((int) (m_height / 1.08556149733), m_height));
+		m_fieldPanel.setPreferredSize(new Dimension((int) (m_height / 1.08556149733), m_height));
+		m_fieldPanel.setMaximumSize(new Dimension((int) (m_height / 1.08556149733), m_height));
 
-		controlPanel = new ControlPanel();
+		m_controlPanel = new ControlPanel();
 
-		add(pathPanel);
-		add(controlPanel);
+		add(m_fieldPanel);
+		add(m_controlPanel);
+	}
+
+	public FieldPanel getFieldPanel() {
+		return m_fieldPanel;
 	}
 }

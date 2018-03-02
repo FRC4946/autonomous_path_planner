@@ -20,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import ca._4946.mreynolds.customSwing.SingleRootFileSystemView;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
@@ -27,9 +28,9 @@ import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 public class LoadScriptDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 
-	ScriptBundle bundle = null;
-	String src = "ll";
-	FieldPanel field;
+	private ScriptBundle m_bundle = null;
+	private String m_src = "ll";
+	private FieldPanel m_field;
 
 	/**
 	 * Create the dialog.
@@ -38,6 +39,15 @@ public class LoadScriptDialog extends JDialog {
 		setSize(900, 500);
 		setTitle("Load Script From File");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
+		setLocationRelativeTo(null);
+		setupUI();
+	}
+
+	/**
+	 * Create the panel
+	 */
+	private void setupUI() {
 		getContentPane().setLayout(new BorderLayout());
 		JSplitPane splitPane = new JSplitPane();
 		{
@@ -52,17 +62,17 @@ public class LoadScriptDialog extends JDialog {
 					return;
 
 				try {
-					bundle = FileIO.loadScript(fc.getSelectedFile());
+					m_bundle = FileIO.loadScript(fc.getSelectedFile());
 					updateField();
 				} catch (ParserConfigurationException | SAXException | IOException e1) {
 					e1.printStackTrace();
 				}
 			});
 
-			field = new FieldPanel(false);
+			m_field = new FieldPanel(false);
 
 			splitPane.setLeftComponent(fc);
-			splitPane.setRightComponent(field);
+			splitPane.setRightComponent(m_field);
 		}
 
 		JPanel buttonPane = new JPanel();
@@ -129,16 +139,16 @@ public class LoadScriptDialog extends JDialog {
 	}
 
 	private void updateField() {
-		field.setScript(bundle.getScript(src), src);
-		field.repaint();
+		m_field.setScript(m_bundle.getScript(m_src), m_src);
+		m_field.repaint();
 	}
 
 	private void setSrc(String data) {
-		src = data;
+		m_src = data;
 		updateField();
 	}
 
 	private void copyTo(String dest) {
-		PathPlanner.main.setScript(bundle.getScript(src), dest);
+		PathPlanner.main.setScript(m_bundle.getScript(m_src), dest);
 	}
 }

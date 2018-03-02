@@ -40,14 +40,14 @@ public class FieldPanel extends JPanel {
 
 	private boolean m_hasFresh = false;
 
-	private Image blueField;
-	private Image redField;
-	private Image switchRedL;
-	private Image switchBlueL;
-	private Image scaleRedL;
-	private Image scaleBlueL;
-	private Image blueRobot;
-	private Image redRobot;
+	private Image m_blueField;
+	private Image m_redField;
+	private Image m_switchRedL;
+	private Image m_switchBlueL;
+	private Image m_scaleRedL;
+	private Image m_scaleBlueL;
+	private Image m_blueRobot;
+	private Image m_redRobot;
 
 	public static final int IMG_WIDTH = 748;
 	public static final int IMG_HEIGHT = 812;
@@ -103,31 +103,39 @@ public class FieldPanel extends JPanel {
 	 * Create the panel.
 	 */
 	public FieldPanel(boolean isInteractive) {
-		try {
-			String fieldDir = "/ca/_4946/mreynolds/pathplanner/resources/field/";
-			String robotDir = "/ca/_4946/mreynolds/pathplanner/resources/robot/";
-
-			blueField = ImageIO.read(this.getClass().getResource(fieldDir + "Blue.png"));
-			redField = ImageIO.read(this.getClass().getResource(fieldDir + "Red.png"));
-			switchRedL = ImageIO.read(this.getClass().getResource(fieldDir + "Switch Red L.png"));
-			switchBlueL = ImageIO.read(this.getClass().getResource(fieldDir + "Switch Blue L.png"));
-			scaleRedL = ImageIO.read(this.getClass().getResource(fieldDir + "Scale Red L.png"));
-			scaleBlueL = ImageIO.read(this.getClass().getResource(fieldDir + "Scale Blue L.png"));
-			redRobot = ImageIO.read(this.getClass().getResource(robotDir + "Red.png"));
-			blueRobot = ImageIO.read(this.getClass().getResource(robotDir + "Blue.png"));
-
-		} catch (IOException | IllegalArgumentException e) {
-			ErrorPopup.createPopup("Error loading resources", e);
-			e.printStackTrace();
-		}
-
 		m_isInteractive = isInteractive;
+
+		setupUI();
+
 		if (m_isInteractive) {
 			addMouseListener(mouse);
 			addMouseMotionListener(mouse);
 		}
 
 		m_refreshTimer.start();
+	}
+
+	/**
+	 * Create the panel
+	 */
+	private void setupUI() {
+		try {
+			String fieldDir = "/ca/_4946/mreynolds/pathplanner/resources/field/";
+			String robotDir = "/ca/_4946/mreynolds/pathplanner/resources/robot/";
+
+			m_blueField = ImageIO.read(this.getClass().getResource(fieldDir + "Blue.png"));
+			m_redField = ImageIO.read(this.getClass().getResource(fieldDir + "Red.png"));
+			m_switchRedL = ImageIO.read(this.getClass().getResource(fieldDir + "Switch Red L.png"));
+			m_switchBlueL = ImageIO.read(this.getClass().getResource(fieldDir + "Switch Blue L.png"));
+			m_scaleRedL = ImageIO.read(this.getClass().getResource(fieldDir + "Scale Red L.png"));
+			m_scaleBlueL = ImageIO.read(this.getClass().getResource(fieldDir + "Scale Blue L.png"));
+			m_redRobot = ImageIO.read(this.getClass().getResource(robotDir + "Red.png"));
+			m_blueRobot = ImageIO.read(this.getClass().getResource(robotDir + "Blue.png"));
+
+		} catch (IOException | IllegalArgumentException e) {
+			ErrorPopup.createPopup("Error loading resources", e);
+			e.printStackTrace();
+		}
 	}
 
 	public void drawPt(Graphics g, Point pt) {
@@ -138,29 +146,29 @@ public class FieldPanel extends JPanel {
 
 	public void drawBackground(Graphics g) {
 		if (m_isBlue) {
-			g.drawImage(blueField, 0, 0, getWidth(), getHeight(), this);
+			g.drawImage(m_blueField, 0, 0, getWidth(), getHeight(), this);
 			if (m_data.charAt(1) == 'l')
-				g.drawImage(scaleBlueL, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(m_scaleBlueL, 0, 0, getWidth(), getHeight(), this);
 			else
-				g.drawImage(scaleRedL, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(m_scaleRedL, 0, 0, getWidth(), getHeight(), this);
 
 			if (m_data.charAt(0) == 'l')
-				g.drawImage(switchBlueL, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(m_switchBlueL, 0, 0, getWidth(), getHeight(), this);
 			else
-				g.drawImage(switchRedL, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(m_switchRedL, 0, 0, getWidth(), getHeight(), this);
 		}
 
 		else {
-			g.drawImage(redField, 0, 0, getWidth(), getHeight(), this);
+			g.drawImage(m_redField, 0, 0, getWidth(), getHeight(), this);
 			if (m_data.charAt(1) == 'l')
-				g.drawImage(scaleRedL, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(m_scaleRedL, 0, 0, getWidth(), getHeight(), this);
 			else
-				g.drawImage(scaleBlueL, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(m_scaleBlueL, 0, 0, getWidth(), getHeight(), this);
 
 			if (m_data.charAt(0) == 'l')
-				g.drawImage(switchRedL, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(m_switchRedL, 0, 0, getWidth(), getHeight(), this);
 			else
-				g.drawImage(switchBlueL, 0, 0, getWidth(), getHeight(), this);
+				g.drawImage(m_switchBlueL, 0, 0, getWidth(), getHeight(), this);
 		}
 	}
 
@@ -259,7 +267,7 @@ public class FieldPanel extends JPanel {
 	}
 
 	private void drawBot(Waypoint o, boolean isFlipped, Graphics2D g) {
-		Image robot = m_isBlue ? blueRobot : redRobot;
+		Image robot = m_isBlue ? m_blueRobot : m_redRobot;
 
 		// Move the image to the point
 		AffineTransform tx = new AffineTransform();

@@ -20,7 +20,6 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -57,7 +56,7 @@ public class ControlPanel extends JPanel {
 	private JButton m_copyRLBtn;
 	private JButton m_copyRRBtn;
 
-	private Thread pingThread = new Thread(() -> {
+	private Thread m_pingThread = new Thread(() -> {
 
 		InetAddress address;
 		boolean isConnected = false;
@@ -93,14 +92,17 @@ public class ControlPanel extends JPanel {
 	 * Create the panel.
 	 */
 	public ControlPanel() {
-		initialize();
+		setupUI();
 		setupKeyListeners();
 		setupListeners();
 
-		pingThread.start();
+		m_pingThread.start();
 	}
 
-	private void initialize() {
+	/**
+	 * Create the panel
+	 */
+	private void setupUI() {
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel topPanel = new JPanel();
@@ -455,8 +457,6 @@ public class ControlPanel extends JPanel {
 
 	private void load() {
 		LoadScriptDialog ls = new LoadScriptDialog();
-		ls.setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
-		ls.setLocationRelativeTo(PathPlanner.main.getWindow());
 		ls.setVisible(true);
 	}
 
