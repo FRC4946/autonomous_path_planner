@@ -41,14 +41,14 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
-import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
+import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
 import ca._4946.mreynolds.pathplanner.src.math.PathParser;
 
 public class FileIO {
 	public static String DEFAULT_DIR = System.getProperty("user.home") + System.getProperty("file.separator")
 			+ "Documents" + System.getProperty("file.separator") + "AutoPathPlanner";
 
-	public static DecimalFormat f = new DecimalFormat("0.0#####");
+	private static DecimalFormat f = new DecimalFormat("0.0#####");
 
 	// Pulled from
 	// https://wpilib.screenstepslive.com/s/currentCS/m/cs_hardware/l/282299-roborio-ftp
@@ -157,12 +157,13 @@ public class FileIO {
 				curAction.setTimeout(Double.parseDouble(curEl.getAttribute("timeout") + "0"));
 
 				if (curAction instanceof DriveAction) {
-					NodeList waypoints = curEl.getElementsByTagName("waypoint");
-					for (int j = 0; j < waypoints.getLength(); j++) {
-						if (waypoints.item(j).getNodeType() == Node.ELEMENT_NODE) {
+					// TODO: Change "waypoint" to "controlpoint"
+					NodeList controlpts = curEl.getElementsByTagName("waypoint");
+					for (int j = 0; j < controlpts.getLength(); j++) {
+						if (controlpts.item(j).getNodeType() == Node.ELEMENT_NODE) {
 
-							Waypoint pt = new Waypoint();
-							Element curPtEl = (Element) waypoints.item(j);
+							ControlPoint pt = new ControlPoint();
+							Element curPtEl = (Element) controlpts.item(j);
 
 							pt.setX(Double.parseDouble(curPtEl.getAttribute("x") + "0"));
 							pt.setY(Double.parseDouble(curPtEl.getAttribute("y") + "0"));
@@ -260,18 +261,18 @@ public class FileIO {
 
 				if (!isExport) {
 					for (int i = 0; i < ((DriveAction) a).getNumPts(); i++) {
-						Waypoint p = ((DriveAction) a).getPt(i);
+						ControlPoint p = ((DriveAction) a).getPt(i);
 
-						Element curWaypoint = doc.createElement("waypoint");
-						curElement.appendChild(curWaypoint);
+						// TODO: Change "waypoint" to "controlpoint"
+						Element curPt = doc.createElement("waypoint");
+						curElement.appendChild(curPt);
 
-						curWaypoint.setAttribute("x", f.format(p.getX()));
-						curWaypoint.setAttribute("y", f.format(p.getY()));
-						// curWaypoint.setAttribute("size", "" + p.get());
-						curWaypoint.setAttribute("heading", f.format(p.getHeading()));
-						curWaypoint.setAttribute("radius", f.format(p.getR()));
-						curWaypoint.setAttribute("magnet", p.isMagnet() ? "true" : "false");
-						curWaypoint.setAttribute("autoHeading", p.isAutomaticHeading() ? "true" : "false");
+						curPt.setAttribute("x", f.format(p.getX()));
+						curPt.setAttribute("y", f.format(p.getY()));
+						curPt.setAttribute("heading", f.format(p.getHeading()));
+						curPt.setAttribute("radius", f.format(p.getR()));
+						curPt.setAttribute("magnet", p.isMagnet() ? "true" : "false");
+						curPt.setAttribute("autoHeading", p.isAutomaticHeading() ? "true" : "false");
 					}
 				} else {
 

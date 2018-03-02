@@ -2,7 +2,7 @@ package ca._4946.mreynolds.pathplanner.src.math;
 
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
-import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
+import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
 import ca._4946.mreynolds.util.MathUtil;
 
 public class CubicBezier {
@@ -17,7 +17,7 @@ public class CubicBezier {
 	private double[] lenMap;
 	private double length;
 
-	public CubicBezier(Waypoint start, Waypoint end) {
+	public CubicBezier(ControlPoint start, ControlPoint end) {
 		this(start, end, start.getHandle(), end.getFlipHandle());
 	}
 
@@ -30,13 +30,13 @@ public class CubicBezier {
 		calcMap();
 	}
 
-	public void updateStart(Waypoint start) {
+	public void updateStart(ControlPoint start) {
 		this.a = start;
 		this.b = start.getHandle();
 		calcMap();
 	}
 
-	public void updateEnd(Waypoint end) {
+	public void updateEnd(ControlPoint end) {
 		this.d = end;
 		this.c = end.getFlipHandle();
 		calcMap();

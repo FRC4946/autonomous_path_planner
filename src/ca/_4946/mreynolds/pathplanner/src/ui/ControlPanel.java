@@ -40,7 +40,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
-import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
+import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 import ca._4946.mreynolds.util.ObservableList;
 
@@ -483,7 +483,7 @@ public class ControlPanel extends JPanel {
 	private void flip() {
 		for (DriveAction a : PathPlanner.main.getScript().getDriveActions())
 			for (int i = 0; i < a.getNumPts(); i++) {
-				Waypoint p = a.getPt(i);
+				ControlPoint p = a.getPt(i);
 				p.setHeading(180 - p.getHeading());
 				p.setX(-p.getX());
 				a.setPt(i, p);

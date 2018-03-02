@@ -26,7 +26,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.MagnetPoint;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
-import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
+import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
 import ca._4946.mreynolds.pathplanner.src.math.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.math.PathParser;
 
@@ -248,13 +248,13 @@ public class FieldPanel extends JPanel {
 
 		List<Action<?>> list = m_script.getActionOfType(DriveAction.class, TurnAction.class);
 
-		Waypoint prevPt = null;
+		ControlPoint prevPt = null;
 		for (Action<?> a : list) {
 
 			// Draw the endpoint of each path
 			if (a instanceof DriveAction && ((DriveAction) a).getNumPts() > 1) {
 
-				prevPt = new Waypoint(((DriveAction) a).getPt(((DriveAction) a).getNumPts() - 1));
+				prevPt = new ControlPoint(((DriveAction) a).getPt(((DriveAction) a).getNumPts() - 1));
 				drawBot(prevPt, a.getData() == 1, (Graphics2D) g);
 			}
 
@@ -266,7 +266,7 @@ public class FieldPanel extends JPanel {
 		}
 	}
 
-	private void drawBot(Waypoint o, boolean isFlipped, Graphics2D g) {
+	private void drawBot(ControlPoint o, boolean isFlipped, Graphics2D g) {
 		Image robot = m_isBlue ? m_blueRobot : m_redRobot;
 
 		// Move the image to the point
@@ -302,7 +302,7 @@ public class FieldPanel extends JPanel {
 
 	}
 
-	private void drawWaypoint(Waypoint p, Graphics g) {
+	private void drawControlPoint(ControlPoint p, Graphics g) {
 		Point h1 = pt2px(p.getHandle());
 		Point h2 = pt2px(p.getFlipHandle());
 
@@ -330,7 +330,7 @@ public class FieldPanel extends JPanel {
 			}
 			for (DriveAction path : m_script.getDriveActions())
 				for (int i = 0; i < path.getNumPts(); i++)
-					drawWaypoint(path.getPt(i), g);
+					drawControlPoint(path.getPt(i), g);
 		}
 	}
 
@@ -340,9 +340,9 @@ public class FieldPanel extends JPanel {
 		DriveAction curAction = null;
 		int ref = -1;
 
-		private Waypoint curPt() {
+		private ControlPoint curPt() {
 			if (curAction == null)
-				return new Waypoint();
+				return new ControlPoint();
 			return curAction.getPt(ref);
 		}
 
@@ -372,8 +372,8 @@ public class FieldPanel extends JPanel {
 						curPt().setX(mag.getX());
 						curPt().setY(mag.getY());
 						if (mag.hasHeading() && !refIsHandle) {
-							((Waypoint) curPt()).setHeading(mag.getHeading());
-							((Waypoint) curPt()).setMagnet(true);
+							((ControlPoint) curPt()).setHeading(mag.getHeading());
+							((ControlPoint) curPt()).setMagnet(true);
 						}
 					}
 
@@ -436,7 +436,7 @@ public class FieldPanel extends JPanel {
 						CubicBezier curve = curAction.getCurves().get(i);
 
 						if (curve.ptIsOnCurve(click, 0.15)) {
-							curAction.addPt(i + 1, new Waypoint(click));
+							curAction.addPt(i + 1, new ControlPoint(click));
 							ref = i + 1;
 							refIsHandle = false;
 							return;
@@ -447,7 +447,7 @@ public class FieldPanel extends JPanel {
 				// If we haven't found a match and this is the last action in the script...
 				if (ref == -1 && j == actions.size() - 1) {
 					ref = curAction.getNumPts();
-					curAction.addPt(new Waypoint(click));
+					curAction.addPt(new ControlPoint(click));
 					refIsHandle = false;
 
 					// Check for magnet points

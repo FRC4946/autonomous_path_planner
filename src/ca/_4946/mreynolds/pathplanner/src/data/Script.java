@@ -7,7 +7,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
-import ca._4946.mreynolds.pathplanner.src.data.point.Waypoint;
+import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
 import ca._4946.mreynolds.util.ObservableList;
 
 /**
@@ -57,7 +57,7 @@ public class Script {
 			if (m_script.get(i) instanceof TurnAction)
 				offset += m_script.get(i).getData();
 			else if (m_script.get(i) instanceof DriveAction) {
-				Waypoint pt = new Waypoint(prevPath.getPt(prevPath.getNumPts() - 1));
+				ControlPoint pt = new ControlPoint(prevPath.getPt(prevPath.getNumPts() - 1));
 
 				// If the isReversed flag differs on the prev and cur action, flip the heading
 				if ((m_script.get(i).getData() == 1) ^ (prevPath.getData() == 1))
