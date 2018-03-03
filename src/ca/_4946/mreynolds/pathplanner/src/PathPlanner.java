@@ -55,7 +55,7 @@ public class PathPlanner {
 		} catch (Exception e) {
 			ErrorPopup.createPopup("Error loading file", e);
 		}
-		
+
 		m_gameData = "ll";
 		window.getFieldPanel().setScript(getScript(), getGameData());
 	}
@@ -122,6 +122,7 @@ public class PathPlanner {
 			scBundle.RL = newScript;
 		else if (code.contains("rr"))
 			scBundle.RR = newScript;
+
 		window.getFieldPanel().setScript(getScript(), getGameData());
 	}
 

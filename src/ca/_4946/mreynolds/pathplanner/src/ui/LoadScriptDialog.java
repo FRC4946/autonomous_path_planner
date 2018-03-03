@@ -139,7 +139,8 @@ public class LoadScriptDialog extends JDialog {
 	}
 
 	private void updateField() {
-		m_field.setScript(m_bundle.getScript(m_src), m_src);
+		if (m_bundle != null)
+			m_field.setScript(m_bundle.getScript(m_src), m_src);
 		m_field.repaint();
 	}
 
@@ -149,6 +150,8 @@ public class LoadScriptDialog extends JDialog {
 	}
 
 	private void copyTo(String dest) {
-		PathPlanner.main.setScript(m_bundle.getScript(m_src), dest);
+		if (m_bundle != null)
+			PathPlanner.main.setScript(m_bundle.getScript(m_src), dest);
+		firePropertyChange("Copy", "old", dest);
 	}
 }

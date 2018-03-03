@@ -459,6 +459,7 @@ public class ControlPanel extends JPanel {
 
 	private void load() {
 		LoadScriptDialog ls = new LoadScriptDialog();
+		ls.addPropertyChangeListener("Copy", e -> setupListeners());
 		ls.setVisible(true);
 	}
 
