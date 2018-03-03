@@ -190,7 +190,11 @@ public class FieldPanel extends JPanel {
 				Point l = pt2px(new Point(path.getLeftPath().get(i).x, path.getLeftPath().get(i).y));
 				Point r = pt2px(new Point(path.getRightPath().get(i).x, path.getRightPath().get(i).y));
 
-				g.setColor(Color.GREEN);
+				if (path.isValid)
+					g.setColor(Color.GREEN);
+				else
+					g.setColor(Color.RED);
+
 				g.drawLine((int) l.getX(), (int) l.getY(), (int) r.getX(), (int) r.getY());
 
 				g.setColor(Color.RED);

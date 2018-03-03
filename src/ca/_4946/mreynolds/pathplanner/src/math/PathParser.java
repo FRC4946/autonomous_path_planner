@@ -115,14 +115,19 @@ public class PathParser {
 	/**
 	 * Turn the path into a path pair, for the left and right sides of the bot
 	 * 
+	 * @param action
+	 *            the {@link DriveAction} to write the generated path to
 	 * @param list
 	 *            The center path
-	 * @return An Action containing the pair
+	 * @return {@code true} if generation was successful
 	 */
-	public static DriveAction generatePath(ArrayList<Segment> list) {
+	public static boolean generatePath(DriveAction action, List<Segment> list) {
 		if (list.size() < 2)
-			return new DriveAction();
-		DriveAction path = new DriveAction();
+			return false;
+
+		boolean isValid = true;
+
+		action.clearGenerated();
 
 		Segment l, r, lastL, lastR;
 		double botRadius = PathPlannerSettings.WHEEL_WIDTH_IN / 2;
@@ -142,7 +147,7 @@ public class PathParser {
 			lastR = r;
 
 			Segment s = list.get(i);
-			perp = MathUtil.toRange(Math.toRadians(list.get(i).heading) - (Math.PI / 2), 0, 2 * Math.PI);
+			perp = MathUtil.toRange(Math.toRadians(s.heading) - (Math.PI / 2), 0, 2 * Math.PI);
 			l = new Segment(s);
 			r = new Segment(s);
 
@@ -168,13 +173,21 @@ public class PathParser {
 			l.vel += -omega * (botRadius);
 			r.vel += omega * (botRadius);
 
-			path.addSegment(true, l);
-			path.addSegment(false, r);
+			double lHead = Math.toDegrees(Math.atan2(lastL.y - l.y, lastL.x - l.x));
+			double rHead = Math.toDegrees(Math.atan2(lastR.y - r.y, lastR.x - r.x));
+			double head = s.heading;
+
+			// If the three angles aren't all apprximately multiples of 360 of eachother,
+			if (MathUtil.isBetween(10, 350, Math.abs(lHead - head))
+					|| MathUtil.isBetween(10, 350, Math.abs(rHead - head)))
+				isValid = false;
+
+			action.addSegment(true, l);
+			action.addSegment(false, r);
 		}
 
 		// TODO: Fix last pt
-
-		return path;
+		return isValid;
 	}
 
 	/**

@@ -33,6 +33,7 @@ public class DriveAction extends Action<DriveAction.Option> {
 	private ArrayList<Segment> m_right;
 	private ObservableList<ControlPoint> m_controlpts;
 	private ArrayList<CubicBezier> m_curves;
+	public boolean isValid = true;
 
 	/**
 	 * Create a {@code DriveAction} with:
@@ -231,9 +232,15 @@ public class DriveAction extends Action<DriveAction.Option> {
 		// Update the bezier curves based on these new headings, and generate the math
 		// using a TrapezoidMotionProfile
 		updateCurves();
-		DriveAction newPath = PathParser.generatePath(PathParser.smoothPath(this));
-		m_left = newPath.getLeftPath();
-		m_right = newPath.getRightPath();
+		isValid = PathParser.generatePath(this, PathParser.smoothPath(this));
+	}
+
+	/**
+	 * Remove the left and right paths
+	 */
+	public void clearGenerated() {
+		getLeftPath().clear();
+		getRightPath().clear();
 	}
 
 	/**
