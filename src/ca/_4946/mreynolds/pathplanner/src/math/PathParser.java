@@ -177,10 +177,15 @@ public class PathParser {
 			double rHead = Math.toDegrees(Math.atan2(lastR.y - r.y, lastR.x - r.x));
 			double head = s.heading;
 
+			if (action.getData() > 0.5)
+				head += 180;
+
 			// If the three angles aren't all apprximately multiples of 360 of eachother,
 			if (MathUtil.isBetween(10, 350, Math.abs(lHead - head))
-					|| MathUtil.isBetween(10, 350, Math.abs(rHead - head)))
+					|| MathUtil.isBetween(10, 350, Math.abs(rHead - head))) {
+				// System.out.println(lHead + "\t" + rHead + "\t" + head);
 				isValid = false;
+			}
 
 			action.addSegment(true, l);
 			action.addSegment(false, r);

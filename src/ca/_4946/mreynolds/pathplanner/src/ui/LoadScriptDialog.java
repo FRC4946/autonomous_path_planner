@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 
 import ca._4946.mreynolds.customSwing.SingleRootFileSystemView;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
+import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 
@@ -151,7 +152,7 @@ public class LoadScriptDialog extends JDialog {
 
 	private void copyTo(String dest) {
 		if (m_bundle != null)
-			PathPlanner.main.setScript(m_bundle.getScript(m_src), dest);
+			PathPlanner.main.setScript(new Script(m_bundle.getScript(m_src)), dest);
 		firePropertyChange("Copy", "old", dest);
 	}
 }
