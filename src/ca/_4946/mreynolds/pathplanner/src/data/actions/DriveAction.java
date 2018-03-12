@@ -26,7 +26,7 @@ public class DriveAction extends Action<DriveAction.Option> {
 	 * @see Action.ActionOption
 	 */
 	public static enum Option implements Action.ActionOption {
-		FollowPath
+		FollowPath, DisconnectedPath
 	}
 
 	private ArrayList<Segment> m_left;
@@ -149,8 +149,13 @@ public class DriveAction extends Action<DriveAction.Option> {
 		m_controlpts.quiet();
 		m_controlpts.add(index, pt);
 
+		// If this is the first pt, insert a new curve at the beginning of the list
+		if(index == 0 && m_controlpts.size() > 1) {
+			getCurves().add(index, new CubicBezier(pt, m_controlpts.get(index + 1)));
+		}
+		
 		// If this isn't the first or last pt...
-		if (0 <= index && index < m_controlpts.size() - 1) {
+		else if (0 < index && index < m_controlpts.size() - 1) {
 			getCurves().add(index, new CubicBezier(pt, m_controlpts.get(index + 1)));
 			getCurves().get(index - 1).updateEnd(pt);
 		}
@@ -251,6 +256,22 @@ public class DriveAction extends Action<DriveAction.Option> {
 		getRightPath().clear();
 		m_controlpts.clear();
 		getCurves().clear();
+	}
+
+	@Override
+	public void setOptions(Enum<Option> option) {
+		Enum<Option> oldOpt = this.option;
+
+		if (oldOpt != option && option == Option.FollowPath)
+			addPt(0, new ControlPoint());
+
+		super.setOptions(option);
+
+		// If we're switching from FollowPath to DisconnectedPath, remove the first ctrl
+		// point
+		if (oldOpt != option && option == Option.DisconnectedPath)
+			removePt(0);
+
 	}
 
 	@Override

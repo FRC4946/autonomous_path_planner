@@ -57,6 +57,12 @@ public class Script {
 			if (m_script.get(i) instanceof TurnAction)
 				offset += m_script.get(i).getData();
 			else if (m_script.get(i) instanceof DriveAction) {
+				if (m_script.get(i).getOption() == DriveAction.Option.DisconnectedPath) {
+					prevPath = (DriveAction) m_script.get(i);
+					prevPath.generatePath();
+					continue;
+				}
+
 				ControlPoint pt = new ControlPoint(prevPath.getPt(prevPath.getNumPts() - 1));
 
 				// If the isReversed flag differs on the prev and cur action, flip the heading
@@ -73,7 +79,7 @@ public class Script {
 				((DriveAction) m_script.get(i)).setPt(0, pt);
 
 				prevPath.generatePath();
-				((DriveAction) m_script.get(i)).generatePath();
+				 ((DriveAction) m_script.get(i)).generatePath();
 
 				prevPath = (DriveAction) m_script.get(i);
 				offset = 0;
