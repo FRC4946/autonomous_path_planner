@@ -17,11 +17,11 @@ public class PathPlanner {
 	private ScriptBundle scBundle = new ScriptBundle();
 	private boolean m_fieldIsBlue = true;
 	private String m_gameData = "ll";
-
-	public static PathPlanner main;
 	private PrimaryWindow window;
 
-	public PathPlanner() {
+	private static PathPlanner instance;
+	
+	private PathPlanner() {
 
 		// Set the project's Look And Feel to the default cross-platform (Metal)
 		try {
@@ -46,7 +46,7 @@ public class PathPlanner {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		main = new PathPlanner();
+		PathPlanner.getInstance();
 	}
 
 	public void saveState() {
@@ -166,6 +166,15 @@ public class PathPlanner {
 	public void setGameData(String gameData) {
 		this.m_gameData = gameData;
 		window.getFieldPanel().setScript(getScript(), getGameData());
+	}
+
+	/**
+	 * @return the main PathPlanner instance
+	 */
+	public static PathPlanner getInstance() {
+		if (instance == null)
+			instance = new PathPlanner();
+		return instance;
 	}
 
 }

@@ -394,7 +394,7 @@ public class FieldPanel extends JPanel {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			PathPlanner.main.saveState();
+			PathPlanner.getInstance().saveState();
 			curAction = null;
 
 			if (m_script.getDriveActions().isEmpty())

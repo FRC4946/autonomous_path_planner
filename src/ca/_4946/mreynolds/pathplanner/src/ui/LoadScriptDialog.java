@@ -152,7 +152,7 @@ public class LoadScriptDialog extends JDialog {
 
 	private void copyTo(String dest) {
 		if (m_bundle != null)
-			PathPlanner.main.setScript(new Script(m_bundle.getScript(m_src)), dest);
+			PathPlanner.getInstance().setScript(new Script(m_bundle.getScript(m_src)), dest);
 		firePropertyChange("Copy", "old", dest);
 	}
 }

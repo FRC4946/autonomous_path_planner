@@ -138,7 +138,7 @@ public class ControlPanel extends JPanel {
 				gbc_scriptNameField.gridy = 0;
 				statusPanel.add(m_scriptNameField, gbc_scriptNameField);
 				m_scriptNameField.setColumns(20);
-				m_scriptNameField.addActionListener(e -> PathPlanner.main.setScriptName(m_scriptNameField.getText()));
+				m_scriptNameField.addActionListener(e -> PathPlanner.getInstance().setScriptName(m_scriptNameField.getText()));
 
 				m_fieldConfigDropdown = new JComboBox<String>();
 				GridBagConstraints gbc_fieldConfigDropdown = new GridBagConstraints();
@@ -155,8 +155,8 @@ public class ControlPanel extends JPanel {
 
 				JButton toggleColor = new JButton("Red");
 				toggleColor.addActionListener(e -> {
-					PathPlanner.main.setFieldColor(!PathPlanner.main.getFieldColor());
-					if (PathPlanner.main.getFieldColor())
+					PathPlanner.getInstance().setFieldColor(!PathPlanner.getInstance().getFieldColor());
+					if (PathPlanner.getInstance().getFieldColor())
 						toggleColor.setText("Blue");
 					else
 						toggleColor.setText("Red");
@@ -325,7 +325,7 @@ public class ControlPanel extends JPanel {
 			openBtn.addActionListener(e -> open());
 
 			JButton newBtn = new JButton("New");
-			newBtn.addActionListener(e -> PathPlanner.main.getScript().clear());
+			newBtn.addActionListener(e -> PathPlanner.getInstance().getScript().clear());
 
 			JButton saveBtn = new JButton("Save (S)");
 			saveBtn.addActionListener(e -> save());
@@ -353,15 +353,15 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void setConfig(String msg) {
-		PathPlanner.main.setGameData(msg.toLowerCase().substring(0, 2));
-		updateActionList(PathPlanner.main.getScript().getActions());
+		PathPlanner.getInstance().setGameData(msg.toLowerCase().substring(0, 2));
+		updateActionList(PathPlanner.getInstance().getScript().getActions());
 
 		m_copyLLBtn.setEnabled(true);
 		m_copyLRBtn.setEnabled(true);
 		m_copyRLBtn.setEnabled(true);
 		m_copyRRBtn.setEnabled(true);
 
-		switch (PathPlanner.main.getGameData().toLowerCase()) {
+		switch (PathPlanner.getInstance().getGameData().toLowerCase()) {
 		case "ll":
 			m_copyLLBtn.setEnabled(false);
 			break;
@@ -406,7 +406,7 @@ public class ControlPanel extends JPanel {
 					addAction(new DelayAction());
 
 				else if (e.getKeyCode() == KeyEvent.VK_Z)
-					PathPlanner.main.undo();
+					PathPlanner.getInstance().undo();
 				else if (e.getKeyCode() == KeyEvent.VK_L)
 					load();
 				else if (e.getKeyCode() == KeyEvent.VK_O)
@@ -437,13 +437,13 @@ public class ControlPanel extends JPanel {
 
 	public void setupListeners() {
 
-		for (Script curScript : PathPlanner.main.getScripts()) {
+		for (Script curScript : PathPlanner.getInstance().getScripts()) {
 			curScript.getActions()
-					.removeListListener(() -> updateActionList(PathPlanner.main.getScript().getActions()));
-			curScript.getActions().addListListener(() -> updateActionList(PathPlanner.main.getScript().getActions()));
+					.removeListListener(() -> updateActionList(PathPlanner.getInstance().getScript().getActions()));
+			curScript.getActions().addListListener(() -> updateActionList(PathPlanner.getInstance().getScript().getActions()));
 		}
 
-		updateActionList(PathPlanner.main.getScript().getActions());
+		updateActionList(PathPlanner.getInstance().getScript().getActions());
 		repaint();
 	}
 
@@ -451,9 +451,9 @@ public class ControlPanel extends JPanel {
 		JFileChooser fc = FileIO.getFileChooser();
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			PathPlanner.main.open(file);
-			m_scriptNameField.setText(PathPlanner.main.getScriptName());
-			m_notesTxtPane.setText(PathPlanner.main.getScriptNotes());
+			PathPlanner.getInstance().open(file);
+			m_scriptNameField.setText(PathPlanner.getInstance().getScriptName());
+			m_notesTxtPane.setText(PathPlanner.getInstance().getScriptNotes());
 			setupListeners();
 		}
 	}
@@ -465,8 +465,8 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void save() {
-		PathPlanner.main.setScriptName(m_scriptNameField.getText());
-		PathPlanner.main.setScriptNotes(m_notesTxtPane.getText());
+		PathPlanner.getInstance().setScriptName(m_scriptNameField.getText());
+		PathPlanner.getInstance().setScriptNotes(m_notesTxtPane.getText());
 
 		JFileChooser fc = FileIO.getFileChooser(m_scriptNameField.getText() + ".xml");
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -474,18 +474,18 @@ public class ControlPanel extends JPanel {
 			if (!file.getName().endsWith(".xml"))
 				file = new File(file.getAbsolutePath() + ".xml");
 
-			PathPlanner.main.save(file);
+			PathPlanner.getInstance().save(file);
 		}
 	}
 
 	private void upload() {
-		PathPlanner.main.setScriptName(m_scriptNameField.getText());
-		PathPlanner.main.setScriptNotes(m_notesTxtPane.getText());
-		PathPlanner.main.upload(new File(m_scriptNameField.getText() + ".xml"));
+		PathPlanner.getInstance().setScriptName(m_scriptNameField.getText());
+		PathPlanner.getInstance().setScriptNotes(m_notesTxtPane.getText());
+		PathPlanner.getInstance().upload(new File(m_scriptNameField.getText() + ".xml"));
 	}
 
 	private void flip() {
-		for (DriveAction a : PathPlanner.main.getScript().getDriveActions())
+		for (DriveAction a : PathPlanner.getInstance().getScript().getDriveActions())
 			for (int i = 0; i < a.getNumPts(); i++) {
 				ControlPoint p = a.getPt(i);
 				p.setHeading(180 - p.getHeading());
@@ -496,7 +496,7 @@ public class ControlPanel extends JPanel {
 
 	ActionListener copyScript = e -> {
 		String data = ((JButton) e.getSource()).getText().toLowerCase();
-		PathPlanner.main.setScript(new Script(PathPlanner.main.getScript()), data);
+		PathPlanner.getInstance().setScript(new Script(PathPlanner.getInstance().getScript()), data);
 
 		switch (data) {
 		case "ll":
@@ -536,7 +536,7 @@ public class ControlPanel extends JPanel {
 	};
 
 	private void addAction(Action<?> a) {
-		PathPlanner.main.saveState();
-		PathPlanner.main.getScript().addAction(a);
+		PathPlanner.getInstance().saveState();
+		PathPlanner.getInstance().getScript().addAction(a);
 	}
 }

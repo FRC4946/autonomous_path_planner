@@ -231,11 +231,11 @@ public class ActionEditorPanel extends JPanel {
 		});
 		btnUp.addActionListener(e -> {
 			saveState();
-			PathPlanner.main.getScript().moveActionUp(m_action);
+			PathPlanner.getInstance().getScript().moveActionUp(m_action);
 		});
 		btnDown.addActionListener(e -> {
 			saveState();
-			PathPlanner.main.getScript().moveActionDown(m_action);
+			PathPlanner.getInstance().getScript().moveActionDown(m_action);
 		});
 		btnClear.addActionListener(e -> {
 			saveState();
@@ -296,7 +296,7 @@ public class ActionEditorPanel extends JPanel {
 		gbc_btnDelete.gridx = 14;
 		btnDelete.addActionListener(e -> {
 			saveState();
-			PathPlanner.main.getScript().removeAction(m_action);
+			PathPlanner.getInstance().getScript().removeAction(m_action);
 		});
 		add(btnDelete, gbc_btnDelete);
 	}
@@ -321,7 +321,7 @@ public class ActionEditorPanel extends JPanel {
 	};
 
 	private void saveState() {
-		PathPlanner.main.saveState();
+		PathPlanner.getInstance().saveState();
 	}
 
 }
