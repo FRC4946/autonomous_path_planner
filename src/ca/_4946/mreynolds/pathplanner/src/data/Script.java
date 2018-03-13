@@ -8,6 +8,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
+import ca._4946.mreynolds.util.ObservableElement;
 import ca._4946.mreynolds.util.ObservableList;
 
 /**
@@ -16,7 +17,7 @@ import ca._4946.mreynolds.util.ObservableList;
  * @author Matthew Reynolds
  *
  */
-public class Script {
+public class Script extends ObservableElement {
 	private ObservableList<Action<?>> m_script;
 
 	/**
@@ -24,7 +25,10 @@ public class Script {
 	 */
 	public Script() {
 		m_script = new ObservableList<>();
-		m_script.addListListener(() -> connectPaths());
+		m_script.addListListener(() -> {
+			connectPaths();
+			fireElementChanged();
+		});
 	}
 
 	/**
@@ -79,7 +83,7 @@ public class Script {
 				((DriveAction) m_script.get(i)).setPt(0, pt);
 
 				prevPath.generatePath();
-				 ((DriveAction) m_script.get(i)).generatePath();
+				((DriveAction) m_script.get(i)).generatePath();
 
 				prevPath = (DriveAction) m_script.get(i);
 				offset = 0;

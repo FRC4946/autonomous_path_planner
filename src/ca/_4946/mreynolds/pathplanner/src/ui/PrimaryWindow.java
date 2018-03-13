@@ -45,6 +45,10 @@ public class PrimaryWindow extends JFrame {
 		add(m_controlPanel);
 	}
 
+	public ControlPanel getControlPanel() {
+		return m_controlPanel;
+	}
+	
 	public FieldPanel getFieldPanel() {
 		return m_fieldPanel;
 	}

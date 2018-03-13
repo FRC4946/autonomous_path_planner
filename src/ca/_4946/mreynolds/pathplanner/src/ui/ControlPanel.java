@@ -390,22 +390,23 @@ public class ControlPanel extends JPanel {
 
 			// If ctrl is down...
 			if (e.isControlDown() && e.getID() == KeyEvent.KEY_PRESSED) {
-				if (e.getKeyCode() == KeyEvent.VK_1) {
-					PathPlanner.main.getScript().addAction(new DriveAction());
-					// PathPlanner.main.getScript().connectPaths();
-				} else if (e.getKeyCode() == KeyEvent.VK_2)
-					PathPlanner.main.getScript().addAction(new ElevatorAction());
+				if (e.getKeyCode() == KeyEvent.VK_1)
+					addAction(new DriveAction());
+				else if (e.getKeyCode() == KeyEvent.VK_2)
+					addAction(new ElevatorAction());
 				else if (e.getKeyCode() == KeyEvent.VK_3)
-					PathPlanner.main.getScript().addAction(new ArmAction());
+					addAction(new ArmAction());
 				else if (e.getKeyCode() == KeyEvent.VK_4)
-					PathPlanner.main.getScript().addAction(new IntakeAction());
+					addAction(new IntakeAction());
 				else if (e.getKeyCode() == KeyEvent.VK_5)
-					PathPlanner.main.getScript().addAction(new OutputAction());
+					addAction(new OutputAction());
 				else if (e.getKeyCode() == KeyEvent.VK_6)
-					PathPlanner.main.getScript().addAction(new TurnAction());
+					addAction(new TurnAction());
 				else if (e.getKeyCode() == KeyEvent.VK_7)
-					PathPlanner.main.getScript().addAction(new DelayAction());
+					addAction(new DelayAction());
 
+				else if (e.getKeyCode() == KeyEvent.VK_Z)
+					PathPlanner.main.undo();
 				else if (e.getKeyCode() == KeyEvent.VK_L)
 					load();
 				else if (e.getKeyCode() == KeyEvent.VK_O)
@@ -434,7 +435,7 @@ public class ControlPanel extends JPanel {
 		});
 	}
 
-	private void setupListeners() {
+	public void setupListeners() {
 
 		for (Script curScript : PathPlanner.main.getScripts()) {
 			curScript.getActions()
@@ -518,20 +519,24 @@ public class ControlPanel extends JPanel {
 		String lbl = ((JButton) e.getSource()).getText();
 
 		if (lbl.contains("Drive")) {
-			PathPlanner.main.getScript().addAction(new DriveAction());
-			// PathPlanner.main.getScript().connectPaths();
+			addAction(new DriveAction());
 		} else if (lbl.contains("Turn")) {
-			PathPlanner.main.getScript().addAction(new TurnAction());
-			// PathPlanner.main.getScript().connectPaths();
+			addAction(new TurnAction());
 		} else if (lbl.contains("Arm"))
-			PathPlanner.main.getScript().addAction(new ArmAction());
+			addAction(new ArmAction());
 		else if (lbl.contains("Intake"))
-			PathPlanner.main.getScript().addAction(new IntakeAction());
+			addAction(new IntakeAction());
 		else if (lbl.contains("Output"))
-			PathPlanner.main.getScript().addAction(new OutputAction());
+			addAction(new OutputAction());
 		else if (lbl.contains("Elevator"))
-			PathPlanner.main.getScript().addAction(new ElevatorAction());
+			addAction(new ElevatorAction());
 		else if (lbl.contains("Delay"))
-			PathPlanner.main.getScript().addAction(new DelayAction());
+			addAction(new DelayAction());
+
 	};
+
+	private void addAction(Action<?> a) {
+		PathPlanner.main.saveState();
+		PathPlanner.main.getScript().addAction(a);
+	}
 }

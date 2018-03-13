@@ -49,6 +49,16 @@ public class PathPlanner {
 		main = new PathPlanner();
 	}
 
+	public void saveState() {
+		scBundle.pushHistory(m_gameData);
+	}
+
+	public void undo() {
+		scBundle.popHistory(m_gameData);
+		window.getFieldPanel().setScript(getScript(), getGameData());
+		window.getControlPanel().setupListeners();
+	}
+
 	public void open(File file) {
 		try {
 			scBundle = FileIO.loadScript(file);
@@ -93,18 +103,7 @@ public class PathPlanner {
 	}
 
 	public Script getScript(String code) {
-		code = code.toLowerCase();
-
-		if (code.contains("ll"))
-			return scBundle.LL;
-		else if (code.contains("lr"))
-			return scBundle.LR;
-		else if (code.contains("rl"))
-			return scBundle.RL;
-		else if (code.contains("rr"))
-			return scBundle.RR;
-
-		return null;
+		return scBundle.getScript(code);
 	}
 
 	public Script getScript() {
@@ -112,17 +111,7 @@ public class PathPlanner {
 	}
 
 	public void setScript(Script newScript, String code) {
-
-		code = code.toLowerCase();
-		if (code.contains("ll"))
-			scBundle.LL = newScript;
-		else if (code.contains("lr"))
-			scBundle.LR = newScript;
-		else if (code.contains("rl"))
-			scBundle.RL = newScript;
-		else if (code.contains("rr"))
-			scBundle.RR = newScript;
-
+		scBundle.setScript(newScript, code);
 		window.getFieldPanel().setScript(getScript(), getGameData());
 	}
 

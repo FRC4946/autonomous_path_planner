@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
@@ -104,8 +103,8 @@ public class ActionEditorPanel extends JPanel {
 			reverseBox.setOpaque(false);
 			reverseBox.setSelected(m_action.getData() == 1.0);
 			reverseBox.addActionListener(e -> {
+				saveState();
 				m_action.setData(reverseBox.isSelected() ? 1 : 0);
-				// PathPlanner.main.getScript().connectPaths();
 			});
 			m_data = reverseBox;
 		} else {
@@ -127,8 +126,10 @@ public class ActionEditorPanel extends JPanel {
 			} else
 				m_data.setVisible(false);
 
-			heightSpinner
-					.addChangeListener(e -> m_action.setData(Double.parseDouble(heightSpinner.getValue().toString())));
+			heightSpinner.addChangeListener(e -> {
+				saveState();
+				m_action.setData(Double.parseDouble(heightSpinner.getValue().toString()));
+			});
 			((JSpinner.DefaultEditor) heightSpinner.getEditor()).getTextField().setColumns(2);
 		}
 
@@ -212,13 +213,34 @@ public class ActionEditorPanel extends JPanel {
 
 		// Setup all the listeners
 		actionSelector.addActionListener(actionSelectListener);
-		delaySpinner.addChangeListener(e -> m_action.setDelay((double) delaySpinner.getValue()));
-		timeoutSpinner.addChangeListener(e -> m_action.setTimeout((double) timeoutSpinner.getValue()));
-		rdbtnSequential.addActionListener(e -> m_action.setBehaviour(Behaviour.kSequential));
-		rdbtnParallel.addActionListener(e -> m_action.setBehaviour(Behaviour.kParallel));
-		btnUp.addActionListener(e -> PathPlanner.main.getScript().moveActionUp(m_action));
-		btnDown.addActionListener(e -> PathPlanner.main.getScript().moveActionDown(m_action));
-		btnClear.addActionListener(e -> ((DriveAction) m_action).clear());
+		delaySpinner.addChangeListener(e -> {
+			saveState();
+			m_action.setDelay((double) delaySpinner.getValue());
+		});
+		timeoutSpinner.addChangeListener(e -> {
+			saveState();
+			m_action.setTimeout((double) timeoutSpinner.getValue());
+		});
+		rdbtnSequential.addActionListener(e -> {
+			saveState();
+			m_action.setBehaviour(Behaviour.kSequential);
+		});
+		rdbtnParallel.addActionListener(e -> {
+			saveState();
+			m_action.setBehaviour(Behaviour.kParallel);
+		});
+		btnUp.addActionListener(e -> {
+			saveState();
+			PathPlanner.main.getScript().moveActionUp(m_action);
+		});
+		btnDown.addActionListener(e -> {
+			saveState();
+			PathPlanner.main.getScript().moveActionDown(m_action);
+		});
+		btnClear.addActionListener(e -> {
+			saveState();
+			((DriveAction) m_action).clear();
+		});
 
 		// Add the action label
 		add(actionTypeLbl, gbc_actionTypeLbl);
@@ -236,7 +258,7 @@ public class ActionEditorPanel extends JPanel {
 			durationLbl.setBackground(Color.WHITE);
 			durationLbl.setOpaque(true);
 
-			//TODO: Make this not trash
+			// TODO: Make this not trash
 			Thread ftpThread = new Thread(() -> {
 				try {
 					Thread.sleep(100);
@@ -272,30 +294,34 @@ public class ActionEditorPanel extends JPanel {
 		gbc_btnDelete.gridy = 0;
 		gbc_btnDelete.fill = GridBagConstraints.BOTH;
 		gbc_btnDelete.gridx = 14;
-		btnDelete.addActionListener(e -> PathPlanner.main.getScript().removeAction(m_action));
+		btnDelete.addActionListener(e -> {
+			saveState();
+			PathPlanner.main.getScript().removeAction(m_action);
+		});
 		add(btnDelete, gbc_btnDelete);
 	}
 
-	ActionListener actionSelectListener = new ActionListener() {
+	@SuppressWarnings("unchecked")
+	ActionListener actionSelectListener = e -> {
+		saveState();
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			m_action.setOptions(Enum.valueOf(m_action.getOption().getDeclaringClass(),
-					((JComboBox<?>) e.getSource()).getSelectedItem().toString()));
+		m_action.setOptions(Enum.valueOf(m_action.getOption().getDeclaringClass(),
+				((JComboBox<?>) e.getSource()).getSelectedItem().toString()));
 
-			
-			if (m_action instanceof ElevatorAction) {
-				if (m_action.getOption() == ElevatorAction.Option.ToCustom) {
-					m_dataLbl.setText(m_action.getDataLabel());
-					((JSpinner) m_data).setModel(
-							new SpinnerNumberModel(MathUtil.limit(6, m_action.getData(), 90), 6.0, 90.0, 6.0));
-					m_data.setVisible(true);
-				} else {
-					m_data.setVisible(false);
-				}
+		if (m_action instanceof ElevatorAction) {
+			if (m_action.getOption() == ElevatorAction.Option.ToCustom) {
+				m_dataLbl.setText(m_action.getDataLabel());
+				((JSpinner) m_data)
+						.setModel(new SpinnerNumberModel(MathUtil.limit(6, m_action.getData(), 90), 6.0, 90.0, 6.0));
+				m_data.setVisible(true);
+			} else {
+				m_data.setVisible(false);
 			}
 		}
 	};
+
+	private void saveState() {
+		PathPlanner.main.saveState();
+	}
 
 }

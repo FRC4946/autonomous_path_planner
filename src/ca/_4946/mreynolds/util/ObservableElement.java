@@ -20,6 +20,12 @@ public class ObservableElement {
 		listenerList.remove(ElementListener.class, l);
 	}
 
+	public void removeAllElementListeners() {
+		for (Object o : listenerList.getListenerList())
+			if (o instanceof ElementListener)
+				removeElementListener((ElementListener) o);
+	}
+
 	protected void fireElementChanged() {
 
 		// Guaranteed to return a non-null array

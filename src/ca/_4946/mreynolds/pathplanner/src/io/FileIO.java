@@ -112,10 +112,10 @@ public class FileIO {
 		Element rl = (Element) doc.getElementsByTagName("rl").item(0);
 		Element rr = (Element) doc.getElementsByTagName("rr").item(0);
 
-		scripts.LL = (ll == null) ? new Script() : loadScript(ll);
-		scripts.LR = (lr == null) ? new Script() : loadScript(lr);
-		scripts.RL = (rl == null) ? new Script() : loadScript(rl);
-		scripts.RR = (rr == null) ? new Script() : loadScript(rr);
+		scripts.setScript((ll == null) ? new Script() : loadScript(ll), "ll");
+		scripts.setScript((lr == null) ? new Script() : loadScript(lr), "lr");
+		scripts.setScript((rl == null) ? new Script() : loadScript(rl), "rl");
+		scripts.setScript((rr == null) ? new Script() : loadScript(rr), "rr");
 
 		// Return the newly-read data
 		return scripts;
@@ -254,10 +254,10 @@ public class FileIO {
 		// Load all the data into the script element
 		root.setAttribute("name", bundle.name);
 		root.setAttribute("notes", bundle.notes);
-		root.appendChild(saveScript(doc, "ll", bundle.LL, false));
-		root.appendChild(saveScript(doc, "lr", bundle.LR, false));
-		root.appendChild(saveScript(doc, "rl", bundle.RL, false));
-		root.appendChild(saveScript(doc, "rr", bundle.RR, false));
+		root.appendChild(saveScript(doc, "ll", bundle.getScript("ll"), false));
+		root.appendChild(saveScript(doc, "lr", bundle.getScript("lr"), false));
+		root.appendChild(saveScript(doc, "rl", bundle.getScript("rl"), false));
+		root.appendChild(saveScript(doc, "rr", bundle.getScript("rr"), false));
 
 		// for (DriveAction a : scBundle.LL.getDriveActions()) {
 		// PathParser.smoothAccelJerk(a.getLeftPath());
@@ -381,10 +381,10 @@ public class FileIO {
 		// Load all the data into the script element
 		root.setAttribute("name", scBundle.name);
 		root.setAttribute("notes", scBundle.notes);
-		root.appendChild(saveScript(doc, "ll", scBundle.LL, true));
-		root.appendChild(saveScript(doc, "lr", scBundle.LR, true));
-		root.appendChild(saveScript(doc, "rl", scBundle.RL, true));
-		root.appendChild(saveScript(doc, "rr", scBundle.RR, true));
+		root.appendChild(saveScript(doc, "ll", scBundle.getScript("ll"), true));
+		root.appendChild(saveScript(doc, "lr", scBundle.getScript("lr"), true));
+		root.appendChild(saveScript(doc, "rl", scBundle.getScript("rl"), true));
+		root.appendChild(saveScript(doc, "rr", scBundle.getScript("rr"), true));
 
 		// Write the content into an XML file
 		DOMSource source = new DOMSource(doc);

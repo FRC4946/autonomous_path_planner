@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
+import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
@@ -393,6 +394,7 @@ public class FieldPanel extends JPanel {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			PathPlanner.main.saveState();
 			curAction = null;
 
 			if (m_script.getDriveActions().isEmpty())

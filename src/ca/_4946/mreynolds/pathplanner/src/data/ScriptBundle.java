@@ -21,10 +21,98 @@ public class ScriptBundle {
 	public String name = "";
 	public String notes = "";
 
-	public Script LL = new Script();
-	public Script LR = new Script();
-	public Script RL = new Script();
-	public Script RR = new Script();
+	private int HISTORY_LENGTH = 10;
+	private Script[] m_llStack = new Script[HISTORY_LENGTH];
+	private Script[] m_lrStack = new Script[HISTORY_LENGTH];
+	private Script[] m_rlStack = new Script[HISTORY_LENGTH];
+	private Script[] m_rrStack = new Script[HISTORY_LENGTH];
+
+	private Script m_llScript = new Script();
+	private Script m_lrScript = new Script();
+	private Script m_rlScript = new Script();
+	private Script m_rrScript = new Script();
+
+	public void pushHistory(String code) {
+		Script[] stack = null;
+		Script script = null;
+
+		switch (code.toLowerCase()) {
+		case "ll":
+			stack = m_llStack;
+			script = m_llScript;
+			break;
+		case "lr":
+			stack = m_lrStack;
+			script = m_lrScript;
+			break;
+		case "rl":
+			stack = m_rlStack;
+			script = m_rlScript;
+			break;
+		case "rr":
+			stack = m_rrStack;
+			script = m_rrScript;
+			break;
+		default:
+			return;
+		}
+		for (int i = HISTORY_LENGTH - 1; i > 0; i--)
+			stack[i] = stack[i - 1];
+		stack[0] = new Script(script);
+	}
+
+	public void popHistory(String code) {
+
+		Script old = null;
+
+		switch (code.toLowerCase()) {
+		case "ll":
+			old = pop(m_llStack);
+			m_llScript = (old == null) ? m_llScript : old;
+			break;
+		case "lr":
+			old = pop(m_lrStack);
+			m_lrScript = (old == null) ? m_lrScript : old;
+			break;
+		case "rl":
+			old = pop(m_rlStack);
+			m_rlScript = (old == null) ? m_rlScript : old;
+			break;
+		case "rr":
+			old = pop(m_rrStack);
+			m_rrScript = (old == null) ? m_rrScript : old;
+			break;
+		}
+	}
+
+	private Script pop(Script[] stack) {
+		Script value = stack[0];
+		for (int i = 0; i < HISTORY_LENGTH - 1; i++)
+			stack[i] = stack[i + 1];
+		stack[HISTORY_LENGTH - 1] = null;
+		return value;
+	}
+
+	/**
+	 * Set the specified script
+	 * 
+	 * @param newScript
+	 *            the new {@link Script}
+	 * @param code
+	 *            the code of the {@code Script} to set
+	 */
+	public void setScript(Script newScript, String code) {
+		switch (code.toLowerCase()) {
+		case "ll":
+			m_llScript = newScript;
+		case "lr":
+			m_lrScript = newScript;
+		case "rl":
+			m_rlScript = newScript;
+		case "rr":
+			m_rrScript = newScript;
+		}
+	}
 
 	/**
 	 * Get the {@link Script} for the specified field configuration
@@ -37,13 +125,13 @@ public class ScriptBundle {
 	public Script getScript(String code) {
 		switch (code.toLowerCase()) {
 		case "ll":
-			return LL;
+			return m_llScript;
 		case "lr":
-			return LR;
+			return m_lrScript;
 		case "rl":
-			return RL;
+			return m_rlScript;
 		case "rr":
-			return RR;
+			return m_rrScript;
 		}
 
 		return null;
@@ -53,7 +141,7 @@ public class ScriptBundle {
 	 * @return a {@code Script} array {LL, LR, RL, RR}
 	 */
 	public Script[] asArray() {
-		return new Script[] { LL, LR, RL, RR };
+		return new Script[] { m_llScript, m_lrScript, m_rlScript, m_rrScript };
 	}
 
 	/**
