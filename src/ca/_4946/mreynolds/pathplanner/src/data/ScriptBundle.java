@@ -9,6 +9,7 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
+import ca._4946.mreynolds.util.FixedStack;
 
 /**
  * A bundle of 4 {@link Script}s, one representing each of the 4 possible field
@@ -22,10 +23,10 @@ public class ScriptBundle {
 	public String notes = "";
 
 	private int HISTORY_LENGTH = 10;
-	private Script[] m_llStack = new Script[HISTORY_LENGTH];
-	private Script[] m_lrStack = new Script[HISTORY_LENGTH];
-	private Script[] m_rlStack = new Script[HISTORY_LENGTH];
-	private Script[] m_rrStack = new Script[HISTORY_LENGTH];
+	FixedStack<Script> m_llStack = new FixedStack<>(HISTORY_LENGTH);
+	FixedStack<Script> m_lrStack = new FixedStack<>(HISTORY_LENGTH);
+	FixedStack<Script> m_rlStack = new FixedStack<>(HISTORY_LENGTH);
+	FixedStack<Script> m_rrStack = new FixedStack<>(HISTORY_LENGTH);
 
 	private Script m_llScript = new Script();
 	private Script m_lrScript = new Script();
@@ -33,64 +34,42 @@ public class ScriptBundle {
 	private Script m_rrScript = new Script();
 
 	public void pushHistory(String code) {
-		Script[] stack = null;
-		Script script = null;
-
 		switch (code.toLowerCase()) {
 		case "ll":
-			stack = m_llStack;
-			script = m_llScript;
+			m_llStack.push(new Script(m_llScript));
 			break;
 		case "lr":
-			stack = m_lrStack;
-			script = m_lrScript;
+			m_lrStack.push(new Script(m_lrScript));
 			break;
 		case "rl":
-			stack = m_rlStack;
-			script = m_rlScript;
+			m_rlStack.push(new Script(m_rlScript));
 			break;
 		case "rr":
-			stack = m_rrStack;
-			script = m_rrScript;
+			m_rrStack.push(new Script(m_rrScript));
 			break;
 		default:
 			return;
 		}
-		for (int i = HISTORY_LENGTH - 1; i > 0; i--)
-			stack[i] = stack[i - 1];
-		stack[0] = new Script(script);
 	}
 
 	public void popHistory(String code) {
-
-		Script old = null;
-
 		switch (code.toLowerCase()) {
 		case "ll":
-			old = pop(m_llStack);
-			m_llScript = (old == null) ? m_llScript : old;
-			break;
+			if (!m_llStack.isEmpty())
+				m_llScript = m_llStack.pop();
 		case "lr":
-			old = pop(m_lrStack);
-			m_lrScript = (old == null) ? m_lrScript : old;
+			if (!m_lrStack.isEmpty())
+				m_lrScript = m_lrStack.pop();
 			break;
 		case "rl":
-			old = pop(m_rlStack);
-			m_rlScript = (old == null) ? m_rlScript : old;
+			if (!m_rlStack.isEmpty())
+				m_rlScript = m_rlStack.pop();
 			break;
 		case "rr":
-			old = pop(m_rrStack);
-			m_rrScript = (old == null) ? m_rrScript : old;
+			if (!m_rrStack.isEmpty())
+				m_rrScript = m_rrStack.pop();
 			break;
 		}
-	}
-
-	private Script pop(Script[] stack) {
-		Script value = stack[0];
-		for (int i = 0; i < HISTORY_LENGTH - 1; i++)
-			stack[i] = stack[i + 1];
-		stack[HISTORY_LENGTH - 1] = null;
-		return value;
 	}
 
 	/**
