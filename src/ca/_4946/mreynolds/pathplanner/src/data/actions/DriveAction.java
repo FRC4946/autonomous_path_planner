@@ -26,7 +26,7 @@ public class DriveAction extends Action<DriveAction.Option> {
 	 * @see Action.ActionOption
 	 */
 	public static enum Option implements Action.ActionOption {
-		FollowPath, DisconnectedPath
+		FollowPath, Detached
 	}
 
 	private ArrayList<Segment> m_left;
@@ -269,7 +269,7 @@ public class DriveAction extends Action<DriveAction.Option> {
 
 		// If we're switching from FollowPath to DisconnectedPath, remove the first ctrl
 		// point
-		if (oldOpt != option && option == Option.DisconnectedPath)
+		if (oldOpt != option && option == Option.Detached)
 			removePt(0);
 
 	}

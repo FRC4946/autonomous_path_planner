@@ -61,7 +61,7 @@ public class Script extends ObservableElement {
 			if (m_script.get(i) instanceof TurnAction)
 				offset += m_script.get(i).getData();
 			else if (m_script.get(i) instanceof DriveAction) {
-				if (m_script.get(i).getOption() == DriveAction.Option.DisconnectedPath) {
+				if (m_script.get(i).getOption() == DriveAction.Option.Detached) {
 					prevPath = (DriveAction) m_script.get(i);
 					prevPath.generatePath();
 					continue;

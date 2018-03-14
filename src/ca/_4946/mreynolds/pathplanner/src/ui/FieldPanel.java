@@ -262,7 +262,7 @@ public class FieldPanel extends JPanel {
 				prevPt = new ControlPoint(((DriveAction) a).getPt(((DriveAction) a).getNumPts() - 1));
 				drawBot(prevPt, a.getData() == 1, (Graphics2D) g);
 
-				if (((DriveAction) a).getOption() == DriveAction.Option.DisconnectedPath) {
+				if (((DriveAction) a).getOption() == DriveAction.Option.Detached) {
 					prevPt = new ControlPoint(((DriveAction) a).getPt(0));
 					drawBot(prevPt, a.getData() == 1, (Graphics2D) g);
 				}
