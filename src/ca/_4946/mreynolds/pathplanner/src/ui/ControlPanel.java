@@ -138,7 +138,8 @@ public class ControlPanel extends JPanel {
 				gbc_scriptNameField.gridy = 0;
 				statusPanel.add(m_scriptNameField, gbc_scriptNameField);
 				m_scriptNameField.setColumns(20);
-				m_scriptNameField.addActionListener(e -> PathPlanner.getInstance().setScriptName(m_scriptNameField.getText()));
+				m_scriptNameField
+						.addActionListener(e -> PathPlanner.getInstance().setScriptName(m_scriptNameField.getText()));
 
 				m_fieldConfigDropdown = new JComboBox<String>();
 				GridBagConstraints gbc_fieldConfigDropdown = new GridBagConstraints();
@@ -440,7 +441,8 @@ public class ControlPanel extends JPanel {
 		for (Script curScript : PathPlanner.getInstance().getScripts()) {
 			curScript.getActions()
 					.removeListListener(() -> updateActionList(PathPlanner.getInstance().getScript().getActions()));
-			curScript.getActions().addListListener(() -> updateActionList(PathPlanner.getInstance().getScript().getActions()));
+			curScript.getActions()
+					.addListListener(() -> updateActionList(PathPlanner.getInstance().getScript().getActions()));
 		}
 
 		updateActionList(PathPlanner.getInstance().getScript().getActions());
@@ -496,6 +498,7 @@ public class ControlPanel extends JPanel {
 
 	ActionListener copyScript = e -> {
 		String data = ((JButton) e.getSource()).getText().toLowerCase();
+
 		PathPlanner.getInstance().setScript(new Script(PathPlanner.getInstance().getScript()), data);
 
 		switch (data) {

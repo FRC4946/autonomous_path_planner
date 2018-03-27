@@ -20,7 +20,7 @@ public class PathPlanner {
 	private PrimaryWindow window;
 
 	private static PathPlanner instance;
-	
+
 	private PathPlanner() {
 
 		// Set the project's Look And Feel to the default cross-platform (Metal)
@@ -111,13 +111,13 @@ public class PathPlanner {
 	}
 
 	public void setScript(Script newScript, String code) {
-		scBundle.setScript(newScript, code);
+		setGameData(code.toLowerCase().substring(0, 2));
+		scBundle.setScript(newScript, getGameData());
 		window.getFieldPanel().setScript(getScript(), getGameData());
 	}
 
 	public void setScript(Script newScript) {
 		setScript(newScript, m_gameData);
-		window.getFieldPanel().setScript(getScript(), getGameData());
 	}
 
 	public void setScriptName(String name) {

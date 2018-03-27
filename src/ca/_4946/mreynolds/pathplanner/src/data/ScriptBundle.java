@@ -48,7 +48,7 @@ public class ScriptBundle {
 			m_rrStack.push(new Script(m_rrScript));
 			break;
 		default:
-			return;
+			throw new IllegalArgumentException("Invalid game data '" + code + "'");
 		}
 	}
 
@@ -69,6 +69,8 @@ public class ScriptBundle {
 			if (!m_rrStack.isEmpty())
 				m_rrScript = m_rrStack.pop();
 			break;
+		default:
+			throw new IllegalArgumentException("Invalid game data '" + code + "'");
 		}
 	}
 
@@ -84,12 +86,18 @@ public class ScriptBundle {
 		switch (code.toLowerCase()) {
 		case "ll":
 			m_llScript = newScript;
+			break;
 		case "lr":
 			m_lrScript = newScript;
+			break;
 		case "rl":
 			m_rlScript = newScript;
+			break;
 		case "rr":
 			m_rrScript = newScript;
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid game data '" + code + "'");
 		}
 	}
 
@@ -111,9 +119,9 @@ public class ScriptBundle {
 			return m_rlScript;
 		case "rr":
 			return m_rrScript;
+		default:
+			throw new IllegalArgumentException("Invalid game data '" + code + "'");
 		}
-
-		return null;
 	}
 
 	/**
