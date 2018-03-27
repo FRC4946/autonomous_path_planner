@@ -375,6 +375,9 @@ public class ControlPanel extends JPanel {
 		case "rr":
 			m_copyRRBtn.setEnabled(false);
 			break;
+		default:
+			throw new IllegalArgumentException(
+					"Invalid game data '" + PathPlanner.getInstance().getGameData().toLowerCase() + "'");
 		}
 	}
 
@@ -514,6 +517,8 @@ public class ControlPanel extends JPanel {
 		case "rr":
 			m_fieldConfigDropdown.setSelectedIndex(3);
 			break;
+		default:
+			throw new IllegalArgumentException("Invalid game data '" + data + "'");
 		}
 		setupListeners();
 	};

@@ -169,6 +169,8 @@ public class FileIO {
 			case "Turn":
 				curAction = new TurnAction();
 				break;
+			default:
+				curAction = null;
 			}
 
 			// If the type was invalid, skip this action and proceed to the next action in
