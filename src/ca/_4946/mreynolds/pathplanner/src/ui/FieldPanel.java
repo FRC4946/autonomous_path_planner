@@ -253,25 +253,28 @@ public class FieldPanel extends JPanel {
 
 		List<Action<?>> list = m_script.getActionOfType(DriveAction.class, TurnAction.class);
 
+		boolean prevIsReverse = false;
 		ControlPoint prevPt = null;
 		for (Action<?> a : list) {
 
 			// Draw the endpoint of each path
 			if (a instanceof DriveAction && ((DriveAction) a).getNumPts() > 1) {
 
+				prevIsReverse = a.getData() == 1;
 				prevPt = new ControlPoint(((DriveAction) a).getPt(((DriveAction) a).getNumPts() - 1));
-				drawBot(prevPt, a.getData() == 1, (Graphics2D) g);
+				drawBot(prevPt, prevIsReverse, (Graphics2D) g);
 
 				if (((DriveAction) a).getOption() == DriveAction.Option.Detached) {
+					prevIsReverse = a.getData() == 1;
 					prevPt = new ControlPoint(((DriveAction) a).getPt(0));
-					drawBot(prevPt, a.getData() == 1, (Graphics2D) g);
+					drawBot(prevPt, prevIsReverse, (Graphics2D) g);
 				}
 			}
 
 			// Draw any of the rotated robots
 			if (a instanceof TurnAction && a.getData() != 0 && prevPt != null) {
 				prevPt.setHeading(prevPt.getHeading() - a.getData());
-				drawBot(prevPt, false, (Graphics2D) g);
+				drawBot(prevPt, prevIsReverse, (Graphics2D) g);
 			}
 		}
 	}

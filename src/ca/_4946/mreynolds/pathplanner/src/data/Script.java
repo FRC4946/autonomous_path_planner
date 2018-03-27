@@ -176,9 +176,10 @@ public class Script extends ObservableElement {
 					break;
 			}
 
-			// If there were any turns, do NOT flip the direction. Otherwise, flip it.
+			// If there were any turns, set the direction to forwards. Otherwise, flip it
+			// from the prev.
 			int prevDir = (int) getDriveActions().get(getDriveActions().size() - 1).getData();
-			a.setData(didTurn ? prevDir : prevDir ^ 1);
+			a.setData(didTurn ? 0 : prevDir ^ 1);
 			connectPaths();
 
 		}
