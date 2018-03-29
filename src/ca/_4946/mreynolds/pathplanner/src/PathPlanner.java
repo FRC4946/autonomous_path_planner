@@ -14,15 +14,17 @@ import ca._4946.mreynolds.pathplanner.src.ui.PrimaryWindow;
 
 public class PathPlanner {
 
-	private ScriptBundle scBundle = new ScriptBundle();
+	private ScriptBundle m_scBundle = new ScriptBundle();
 	private boolean m_fieldIsBlue = true;
 	private String m_gameData = "ll";
-	private PrimaryWindow window;
+	private PrimaryWindow m_window;
 
-	private static PathPlanner instance;
+	private static PathPlanner m_instance;
 
 	private PathPlanner() {
 
+		FileIO.createDefaultDir();
+		
 		// Set the project's Look And Feel to the default cross-platform (Metal)
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -33,9 +35,9 @@ public class PathPlanner {
 
 		EventQueue.invokeLater(() -> {
 			try {
-				window = new PrimaryWindow();
-				window.setVisible(true);
-				window.getFieldPanel().setScript(getScript(), getGameData());
+				m_window = new PrimaryWindow();
+				m_window.setVisible(true);
+				m_window.getFieldPanel().setScript(getScript(), getGameData());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -50,35 +52,35 @@ public class PathPlanner {
 	}
 
 	public void saveState() {
-		scBundle.pushHistory(m_gameData);
+		m_scBundle.pushHistory(m_gameData);
 	}
 
 	public void undo() {
-		scBundle.popHistory(m_gameData);
-		window.getFieldPanel().setScript(getScript(), getGameData());
-		window.getControlPanel().setupListeners();
+		m_scBundle.popHistory(m_gameData);
+		m_window.getFieldPanel().setScript(getScript(), getGameData());
+		m_window.getControlPanel().setupListeners();
 	}
 
 	public void open(File file) {
 		try {
-			scBundle = FileIO.loadScript(file);
+			m_scBundle = FileIO.loadScript(file);
 		} catch (Exception e) {
 			ErrorPopup.createPopup("Error loading file", e);
 		}
 
 		m_gameData = "ll";
-		window.getFieldPanel().setScript(getScript(), getGameData());
+		m_window.getFieldPanel().setScript(getScript(), getGameData());
 	}
 
 	public void save(File file) {
 
-		if (!scBundle.validateParallelActions()) {
+		if (!m_scBundle.validateParallelActions()) {
 			ErrorPopup.createPopup("Invalid Script", "Script contains illegal parallel actions!");
 			return;
 		}
 
 		try {
-			FileIO.saveScript(scBundle, file);
+			FileIO.saveScript(m_scBundle, file);
 		} catch (Exception e) {
 			ErrorPopup.createPopup("Error saving file", e);
 		}
@@ -86,24 +88,24 @@ public class PathPlanner {
 
 	public void upload(File file) {
 
-		if (!scBundle.validateParallelActions()) {
+		if (!m_scBundle.validateParallelActions()) {
 			ErrorPopup.createPopup("Invalid Script", "Script contains illegal parallel actions!");
 			return;
 		}
 
 		try {
-			FileIO.uploadScript(scBundle, file);
+			FileIO.uploadScript(m_scBundle, file);
 		} catch (Exception e) {
 			ErrorPopup.createPopup("Error uploading file", e);
 		}
 	}
 
 	public Script[] getScripts() {
-		return scBundle.asArray();
+		return m_scBundle.asArray();
 	}
 
 	public Script getScript(String code) {
-		return scBundle.getScript(code);
+		return m_scBundle.getScript(code);
 	}
 
 	public Script getScript() {
@@ -112,8 +114,8 @@ public class PathPlanner {
 
 	public void setScript(Script newScript, String code) {
 		setGameData(code.toLowerCase().substring(0, 2));
-		scBundle.setScript(newScript, getGameData());
-		window.getFieldPanel().setScript(getScript(), getGameData());
+		m_scBundle.setScript(newScript, getGameData());
+		m_window.getFieldPanel().setScript(getScript(), getGameData());
 	}
 
 	public void setScript(Script newScript) {
@@ -121,19 +123,19 @@ public class PathPlanner {
 	}
 
 	public void setScriptName(String name) {
-		scBundle.name = name;
+		m_scBundle.name = name;
 	}
 
 	public String getScriptName() {
-		return scBundle.name;
+		return m_scBundle.name;
 	}
 
 	public void setScriptNotes(String notes) {
-		scBundle.notes = notes;
+		m_scBundle.notes = notes;
 	}
 
 	public String getScriptNotes() {
-		return scBundle.notes;
+		return m_scBundle.notes;
 	}
 
 	/**
@@ -149,7 +151,7 @@ public class PathPlanner {
 	 */
 	public void setFieldColor(boolean isBlue) {
 		m_fieldIsBlue = isBlue;
-		window.getFieldPanel().setBlue(isBlue);
+		m_window.getFieldPanel().setBlue(isBlue);
 	}
 
 	/**
@@ -165,16 +167,16 @@ public class PathPlanner {
 	 */
 	public void setGameData(String gameData) {
 		this.m_gameData = gameData;
-		window.getFieldPanel().setScript(getScript(), getGameData());
+		m_window.getFieldPanel().setScript(getScript(), getGameData());
 	}
 
 	/**
 	 * @return the main PathPlanner instance
 	 */
 	public static PathPlanner getInstance() {
-		if (instance == null)
-			instance = new PathPlanner();
-		return instance;
+		if (m_instance == null)
+			m_instance = new PathPlanner();
+		return m_instance;
 	}
 
 }

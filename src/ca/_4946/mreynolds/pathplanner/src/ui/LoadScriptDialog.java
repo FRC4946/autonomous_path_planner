@@ -20,7 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import ca._4946.mreynolds.customSwing.SingleRootFileSystemView;
+import ca._4946.mreynolds.customSwing.SimpleFileSystemView;
 import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
@@ -53,8 +53,8 @@ public class LoadScriptDialog extends JDialog {
 		JSplitPane splitPane = new JSplitPane();
 		{
 
-			File root = new File(FileIO.DEFAULT_DIR);
-			FileSystemView fsv = new SingleRootFileSystemView(root);
+			File root = new File(FileIO.SCRIPT_DIR);
+			FileSystemView fsv = new SimpleFileSystemView(root);
 			JFileChooser fc = new JFileChooser(fsv);
 			fc.setFileFilter(new FileNameExtensionFilter("XML", "xml"));
 			fc.setControlButtonsAreShown(false);

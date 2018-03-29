@@ -57,11 +57,23 @@ public class FileIO {
 	private static DecimalFormat f = new DecimalFormat("0.0#####");
 
 	/**
-	 * The default directory for scripts on the host machine. This is usually
-	 * {@code <Username>/Documents/AutoPathPlanner/}
+	 * The default directory for the application's files on the host machine. This
+	 * is usually {@code <Username>/Documents/AutoPathPlanner/}
 	 */
-	public static String DEFAULT_DIR = System.getProperty("user.home") + System.getProperty("file.separator")
+	public static String WORKING_DIR = System.getProperty("user.home") + System.getProperty("file.separator")
 			+ "Documents" + System.getProperty("file.separator") + "AutoPathPlanner";
+
+	/**
+	 * The default directory for the scripts. Equivalent to
+	 * {@link #WORKING_DIR}{@code + "/Scripts"}
+	 */
+	public static String SCRIPT_DIR = WORKING_DIR + System.getProperty("file.separator") + "Scripts";
+
+	/**
+	 * The default directory for the motion profiles. Equivalent to
+	 * {@link #WORKING_DIR}{@code + "/Profiles"}
+	 */
+	public static String PROFILE_DIR = WORKING_DIR + System.getProperty("file.separator") + "Profiles";
 
 	// Pulled from
 	// wpilib.screenstepslive.com/s/currentCS/m/cs_hardware/l/282299-roborio-ftp
@@ -70,14 +82,59 @@ public class FileIO {
 	public static String FTP_PASSWORD = "";
 
 	/**
-	 * Ensure the {@link FileIO#DEFAULT_DIR} exists
+	 * Ensure the {@link #WORKING_DIR}, {@link #SCRIPT_DIR}, and
+	 * {@link #PROFILE_DIR} exist
 	 */
 	public static void createDefaultDir() {
-		File dir = new File(DEFAULT_DIR);
+		File dir = new File(WORKING_DIR);
+		if (!dir.exists() || !dir.isDirectory())
+			dir.mkdir();
 
+		dir = new File(SCRIPT_DIR);
+		if (!dir.exists() || !dir.isDirectory())
+			dir.mkdir();
+
+		dir = new File(PROFILE_DIR);
 		if (!dir.exists() || !dir.isDirectory())
 			dir.mkdir();
 	}
+
+	// /**
+	// * Get the application data of the program. This directory is different based
+	// on
+	// * the OS. On Windows, it is normally {@code \Users\<name>\AppData\Roaming}
+	// (AKA
+	// * {@code %AppData%}), while on OS X it is
+	// * {@code ~/Library/Application Support/PathPlanner}
+	// *
+	// * @return a string containing the url of the data directory
+	// */
+	// public static String getDataDir() {
+	//
+	// String workingDirectory = "";
+	//
+	// // Assign the name of the OS, according to Java, to a variable to
+	// // determine what the workingDirectory is.
+	// String OS = (System.getProperty("os.name")).toUpperCase();
+	//
+	// // If the operating system is Windows, the workingDirectory is the
+	// // location of the "AppData" folder
+	// if (OS.contains("WIN"))
+	// workingDirectory = System.getenv("AppData");
+	//
+	// // Otherwise, we assume Linux or Mac
+	// else {
+	// // In either case, we would start in the user's home directory
+	// workingDirectory = System.getProperty("user.home");
+	//
+	// // If we are on a Mac, we look for "Application Support"
+	// if (OS.contains("OS X"))
+	// workingDirectory += "/Library/Application Support";
+	// }
+	//
+	// workingDirectory += "/ReynoldsFMS";
+	// return workingDirectory;
+	// }
 
 	/**
 	 * Load a {@link ScriptBundle} from the specified {@code XML} {@link File}
@@ -620,12 +677,11 @@ public class FileIO {
 
 	/**
 	 * @return a {@link JFileChooser} filtering for {@code XML} files in the
-	 *         {@link FileIO#DEFAULT_DIR}
+	 *         {@link #SCRIPT_DIR}
 	 */
 	public static JFileChooser getFileChooser() {
 
-		FileIO.createDefaultDir();
-		JFileChooser fileChooser = new JFileChooser(FileIO.DEFAULT_DIR);
+		JFileChooser fileChooser = new JFileChooser(SCRIPT_DIR);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("XML", "xml");
 		fileChooser.setFileFilter(filter);
@@ -637,7 +693,7 @@ public class FileIO {
 	 * @param defaultFile
 	 *            the default file to select
 	 * @return a {@link JFileChooser} filtering for {@code XML} files in the
-	 *         {@link FileIO#DEFAULT_DIR}
+	 *         {@link #SCRIPT_DIR}
 	 */
 	public static JFileChooser getFileChooser(String defaultFile) {
 		JFileChooser fc = getFileChooser();
