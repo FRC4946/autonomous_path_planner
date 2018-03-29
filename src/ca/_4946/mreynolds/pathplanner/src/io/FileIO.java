@@ -679,7 +679,7 @@ public class FileIO {
 	 * @return a {@link JFileChooser} filtering for {@code XML} files in the
 	 *         {@link #SCRIPT_DIR}
 	 */
-	public static JFileChooser getFileChooser() {
+	public static JFileChooser getScriptChooser() {
 
 		JFileChooser fileChooser = new JFileChooser(SCRIPT_DIR);
 
@@ -695,8 +695,34 @@ public class FileIO {
 	 * @return a {@link JFileChooser} filtering for {@code XML} files in the
 	 *         {@link #SCRIPT_DIR}
 	 */
-	public static JFileChooser getFileChooser(String defaultFile) {
-		JFileChooser fc = getFileChooser();
+	public static JFileChooser getScriptChooser(String defaultFile) {
+		JFileChooser fc = getScriptChooser();
+		fc.setSelectedFile(new File(defaultFile));
+		return fc;
+	}
+
+	/**
+	 * @return a {@link JFileChooser} filtering for {@code INI} files in the
+	 *         {@link #PROFILE_DIR}
+	 */
+	public static JFileChooser getProfileChooser() {
+
+		JFileChooser fileChooser = new JFileChooser(PROFILE_DIR);
+
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("INI", "ini");
+		fileChooser.setFileFilter(filter);
+
+		return fileChooser;
+	}
+
+	/**
+	 * @param defaultFile
+	 *            the default file to select
+	 * @return a {@link JFileChooser} filtering for {@code INI} files in the
+	 *         {@link #PROFILE_DIR}
+	 */
+	public static JFileChooser getProfileChooser(String defaultFile) {
+		JFileChooser fc = getProfileChooser();
 		fc.setSelectedFile(new File(defaultFile));
 		return fc;
 	}

@@ -4,6 +4,13 @@ import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
+import ca._4946.mreynolds.pathplanner.src.ui.aboutDialogs.AboutAppDialog;
 
 public class PrimaryWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -25,7 +32,40 @@ public class PrimaryWindow extends JFrame {
 		setResizable(false);
 		setLocationRelativeTo(null);
 
+		setupMenu();
 		setupUI();
+	}
+
+	/**
+	 * Setup the menu bar
+	 */
+	private void setupMenu() {
+		// Create the menu bar
+		JMenuBar menuBar = new JMenuBar();
+		{
+
+			// Create the About menu for the menu bar
+			JMenu helpMenu = new JMenu("Help");
+			{
+				JMenuItem aboutPathPlanner = new JMenuItem("About Path Planner");
+				aboutPathPlanner.addActionListener(e -> new AboutAppDialog().setVisible(true));
+
+				// Create a JLabel containing the version and copyright
+				JLabel about = new JLabel(
+						"<html>© 2018 The Alpha Dogs <br>Version " + PathPlannerSettings.APP_VERSION + "</html>");
+
+				// Add the JLabel to the About menu
+				helpMenu.add(about);
+				helpMenu.addSeparator();
+				helpMenu.add(aboutPathPlanner);
+
+			}
+
+			// Add the Help menu to the menu bar
+			menuBar.add(helpMenu);
+		}
+
+		setJMenuBar(menuBar);
 	}
 
 	/**
@@ -48,7 +88,7 @@ public class PrimaryWindow extends JFrame {
 	public ControlPanel getControlPanel() {
 		return m_controlPanel;
 	}
-	
+
 	public FieldPanel getFieldPanel() {
 		return m_fieldPanel;
 	}

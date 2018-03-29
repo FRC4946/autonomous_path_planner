@@ -453,7 +453,7 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void open() {
-		JFileChooser fc = FileIO.getFileChooser();
+		JFileChooser fc = FileIO.getScriptChooser();
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			PathPlanner.getInstance().open(file);
@@ -473,7 +473,7 @@ public class ControlPanel extends JPanel {
 		PathPlanner.getInstance().setScriptName(m_scriptNameField.getText());
 		PathPlanner.getInstance().setScriptNotes(m_notesTxtPane.getText());
 
-		JFileChooser fc = FileIO.getFileChooser(m_scriptNameField.getText() + ".xml");
+		JFileChooser fc = FileIO.getScriptChooser(m_scriptNameField.getText() + ".xml");
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			if (!file.getName().endsWith(".xml"))

@@ -2,9 +2,18 @@ package ca._4946.mreynolds.pathplanner.src;
 
 import java.awt.EventQueue;
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.ini4j.Ini;
+import org.ini4j.Profile.Section;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
@@ -24,6 +33,7 @@ public class PathPlanner {
 	private PathPlanner() {
 
 		FileIO.createDefaultDir();
+		PathPlannerSettings.saveSettings();
 		
 		// Set the project's Look And Feel to the default cross-platform (Metal)
 		try {
