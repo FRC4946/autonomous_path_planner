@@ -25,17 +25,20 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -95,6 +98,10 @@ public class ErrorPopup extends JDialog {
 		// Set the error message
 		m_messageTextArea.setText(message);
 		m_detailsTextArea.setText(details);
+		
+		// Close on esc
+		getRootPane().registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	/**

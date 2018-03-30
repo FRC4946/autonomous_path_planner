@@ -1,6 +1,7 @@
 package ca._4946.mreynolds.pathplanner.src.ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -8,12 +9,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,6 +46,11 @@ public class LoadScriptDialog extends JDialog {
 		setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
 		setLocationRelativeTo(null);
 		setupUI();
+
+		// Close on esc
+		//TODO: Doesn't work
+		getRootPane().registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	/**
