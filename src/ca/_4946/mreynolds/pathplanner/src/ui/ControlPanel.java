@@ -40,7 +40,6 @@ import ca._4946.mreynolds.pathplanner.src.data.actions.ElevatorAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.IntakeAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.OutputAction;
 import ca._4946.mreynolds.pathplanner.src.data.actions.TurnAction;
-import ca._4946.mreynolds.pathplanner.src.data.point.ControlPoint;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 import ca._4946.mreynolds.util.ObservableList;
 
@@ -355,18 +354,10 @@ public class ControlPanel extends JPanel {
 		JPanel btnPanel = new JPanel();
 		{
 
-			JButton newBtn = new JButton("New");
-			newBtn.addActionListener(e -> PathPlanner.getInstance().getScript().clear());
-
 			JButton uploadBtn = new JButton("Upload (Space)");
 			uploadBtn.addActionListener(e -> upload());
 
-			JButton flipBtn = new JButton("Flip (F)");
-			flipBtn.addActionListener(e -> flip());
-
-			btnPanel.add(newBtn);
 			btnPanel.add(uploadBtn);
-			btnPanel.add(flipBtn);
 		}
 
 		add(topPanel, BorderLayout.NORTH);
@@ -430,8 +421,6 @@ public class ControlPanel extends JPanel {
 				else if (e.getKeyCode() == KeyEvent.VK_7)
 					addAction(new DelayAction());
 
-				else if (e.getKeyCode() == KeyEvent.VK_F)
-					flip();
 				else if (e.getKeyCode() == KeyEvent.VK_SPACE)
 					upload();
 				else
@@ -474,16 +463,6 @@ public class ControlPanel extends JPanel {
 		PathPlanner.getInstance().setScriptName(m_scriptNameField.getText());
 		PathPlanner.getInstance().setScriptNotes(m_notesTxtPane.getText());
 		PathPlanner.getInstance().upload(new File(m_scriptNameField.getText() + ".xml"));
-	}
-
-	private void flip() {
-		for (DriveAction a : PathPlanner.getInstance().getScript().getDriveActions())
-			for (int i = 0; i < a.getNumPts(); i++) {
-				ControlPoint p = a.getPt(i);
-				p.setHeading(180 - p.getHeading());
-				p.setX(-p.getX());
-				a.setPt(i, p);
-			}
 	}
 
 	ActionListener copyScript = e -> {

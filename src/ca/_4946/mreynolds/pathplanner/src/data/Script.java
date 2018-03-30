@@ -1,7 +1,7 @@
 package ca._4946.mreynolds.pathplanner.src.data;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import ca._4946.mreynolds.pathplanner.src.data.actions.Action;
 import ca._4946.mreynolds.pathplanner.src.data.actions.ArmAction;
@@ -254,6 +254,13 @@ public class Script extends ObservableElement {
 	}
 
 	/**
+	 * @return the number of {@code Action}s in the script
+	 */
+	public int getNumActions() {
+		return m_script.size();
+	}
+
+	/**
 	 * @param a
 	 *            the {@link Action} to search for
 	 * @return the index of the specified {@code Action} in the script
@@ -269,4 +276,16 @@ public class Script extends ObservableElement {
 		m_script.clear();
 	}
 
+	/**
+	 * Mirror the script horizontally
+	 */
+	public void flip() {
+		for (DriveAction a : getDriveActions())
+			for (int i = 0; i < a.getNumPts(); i++) {
+				ControlPoint p = a.getPt(i);
+				p.setHeading(180 - p.getHeading());
+				p.setX(-p.getX());
+				a.setPt(i, p);
+			}
+	}
 }
