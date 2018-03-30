@@ -318,13 +318,13 @@ public class ControlPanel extends JPanel {
 				JButton addTurnBtn = new JButton("Add Turn (6)");
 				JButton addDelayBtn = new JButton("Add Delay (7)");
 
-				addPathBtn.addActionListener(addNewAction);
-				addElevatorBtn.addActionListener(addNewAction);
-				addArmBtn.addActionListener(addNewAction);
-				addIntakeBtn.addActionListener(addNewAction);
-				addOutputBtn.addActionListener(addNewAction);
-				addTurnBtn.addActionListener(addNewAction);
-				addDelayBtn.addActionListener(addNewAction);
+				addPathBtn.addActionListener(e -> addAction(new DriveAction()));
+				addElevatorBtn.addActionListener(e -> addAction(new ElevatorAction()));
+				addArmBtn.addActionListener(e -> addAction(new ArmAction()));
+				addIntakeBtn.addActionListener(e -> addAction(new IntakeAction()));
+				addOutputBtn.addActionListener(e -> addAction(new OutputAction()));
+				addTurnBtn.addActionListener(e -> addAction(new TurnAction()));
+				addDelayBtn.addActionListener(e -> addAction(new DelayAction()));
 
 				EmptyBorder border = new EmptyBorder(2, 4, 2, 4);
 				addPathBtn.setBorder(border);
@@ -354,7 +354,8 @@ public class ControlPanel extends JPanel {
 		JPanel btnPanel = new JPanel();
 		{
 
-			JButton uploadBtn = new JButton("Upload (Space)");
+			JButton uploadBtn = new JButton("Upload! (Ctrl+Space)");
+			uploadBtn.setFont(new Font("Tahoma", Font.PLAIN, 15));
 			uploadBtn.addActionListener(e -> upload());
 
 			btnPanel.add(uploadBtn);
@@ -487,26 +488,6 @@ public class ControlPanel extends JPanel {
 			throw new IllegalArgumentException("Invalid game data '" + data + "'");
 		}
 		setup();
-	};
-
-	ActionListener addNewAction = e -> {
-		String lbl = ((JButton) e.getSource()).getText();
-
-		if (lbl.contains("Drive")) {
-			addAction(new DriveAction());
-		} else if (lbl.contains("Turn")) {
-			addAction(new TurnAction());
-		} else if (lbl.contains("Arm"))
-			addAction(new ArmAction());
-		else if (lbl.contains("Intake"))
-			addAction(new IntakeAction());
-		else if (lbl.contains("Output"))
-			addAction(new OutputAction());
-		else if (lbl.contains("Elevator"))
-			addAction(new ElevatorAction());
-		else if (lbl.contains("Delay"))
-			addAction(new DelayAction());
-
 	};
 
 	private void addAction(Action<?> a) {
