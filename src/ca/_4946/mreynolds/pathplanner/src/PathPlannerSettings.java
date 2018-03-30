@@ -20,7 +20,7 @@ public class PathPlannerSettings {
 	public static double WHEEL_WIDTH_IN = 28;
 
 	public static final double SAMPLE_PERIOD = 0.02; // 20ms
-	public static final String APP_VERSION = "1.0.1";
+	public static final String APP_VERSION = "1.1.0";
 
 	private static MotionProfile m_motionProfile;
 
