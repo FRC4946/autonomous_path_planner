@@ -2,23 +2,16 @@ package ca._4946.mreynolds.pathplanner.src;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
+import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import org.ini4j.Ini;
-import org.ini4j.Profile.Section;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
+import ca._4946.mreynolds.pathplanner.src.ui.LoadScriptDialog;
 import ca._4946.mreynolds.pathplanner.src.ui.PrimaryWindow;
 
 public class PathPlanner {
@@ -34,7 +27,7 @@ public class PathPlanner {
 
 		FileIO.createDefaultDir();
 		PathPlannerSettings.saveSettings();
-		
+
 		// Set the project's Look And Feel to the default cross-platform (Metal)
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -68,31 +61,44 @@ public class PathPlanner {
 	public void undo() {
 		m_scBundle.popHistory(m_gameData);
 		m_window.getFieldPanel().setScript(getScript(), getGameData());
-		m_window.getControlPanel().setupListeners();
+		m_window.getControlPanel().setup();
 	}
 
-	public void open(File file) {
-		try {
-			m_scBundle = FileIO.loadScript(file);
-		} catch (Exception e) {
-			ErrorPopup.createPopup("Error loading file", e);
-		}
+	public void open() {
+		JFileChooser fc = FileIO.getScriptChooser();
+		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
 
-		m_gameData = "ll";
-		m_window.getFieldPanel().setScript(getScript(), getGameData());
+			try {
+				m_scBundle = FileIO.loadScript(file);
+			} catch (Exception e) {
+				ErrorPopup.createPopup("Error loading file", e);
+			}
+
+			m_gameData = "ll";
+			m_window.getControlPanel().setup();
+			m_window.getFieldPanel().setScript(getScript(), getGameData());
+
+		}
 	}
 
-	public void save(File file) {
+	public void save() {
+		JFileChooser fc = FileIO.getScriptChooser(m_scBundle.name + ".xml");
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			if (!file.getName().endsWith(".xml"))
+				file = new File(file.getAbsolutePath() + ".xml");
 
-		if (!m_scBundle.validateParallelActions()) {
-			ErrorPopup.createPopup("Invalid Script", "Script contains illegal parallel actions!");
-			return;
-		}
+			if (!m_scBundle.validateParallelActions()) {
+				ErrorPopup.createPopup("Invalid Script", "Script contains illegal parallel actions!");
+				return;
+			}
 
-		try {
-			FileIO.saveScript(m_scBundle, file);
-		} catch (Exception e) {
-			ErrorPopup.createPopup("Error saving file", e);
+			try {
+				FileIO.saveScript(m_scBundle, file);
+			} catch (Exception e) {
+				ErrorPopup.createPopup("Error saving file", e);
+			}
 		}
 	}
 
@@ -108,6 +114,12 @@ public class PathPlanner {
 		} catch (Exception e) {
 			ErrorPopup.createPopup("Error uploading file", e);
 		}
+	}
+
+	public void importScript() {
+		LoadScriptDialog ls = new LoadScriptDialog();
+		ls.addPropertyChangeListener("Copy", e -> m_window.getControlPanel().setup());
+		ls.setVisible(true);
 	}
 
 	public Script[] getScripts() {

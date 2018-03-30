@@ -1,6 +1,7 @@
 package ca._4946.mreynolds.pathplanner.src.ui;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -8,7 +9,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
+import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.ui.aboutDialogs.AboutAppDialog;
 
@@ -43,6 +46,42 @@ public class PrimaryWindow extends JFrame {
 		// Create the menu bar
 		JMenuBar menuBar = new JMenuBar();
 		{
+			// Create the File menu for the menu bar
+			JMenu fileMenu = new JMenu("File");
+			{
+				JMenuItem saveButton = new JMenuItem("Save");
+				saveButton.addActionListener(e -> PathPlanner.getInstance().save());
+				saveButton.setAccelerator(
+						KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+				JMenuItem openButton = new JMenuItem("Open");
+				openButton.addActionListener(e -> PathPlanner.getInstance().open());
+				openButton.setAccelerator(
+						KeyStroke.getKeyStroke('O', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+				JMenuItem importButton = new JMenuItem("Import");
+				importButton.addActionListener(e -> PathPlanner.getInstance().importScript());
+				importButton.setAccelerator(
+						KeyStroke.getKeyStroke('I', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+				// Add the JLabel to the About menu
+				fileMenu.add(saveButton);
+				fileMenu.add(openButton);
+				fileMenu.add(importButton);
+
+			}
+
+			// Create the Edit menu for the menu bar
+			JMenu editMenu = new JMenu("Edit");
+			{
+				JMenuItem undoButton = new JMenuItem("Undo");
+				undoButton.addActionListener(e -> PathPlanner.getInstance().undo());
+				undoButton.setAccelerator(
+						KeyStroke.getKeyStroke('Z', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+				editMenu.add(undoButton);
+
+			}
 
 			// Create the About menu for the menu bar
 			JMenu helpMenu = new JMenu("Help");
@@ -61,7 +100,8 @@ public class PrimaryWindow extends JFrame {
 
 			}
 
-			// Add the Help menu to the menu bar
+			menuBar.add(fileMenu);
+			menuBar.add(editMenu);
 			menuBar.add(helpMenu);
 		}
 

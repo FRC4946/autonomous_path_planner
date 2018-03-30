@@ -21,24 +21,24 @@ package ca._4946.mreynolds.customSwing;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import ca._4946.mreynolds.customSwing.FramelessDialog;
-import ca._4946.mreynolds.customSwing.ScrollablePanel;
-
 /**
  * The superclass for all 'About' dialogs. This implementation of
  * {@link FramelessDialog} includes a scrollable {@link JTextPane}, which all
- * information should be added to using {@link AboutDialog#setText(String)}
+ * information should be added to using {@link #setText(String)}
  * 
  * @author Matthew Reynolds
  * 
@@ -54,6 +54,10 @@ public class AboutDialog extends FramelessDialog {
 	public AboutDialog() {
 		super();
 		setupUI();
+
+		// Close on esc
+		getRootPane().registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	/**
@@ -65,8 +69,7 @@ public class AboutDialog extends FramelessDialog {
 		JPanel containingPanel = new ScrollablePanel();
 		{
 			// Set the layout to a vertical BoxLayout
-			containingPanel.setLayout(new BoxLayout(containingPanel,
-					BoxLayout.Y_AXIS));
+			containingPanel.setLayout(new BoxLayout(containingPanel, BoxLayout.Y_AXIS));
 
 			// Create the textPane to contain all of the text.
 			lblInfo = new JTextPane();
@@ -81,8 +84,7 @@ public class AboutDialog extends FramelessDialog {
 				// Center the text pane's text
 				StyledDocument doc = lblInfo.getStyledDocument();
 				SimpleAttributeSet center = new SimpleAttributeSet();
-				StyleConstants
-						.setAlignment(center, StyleConstants.ALIGN_CENTER);
+				StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 				doc.setParagraphAttributes(0, doc.getLength(), center, false);
 
 				// Set the default size
@@ -101,8 +103,8 @@ public class AboutDialog extends FramelessDialog {
 	}
 
 	/**
-	 * Set the {@link JTextPane}'s text, and apply all of the neccesary sizing
-	 * and formatting
+	 * Set the {@link JTextPane}'s text, and apply all of the neccesary sizing and
+	 * formatting
 	 * 
 	 * @param text
 	 *            the text to set

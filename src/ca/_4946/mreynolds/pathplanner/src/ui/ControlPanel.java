@@ -11,6 +11,7 @@ import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,7 +21,6 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -94,7 +94,7 @@ public class ControlPanel extends JPanel {
 	public ControlPanel() {
 		setupUI();
 		setupKeyListeners();
-		setupListeners();
+		setup();
 
 		m_pingThread.start();
 	}
@@ -138,8 +138,23 @@ public class ControlPanel extends JPanel {
 				gbc_scriptNameField.gridy = 0;
 				statusPanel.add(m_scriptNameField, gbc_scriptNameField);
 				m_scriptNameField.setColumns(20);
-				m_scriptNameField
-						.addActionListener(e -> PathPlanner.getInstance().setScriptName(m_scriptNameField.getText()));
+				m_scriptNameField.addKeyListener(new KeyListener() {
+
+					@Override
+					public void keyTyped(KeyEvent e) {
+						PathPlanner.getInstance().setScriptName(m_scriptNameField.getText());
+					}
+
+					@Override
+					public void keyReleased(KeyEvent e) {
+						PathPlanner.getInstance().setScriptName(m_scriptNameField.getText());
+					}
+
+					@Override
+					public void keyPressed(KeyEvent e) {
+						PathPlanner.getInstance().setScriptName(m_scriptNameField.getText());
+					}
+				});
 
 				m_fieldConfigDropdown = new JComboBox<String>();
 				GridBagConstraints gbc_fieldConfigDropdown = new GridBagConstraints();
@@ -198,6 +213,23 @@ public class ControlPanel extends JPanel {
 				notesPanel.add(lblNotes, gbc_lblNotes);
 
 				m_notesTxtPane = new JTextPane();
+				m_notesTxtPane.addKeyListener(new KeyListener() {
+
+					@Override
+					public void keyTyped(KeyEvent e) {
+						PathPlanner.getInstance().setScriptNotes(m_notesTxtPane.getText());
+					}
+
+					@Override
+					public void keyReleased(KeyEvent e) {
+						PathPlanner.getInstance().setScriptNotes(m_notesTxtPane.getText());
+					}
+
+					@Override
+					public void keyPressed(KeyEvent e) {
+						PathPlanner.getInstance().setScriptNotes(m_notesTxtPane.getText());
+					}
+				});
 				GridBagConstraints gbc_notesTxtPane = new GridBagConstraints();
 				gbc_notesTxtPane.fill = GridBagConstraints.BOTH;
 				gbc_notesTxtPane.insets = new Insets(0, 0, 0, 5);
@@ -322,17 +354,9 @@ public class ControlPanel extends JPanel {
 
 		JPanel btnPanel = new JPanel();
 		{
-			JButton openBtn = new JButton("Open (O)");
-			openBtn.addActionListener(e -> open());
 
 			JButton newBtn = new JButton("New");
 			newBtn.addActionListener(e -> PathPlanner.getInstance().getScript().clear());
-
-			JButton saveBtn = new JButton("Save (S)");
-			saveBtn.addActionListener(e -> save());
-
-			JButton loadBtn = new JButton("Load (L)");
-			loadBtn.addActionListener(e -> load());
 
 			JButton uploadBtn = new JButton("Upload (Space)");
 			uploadBtn.addActionListener(e -> upload());
@@ -341,9 +365,6 @@ public class ControlPanel extends JPanel {
 			flipBtn.addActionListener(e -> flip());
 
 			btnPanel.add(newBtn);
-			btnPanel.add(openBtn);
-			btnPanel.add(loadBtn);
-			btnPanel.add(saveBtn);
 			btnPanel.add(uploadBtn);
 			btnPanel.add(flipBtn);
 		}
@@ -409,18 +430,12 @@ public class ControlPanel extends JPanel {
 				else if (e.getKeyCode() == KeyEvent.VK_7)
 					addAction(new DelayAction());
 
-				else if (e.getKeyCode() == KeyEvent.VK_Z)
-					PathPlanner.getInstance().undo();
-				else if (e.getKeyCode() == KeyEvent.VK_L)
-					load();
-				else if (e.getKeyCode() == KeyEvent.VK_O)
-					open();
-				else if (e.getKeyCode() == KeyEvent.VK_S)
-					save();
 				else if (e.getKeyCode() == KeyEvent.VK_F)
 					flip();
 				else if (e.getKeyCode() == KeyEvent.VK_SPACE)
 					upload();
+				else
+					return false;
 			}
 
 			else if (e.getKeyCode() == KeyEvent.VK_F1)
@@ -439,7 +454,10 @@ public class ControlPanel extends JPanel {
 		});
 	}
 
-	public void setupListeners() {
+	public void setup() {
+
+		m_scriptNameField.setText(PathPlanner.getInstance().getScriptName());
+		m_notesTxtPane.setText(PathPlanner.getInstance().getScriptNotes());
 
 		for (Script curScript : PathPlanner.getInstance().getScripts()) {
 			curScript.getActions()
@@ -450,37 +468,6 @@ public class ControlPanel extends JPanel {
 
 		updateActionList(PathPlanner.getInstance().getScript().getActions());
 		repaint();
-	}
-
-	private void open() {
-		JFileChooser fc = FileIO.getScriptChooser();
-		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
-			PathPlanner.getInstance().open(file);
-			m_scriptNameField.setText(PathPlanner.getInstance().getScriptName());
-			m_notesTxtPane.setText(PathPlanner.getInstance().getScriptNotes());
-			setupListeners();
-		}
-	}
-
-	private void load() {
-		LoadScriptDialog ls = new LoadScriptDialog();
-		ls.addPropertyChangeListener("Copy", e -> setupListeners());
-		ls.setVisible(true);
-	}
-
-	private void save() {
-		PathPlanner.getInstance().setScriptName(m_scriptNameField.getText());
-		PathPlanner.getInstance().setScriptNotes(m_notesTxtPane.getText());
-
-		JFileChooser fc = FileIO.getScriptChooser(m_scriptNameField.getText() + ".xml");
-		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
-			if (!file.getName().endsWith(".xml"))
-				file = new File(file.getAbsolutePath() + ".xml");
-
-			PathPlanner.getInstance().save(file);
-		}
 	}
 
 	private void upload() {
@@ -520,7 +507,7 @@ public class ControlPanel extends JPanel {
 		default:
 			throw new IllegalArgumentException("Invalid game data '" + data + "'");
 		}
-		setupListeners();
+		setup();
 	};
 
 	ActionListener addNewAction = e -> {
