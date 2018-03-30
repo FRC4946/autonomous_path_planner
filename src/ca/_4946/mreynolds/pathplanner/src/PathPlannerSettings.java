@@ -9,33 +9,20 @@ import java.util.List;
 import org.ini4j.Ini;
 
 import ca._4946.mreynolds.pathplanner.src.data.point.MagnetPoint;
+import ca._4946.mreynolds.pathplanner.src.data.profiles.ConstantJerkProfile;
+import ca._4946.mreynolds.pathplanner.src.data.profiles.MotionProfile;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 
 public class PathPlannerSettings {
 
 	public static final double ROBOT_LENGTH_IN = 39.375;
 	public static final double ROBOT_WIDTH_IN = 34.375;
-	public static final double WHEEL_WIDTH_IN = 28;
-
-	// Fast:
-	// approxTime = 0.75
-	// jerk: 3.0
-	// Max vel: 120
-
-	// Slow:
-	// Approx time = 1.0
-	// jerk = 2.0
-	// Max vel = 60
-
-	// desmos.com/calculator/bovxrwsidp
-	private static final double kApproxAccelTime = 1; // ~0.75 sec to accelerate to max vel
-	private static final double kJerkMultiplier = 2.0; // Must be greater than 1.0. Larger = more aggresive jerk
-	public static final double MAX_VEL = 60; // in/s
-	public static final double MAX_ACCEL = MAX_VEL / kApproxAccelTime; // in/s^2
-	public static final double MAX_JERK = MAX_ACCEL / kApproxAccelTime * kJerkMultiplier; // in/s^3
+	public static double WHEEL_WIDTH_IN = 28;
 
 	public static final double SAMPLE_PERIOD = 0.02; // 20ms
 	public static final String APP_VERSION = "1.0.1";
+
+	private static MotionProfile m_motionProfile;
 
 	private static ArrayList<MagnetPoint> magnets = new ArrayList<>();
 
@@ -54,27 +41,45 @@ public class PathPlannerSettings {
 		return Collections.unmodifiableList(magnets);
 	}
 
+	public static void loadSettings() {
+
+		try {
+			File f = new File(FileIO.PROFILE_DIR + "/default.ini");
+
+			Ini ini = new Ini(f);
+			if (m_motionProfile == null) {
+				m_motionProfile = new ConstantJerkProfile();
+				m_motionProfile.loadFromIni(ini);
+			}
+			WHEEL_WIDTH_IN = Double.parseDouble(ini.get("Robot", "Wheel Radius"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void saveSettings() {
 
 		try {
-			File f = new File(FileIO.PROFILE_DIR + "/test.ini");
+			File f = new File(FileIO.PROFILE_DIR + "/default.ini");
 			if (!f.exists())
 				f.createNewFile();
 
 			Ini ini = new Ini(f);
-			System.out.println(ini.values());
-			System.out.println(ini.fetch("Motion Profile", "max vel"));
-
-			ini.put("Motion Profile", "algorithm", "Constant Jerk");
-			ini.put("Motion Profile", "max vel", MAX_VEL);
-			ini.put("Motion Profile", "max accel", MAX_ACCEL);
-			ini.put("Motion Profile", "max jerk", MAX_JERK);
+			if (m_motionProfile != null)
+				m_motionProfile.saveToIni(ini);
+			ini.put("Robot", "Wheel Radius", WHEEL_WIDTH_IN);
 			ini.store();
 
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
+	}
 
+	public static MotionProfile getMotionProfile() {
+		if (m_motionProfile == null)
+			m_motionProfile = new ConstantJerkProfile();
+
+		return m_motionProfile;
 	}
 
 }

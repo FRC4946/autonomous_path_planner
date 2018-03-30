@@ -42,6 +42,10 @@ public class Script extends ObservableElement {
 			m_script.add(a.clone());
 	}
 
+	public void regenerate() {
+		connectPaths();
+	}
+
 	/**
 	 * Ensure that consecutive paths start/end at the same point, taking into
 	 * account alternative directions and any intermediate {@link TurnAction}

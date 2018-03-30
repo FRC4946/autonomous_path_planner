@@ -16,6 +16,7 @@ import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.ui.aboutDialogs.AboutAppDialog;
+import ca._4946.mreynolds.pathplanner.src.ui.popups.PreferencesDialog;
 
 public class PrimaryWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -110,9 +111,21 @@ public class PrimaryWindow extends JFrame {
 				// KeyStroke.getKeyStroke('C',
 				// Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
+				JMenuItem preferencesButton = new JMenuItem("Preferences");
+				preferencesButton.addActionListener(e -> {
+					new PreferencesDialog().setVisible(true);
+					PathPlannerSettings.saveSettings();
+					for (Script s : PathPlanner.getInstance().getScripts())
+						s.regenerate();
+				});
+				preferencesButton.setAccelerator(
+						KeyStroke.getKeyStroke(',', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
 				editMenu.add(undoButton);
 				editMenu.add(flipButton);
 				editMenu.add(clearButton);
+				editMenu.addSeparator();
+				editMenu.add(preferencesButton);
 
 			}
 

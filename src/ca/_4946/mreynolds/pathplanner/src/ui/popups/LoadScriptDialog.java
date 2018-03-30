@@ -1,4 +1,4 @@
-package ca._4946.mreynolds.pathplanner.src.ui;
+package ca._4946.mreynolds.pathplanner.src.ui.popups;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -28,6 +28,7 @@ import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
+import ca._4946.mreynolds.pathplanner.src.ui.FieldPanel;
 
 public class LoadScriptDialog extends JDialog {
 	private static final long serialVersionUID = 1L;

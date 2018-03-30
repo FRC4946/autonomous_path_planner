@@ -11,8 +11,8 @@ import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.data.Script;
 import ca._4946.mreynolds.pathplanner.src.data.ScriptBundle;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
-import ca._4946.mreynolds.pathplanner.src.ui.LoadScriptDialog;
 import ca._4946.mreynolds.pathplanner.src.ui.PrimaryWindow;
+import ca._4946.mreynolds.pathplanner.src.ui.popups.LoadScriptDialog;
 
 public class PathPlanner {
 
@@ -26,7 +26,7 @@ public class PathPlanner {
 	private PathPlanner() {
 
 		FileIO.createDefaultDir();
-		PathPlannerSettings.saveSettings();
+		PathPlannerSettings.loadSettings();
 
 		// Set the project's Look And Feel to the default cross-platform (Metal)
 		try {

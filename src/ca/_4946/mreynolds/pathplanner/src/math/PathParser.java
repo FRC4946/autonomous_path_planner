@@ -8,6 +8,7 @@ import ca._4946.mreynolds.pathplanner.src.data.CubicBezier;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
 import ca._4946.mreynolds.pathplanner.src.data.actions.DriveAction;
 import ca._4946.mreynolds.pathplanner.src.data.point.Point;
+import ca._4946.mreynolds.pathplanner.src.data.profiles.MotionProfile;
 import ca._4946.mreynolds.util.MathUtil;
 
 public class PathParser {
@@ -64,13 +65,13 @@ public class PathParser {
 			dist *= -1;
 
 		// Create the motion profile
-		TrapezoidMotionProfile profile = new TrapezoidMotionProfile(dist, PathPlannerSettings.MAX_VEL,
-				PathPlannerSettings.MAX_ACCEL, PathPlannerSettings.MAX_JERK);
+		MotionProfile profile = PathPlannerSettings.getMotionProfile();
+		profile.setPathLength(dist);
 		double time = 0;
 		int lastSeg = 0;
 
 		// Iterate through every timestamp
-		while (time < profile.time[7]) {
+		while (time < profile.duration()) {
 
 			// Load the current segment's pos, vel, accel, jerk
 			Segment s = new Segment(profile.getSeg(time));
