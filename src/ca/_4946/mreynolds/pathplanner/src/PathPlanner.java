@@ -28,12 +28,12 @@ public class PathPlanner {
 		FileIO.createDefaultDir();
 		PathPlannerSettings.loadSettings();
 
-		// Set the project's Look And Feel to the default cross-platform (Metal)
+		// Set the project's Look And Feel to the system theme
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e1) {
-			e1.printStackTrace();
+				| UnsupportedLookAndFeelException e) {
+			ErrorPopup.createPopup("Error setting theme", e);
 		}
 
 		EventQueue.invokeLater(() -> {
@@ -42,7 +42,7 @@ public class PathPlanner {
 				m_window.setVisible(true);
 				m_window.getFieldPanel().setScript(getScript(), getGameData());
 			} catch (Exception e) {
-				e.printStackTrace();
+				ErrorPopup.createPopup("Error opening application", e);
 			}
 		});
 	}
