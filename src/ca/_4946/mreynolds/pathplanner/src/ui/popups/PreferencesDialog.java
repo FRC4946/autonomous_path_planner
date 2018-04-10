@@ -286,11 +286,7 @@ public class PreferencesDialog extends JDialog {
 
 		JPanel buttonPanel = new JPanel();
 		{
-			JButton btnSave = new JButton("Save");
-			buttonPanel.add(btnSave);
-			btnSave.addActionListener(e -> PathPlannerSettings.saveSettings());
-
-			JButton btnSaveAs = new JButton("Save As");
+			JButton btnSaveAs = new JButton("Export Settings");
 			buttonPanel.add(btnSaveAs);
 			btnSaveAs.addActionListener(e -> {
 				JFileChooser fc = FileIO.getProfileChooser();
@@ -298,11 +294,11 @@ public class PreferencesDialog extends JDialog {
 					File file = fc.getSelectedFile();
 					if (!file.getName().endsWith(".ini"))
 						file = new File(file.getAbsolutePath() + ".ini");
-					PathPlannerSettings.saveSettings(file);
+					PathPlannerSettings.exportSettings(file);
 				}
 			});
 
-			JButton btnLoad = new JButton("Load");
+			JButton btnLoad = new JButton("Import Settings");
 			buttonPanel.add(btnLoad);
 			btnLoad.addActionListener(e -> {
 				JFileChooser fc = FileIO.getProfileChooser();
@@ -310,7 +306,7 @@ public class PreferencesDialog extends JDialog {
 					File file = fc.getSelectedFile();
 					if (!file.getName().endsWith(".ini"))
 						file = new File(file.getAbsolutePath() + ".ini");
-					PathPlannerSettings.loadSettings(file);
+					PathPlannerSettings.importSettings(file);
 				}
 				updateValues();
 			});

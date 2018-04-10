@@ -114,7 +114,7 @@ public class PrimaryWindow extends JFrame {
 				JMenuItem preferencesButton = new JMenuItem("Preferences");
 				preferencesButton.addActionListener(e -> {
 					new PreferencesDialog().setVisible(true);
-					// PathPlannerSettings.saveSettings();
+					 PathPlannerSettings.saveSettings();
 					for (Script s : PathPlanner.getInstance().getScripts())
 						s.regenerate();
 				});

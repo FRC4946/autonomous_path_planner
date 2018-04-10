@@ -1,6 +1,7 @@
 package ca._4946.mreynolds.pathplanner.src.data.profiles;
 
-import org.ini4j.Ini;
+import java.util.HashMap;
+import java.util.Map;
 
 import ca._4946.mreynolds.customSwing.ErrorPopup;
 import ca._4946.mreynolds.pathplanner.src.data.Segment;
@@ -114,34 +115,40 @@ public class ConstantJerkProfile extends MotionProfile {
 	}
 
 	@Override
-	public void saveToIni(Ini ini) {
-		ini.put("Motion Profile", "algorithm", toString());
-		ini.put("Motion Profile", "max vel", Math.abs(vmax_param));
+	public Map<String, String> exportProfile() {
+		Map<String, String> map = new HashMap<String, String>();
+
+		map.put("algorithm", toString());
+		map.put("max vel", "" + Math.abs(vmax_param));
 		if (m_tuneAbs) {
-			ini.put("Motion Profile", "max accel", Math.abs(amax_param));
-			ini.put("Motion Profile", "max jerk", Math.abs(jmax_param));
-			ini.remove("Motion Profile", "accel time");
-			ini.remove("Motion Profile", "jerk multiplier");
+			map.put("max accel", "" + Math.abs(amax_param));
+			map.put("max jerk", "" + Math.abs(jmax_param));
+			map.remove("accel time");
+			map.remove("jerk multiplier");
 		} else {
-			ini.remove("Motion Profile", "max accel");
-			ini.remove("Motion Profile", "max jerk");
-			ini.put("Motion Profile", "accel time", Math.abs(m_approxAccelTime));
-			ini.put("Motion Profile", "jerk multiplier", Math.abs(m_jerkMultiplier));
+			map.remove("max accel");
+			map.remove("max jerk");
+			map.put("accel time", "" + Math.abs(m_approxAccelTime));
+			map.put("jerk multiplier", "" + Math.abs(m_jerkMultiplier));
 		}
+
+		return map;
 	}
 
 	@Override
-	public void loadFromIni(Ini ini) {
+	public void importProfile(Map<String, String> data) {
 		try {
-			vmax_param = Double.parseDouble(ini.get("Motion Profile", "max vel"));
+			vmax_param = Double.parseDouble(data.get("max vel"));
 
-			m_tuneAbs = ini.get("Motion Profile", "max accel") != null;
+			m_tuneAbs = data.get("max accel") != null;
 			if (m_tuneAbs) {
-				amax_param = Double.parseDouble(ini.get("Motion Profile", "max accel"));
-				jmax_param = Double.parseDouble(ini.get("Motion Profile", "max jerk"));
+				amax_param = Double.parseDouble(data.get("max accel"));
+				jmax_param = Double.parseDouble(data.get("max jerk"));
+				updateAbsoluteTunings(vmax_param, amax_param, jmax_param);
 			} else {
-				m_approxAccelTime = Double.parseDouble(ini.get("Motion Profile", "accel time"));
-				m_jerkMultiplier = Double.parseDouble(ini.get("Motion Profile", "jerk multiplier"));
+				m_approxAccelTime = Double.parseDouble(data.get("accel time"));
+				m_jerkMultiplier = Double.parseDouble(data.get("jerk multiplier"));
+				updateRelativeTunings(vmax_param, m_approxAccelTime, m_jerkMultiplier);
 			}
 		} catch (Exception e) {
 			ErrorPopup.createPopup("Error loading profile", e);

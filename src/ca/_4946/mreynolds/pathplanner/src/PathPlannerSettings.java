@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 import org.ini4j.Ini;
@@ -12,7 +13,6 @@ import org.ini4j.Ini;
 import ca._4946.mreynolds.pathplanner.src.data.point.MagnetPoint;
 import ca._4946.mreynolds.pathplanner.src.data.profiles.ConstantJerkProfile;
 import ca._4946.mreynolds.pathplanner.src.data.profiles.MotionProfile;
-import ca._4946.mreynolds.pathplanner.src.io.FileIO;
 
 public class PathPlannerSettings {
 
@@ -40,58 +40,57 @@ public class PathPlannerSettings {
 		return Collections.unmodifiableList(magnets);
 	}
 
-	public static void loadSettings(File newFile) {
-		Preferences prefs = Preferences.userNodeForPackage(PathPlanner.class);
-		prefs.put("Profile Path", newFile.getAbsolutePath());
-
-		loadSettings();
-	}
-	
 	public static void loadSettings() {
+		Preferences prefs = Preferences.userNodeForPackage(PathPlanner.class);
+		WHEEL_WIDTH_IN = prefs.getDouble("Wheel Radius", WHEEL_WIDTH_IN);
 
+		if (m_motionProfile == null)
+			m_motionProfile = new ConstantJerkProfile();
+		
+		Map<String, String> profile = m_motionProfile.exportProfile();
+		for (String key : profile.keySet())
+			profile.put(key, prefs.get(key, "0"));
+		m_motionProfile.importProfile(profile);
+	}
+
+	public static void saveSettings() {
+		Preferences prefs = Preferences.userNodeForPackage(PathPlanner.class);
+		prefs.put("Wheel Radius", "" + WHEEL_WIDTH_IN);
+
+		Map<String, String> profile = m_motionProfile.exportProfile();
+		for (String key : profile.keySet())
+			prefs.put(key, profile.get(key));
+	}
+
+	public static void importSettings(File f) {
 		try {
-			File f = getFile();
+			Ini ini = new Ini(f);
 
-			// If the default file does not exist, create a default file and save it
-			if (!f.exists()) {
-				f.createNewFile();
-				Ini ini = new Ini(f);
+			if (m_motionProfile == null)
 				m_motionProfile = new ConstantJerkProfile();
-				m_motionProfile.saveToIni(ini);
-				ini.put("Robot", "Wheel Radius", WHEEL_WIDTH_IN);
-				ini.store();
-			}
 
-			// Assuming it does exist, simply load its values
-			else {
-				Ini ini = new Ini(f);
-				if (m_motionProfile == null)
-					m_motionProfile = new ConstantJerkProfile();
+			Map<String, String> profile = m_motionProfile.exportProfile();
+			for (String key : profile.keySet())
+				profile.put(key, ini.get("Motion Profile", key));
+			m_motionProfile.importProfile(profile);
 
-				m_motionProfile.loadFromIni(ini);
-				WHEEL_WIDTH_IN = Double.parseDouble(ini.get("Robot", "Wheel Radius"));
-			}
-		} catch (Exception e) {
+			WHEEL_WIDTH_IN = Double.parseDouble(ini.get("Robot", "Wheel Radius"));
+
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void saveSettings(File newFile) {
-		Preferences prefs = Preferences.userNodeForPackage(PathPlanner.class);
-		prefs.put("Profile Path", newFile.getAbsolutePath());
-
-		saveSettings();
-	}
-
-	public static void saveSettings() {
+	public static void exportSettings(File f) {
 		try {
-			File f = getFile();
-
-			if (!f.exists())
-				f.createNewFile();
+			if (f.exists())
+				f.delete();
+			f.createNewFile();
 
 			Ini ini = new Ini(f);
-			m_motionProfile.saveToIni(ini);
+			Map<String, String> profile = m_motionProfile.exportProfile();
+			for (String key : profile.keySet())
+				ini.put("Motion Profile", key, profile.get(key));
 			ini.put("Robot", "Wheel Radius", WHEEL_WIDTH_IN);
 			ini.store();
 
@@ -103,11 +102,4 @@ public class PathPlannerSettings {
 	public static MotionProfile getMotionProfile() {
 		return m_motionProfile;
 	}
-
-	private static File getFile() throws IOException {
-		Preferences prefs = Preferences.userNodeForPackage(PathPlanner.class);
-		File f = new File(prefs.get("Profile Path", FileIO.PROFILE_DIR + "/default.ini"));
-		return f;
-	}
-
 }
