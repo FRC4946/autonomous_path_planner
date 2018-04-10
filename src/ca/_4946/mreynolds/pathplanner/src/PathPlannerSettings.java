@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.ini4j.Ini;
@@ -50,7 +49,7 @@ public class PathPlannerSettings {
 
 		Map<String, String> profile = m_motionProfile.exportProfile();
 		for (String key : profile.keySet())
-			profile.put(key, prefs.get(key, "-1"));
+			profile.put(key, prefs.get(key, profile.get(key)));
 		m_motionProfile.importProfile(profile);
 	}
 
