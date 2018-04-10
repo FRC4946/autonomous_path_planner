@@ -139,15 +139,24 @@ public class ConstantJerkProfile extends MotionProfile {
 	public void importProfile(Map<String, String> data) {
 		try {
 			vmax_param = Double.parseDouble(data.get("max vel"));
+			vmax_param = vmax_param == -1 ? 60 : vmax_param;
 
-			m_tuneAbs = data.get("max accel") != null;
+			m_tuneAbs = data.get("max accel") != "-1" && data.get("max accel") != null;
 			if (m_tuneAbs) {
 				amax_param = Double.parseDouble(data.get("max accel"));
 				jmax_param = Double.parseDouble(data.get("max jerk"));
+
+				amax_param = amax_param == -1 ? 60 : amax_param;
+				jmax_param = jmax_param == -1 ? 120 : jmax_param;
+
 				updateAbsoluteTunings(vmax_param, amax_param, jmax_param);
 			} else {
 				m_approxAccelTime = Double.parseDouble(data.get("accel time"));
 				m_jerkMultiplier = Double.parseDouble(data.get("jerk multiplier"));
+
+				m_approxAccelTime = m_approxAccelTime == -1 ? 1 : m_approxAccelTime;
+				m_jerkMultiplier = m_jerkMultiplier == -1 ? 2 : m_jerkMultiplier;
+
 				updateRelativeTunings(vmax_param, m_approxAccelTime, m_jerkMultiplier);
 			}
 		} catch (Exception e) {

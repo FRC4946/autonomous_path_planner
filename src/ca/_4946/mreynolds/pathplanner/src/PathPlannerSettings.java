@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.ini4j.Ini;
@@ -46,10 +47,10 @@ public class PathPlannerSettings {
 
 		if (m_motionProfile == null)
 			m_motionProfile = new ConstantJerkProfile();
-		
+
 		Map<String, String> profile = m_motionProfile.exportProfile();
 		for (String key : profile.keySet())
-			profile.put(key, prefs.get(key, "0"));
+			profile.put(key, prefs.get(key, "-1"));
 		m_motionProfile.importProfile(profile);
 	}
 
