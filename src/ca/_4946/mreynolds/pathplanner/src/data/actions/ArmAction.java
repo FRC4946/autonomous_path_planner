@@ -11,12 +11,14 @@ public class ArmAction extends Action<ArmAction.Option> {
 	/**
 	 * <li>{@link Option#ArmDown} puts the arm in the down position
 	 * <li>{@link Option#ArmUp} puts the arm in the upright position
+	 * <li>{@link Option#CloseClamp} engages the clamp
+	 * <li>{@link Option#OpenClamp} disengages the clamp
 	 *
 	 * @author Matthew Reynolds
 	 * @see Action.ActionOption
 	 */
 	public static enum Option implements Action.ActionOption {
-		ArmDown, ArmUp
+		ArmDown, ArmUp, CloseClamp, OpenClamp
 	}
 
 	/**

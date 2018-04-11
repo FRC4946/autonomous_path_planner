@@ -140,7 +140,7 @@ public class ConstantJerkProfile extends MotionProfile {
 		try {
 			vmax_param = Double.parseDouble(data.get("max vel"));
 
-			m_tuneAbs = data.get("max accel") != "-1" && data.get("max accel") != null;
+			m_tuneAbs = data.get("max accel") != null;
 			if (m_tuneAbs) {
 				amax_param = Double.parseDouble(data.get("max accel"));
 				jmax_param = Double.parseDouble(data.get("max jerk"));
