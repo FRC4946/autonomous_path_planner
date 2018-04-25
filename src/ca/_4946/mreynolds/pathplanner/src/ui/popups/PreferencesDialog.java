@@ -22,6 +22,7 @@ import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
 
+import ca._4946.mreynolds.pathplanner.src.PathPlanner;
 import ca._4946.mreynolds.pathplanner.src.PathPlannerSettings;
 import ca._4946.mreynolds.pathplanner.src.data.profiles.ConstantJerkProfile;
 import ca._4946.mreynolds.pathplanner.src.io.FileIO;
@@ -281,8 +282,10 @@ public class PreferencesDialog extends JDialog {
 		gbc_wheelRadiusSpinner.gridx = 2;
 		gbc_wheelRadiusSpinner.gridy = 10;
 		centerPanel.add(m_wheelRadiusSpinner, gbc_wheelRadiusSpinner);
-		m_wheelRadiusSpinner
-				.addChangeListener(e -> PathPlannerSettings.WHEEL_WIDTH_IN = (double) m_wheelRadiusSpinner.getValue());
+		m_wheelRadiusSpinner.addChangeListener(e -> {
+			PathPlannerSettings.WHEEL_WIDTH_IN = (double) m_wheelRadiusSpinner.getValue();
+			PathPlanner.getInstance().getScript().regenerate();
+		});
 
 		JPanel buttonPanel = new JPanel();
 		{
@@ -329,5 +332,6 @@ public class PreferencesDialog extends JDialog {
 		m_wheelRadiusSpinner.setValue(PathPlannerSettings.WHEEL_WIDTH_IN);
 
 		quiet = false;
+		PathPlanner.getInstance().getScript().regenerate();
 	}
 }
